@@ -1,0 +1,21 @@
+name: app-inventory
+
+services:
+  app-inventory:
+    build: .
+    container_name: app-inventory
+    volumes:
+      - /home/ced/python/inventory:/app
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - mongo-network
+      - app-inventory
+
+networks:
+  mongo-network:
+    external: true
+  app-inventory:
+    external: true
