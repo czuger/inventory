@@ -1,19 +1,26 @@
+import logging
+
 from flask import Flask, render_template, request, redirect, url_for, flash
-from mongoengine import connect
 
 from inventory.libs.categories import Category
+from inventory.libs.get_or_404 import get_or_404
+from inventory.libs.initialization import initialize
 from inventory.libs.item import Item, Quantite, Localisation, Dimensions
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(filename)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-connect(
-    db="grognards",
-    host="nuc150",
-    port=27017,
-    username="root",
-    password="foo",
-    authentication_source="admin"
-)
+app_context = initialize(app)
+app = app_context.app
+
+app.secret_key = app_context.secret_key
 
 
 @app.route("/")
@@ -24,7 +31,8 @@ def index():
     cat = request.args.get("cat")
     sous = request.args.get("sous")
 
-    items = Item.objects.order_by("code")
+    items = Item.objects.order_by("categorie", "sous_category", "label")
+
     if cat:
         items = items.filter(categorie=cat)
 
@@ -36,13 +44,13 @@ def index():
 
 @app.route("/item/<id>")
 def show(id):
-    item = Item.objects.get_or_404(id=id)
+    item = get_or_404(Item, id)
     return render_template("show.html", item=item)
 
 
 @app.route("/item/<id>/edit", methods=["GET", "POST"])
 def edit(id):
-    item = Item.objects.get_or_404(id=id)
+    item = get_or_404(Item, id)
 
     if request.method == "POST":
         item.code = request.form.get("code")
