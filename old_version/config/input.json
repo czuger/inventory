@@ -1,0 +1,998 @@
+[
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "nappe de jeu",
+      "name": "nappes floquéee (1,2x1,8)",
+      "quantity": 23,
+      "location": "petite salle - armoire 1"
+    },
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "nappe de jeu",
+      "name": "nappes tissus (1,2x1,8)",
+      "quantity": 6,
+      "location": "petite salle - armoire 1"
+    },
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "nappe de jeu",
+      "name": "nappes mousse (1,2x0,9)",
+      "quantity": 25,
+      "remarks": "SAGA",
+      "location": "gande salle - placard 1 porte"
+    },
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "nappe de jeu",
+      "name": "nappes mousse (0,9x0,9)",
+      "quantity": 8,
+      "remarks": "Guildball",
+      "location": "gande salle - placard 1 porte"
+    },
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "nappe de jeu",
+      "name": "nappes mousse (0,9x0,9)",
+      "quantity": 4,
+      "remarks": "Malifaux (en housse)",
+      "location": "gande salle - placard 1 porte"
+    },
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "nappe de jeu",
+      "name": "nappes mousse (1,2x1,8)",
+      "quantity": 3,
+      "remarks": "désert+glace+feu",
+      "location": "gande salle - placard 1 porte"
+    },
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "nappe de jeu",
+      "name": "nappes mousse (1,2x1,2)",
+      "quantity": 4,
+      "remarks": "désert+plage",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "nappe de jeu",
+      "name": "nappes mousse (?x?)",
+      "quantity": 2,
+      "remarks": "StarWars",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "nappe de jeu",
+      "name": "nappes ADG (1,2x0,8)",
+      "quantity": "1 (latex) +4 (floquées)",
+      "remarks": "perdues dans la masse"
+    },
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "plaques modulaires",
+      "name": "mélaminées peintes/floquées 50x50",
+      "quantity": 13,
+      "remarks": "avec rivière",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "plaques modulaires",
+      "name": "polystyrènes/floquées 60x60",
+      "quantity": "11 + 8 + 9",
+      "remarks": "steppe + plage + neige",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "plaques modulaires",
+      "name": "bois",
+      "quantity": "8x120cm",
+      "remarks": "+ 4 trétaux supprimées durant période COVID"
+    },
+    {
+      "typology": "material",
+      "category": "support de jeu",
+      "subcategory": "plaques modulaires",
+      "name": "bois",
+      "quantity": "2x180cm",
+      "remarks": "supprimées durant période COVID"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 15mm",
+      "name": "batîments est européens",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 15mm",
+      "name": "batîments ruines",
+      "remarks": "dans 1 boite",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "panières batiments médiévaux",
+      "quantity": 2,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "murs",
+      "quantity": "1,5m",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "temple antique",
+      "quantity": 1,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "temple grec",
+      "quantity": 1,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "temple Gondor",
+      "quantity": 1,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "tour féodale",
+      "quantity": 1,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "tour médiévale",
+      "quantity": 1,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "maisons 20e siècle",
+      "quantity": 9,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "routes 20e siècle",
+      "quantity": "2-3m",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "\"mur\" de la mine",
+      "quantity": 1,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "tombeau de Balin",
+      "quantity": 1,
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "arène cirque Jugula",
+      "quantity": 1,
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "boites Désert",
+      "quantity": 2,
+      "location": "gande salle - placard 2 portes"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "boite Asie",
+      "quantity": 1,
+      "location": "gande salle - placard 2 portes"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour 28mm",
+      "name": "arbres",
+      "quantity": 38,
+      "remarks": "dont 8 sapins",
+      "location": "gande salle - placard 1 porte"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu BOLT ACTION",
+      "name": "table Stalingrad",
+      "quantity": 1,
+      "remarks": "à peindre",
+      "location": "gande salle - placard 2 portes"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu BOLT ACTION",
+      "name": "table France occupée",
+      "quantity": 1,
+      "location": "gande salle - placard 2 portes"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu BOLT ACTION",
+      "name": "table maisons allemagne+gare",
+      "quantity": 1,
+      "location": "gande salle - placard 2 portes"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour +30mm",
+      "name": "Malifaux",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour +30mm",
+      "name": "Briskars",
+      "location": "gande salle - placard 1 porte"
+    },
+    {
+      "typology": "material",
+      "category": "décors de jeu",
+      "subcategory": "décors de jeu pour +30mm",
+      "name": "Fig Symbiotique",
+      "quantity": 1,
+      "location": "petite salle - vitrine 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "StarWars",
+      "name": "Armada = règle",
+      "quantity": "2 cartons",
+      "remarks": "Alliance & Empire",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "StarWars",
+      "name": "Armada = règle",
+      "quantity": "1 panière",
+      "remarks": "Alliance & Empire",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "StarWars",
+      "name": "Armada = règle",
+      "quantity": "1 boite",
+      "remarks": "conflit Corélien (campagne)",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "StarWars",
+      "name": "Armada = règle",
+      "quantity": "1 boite",
+      "remarks": "destroyer stellaire",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "StarWars",
+      "name": "Armada = règle",
+      "quantity": "1 boite",
+      "remarks": "Phoenix Home",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "Seigneurs des Anneaux",
+      "name": "URUKAÏ",
+      "quantity": "3 boites",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "Seigneurs des Anneaux",
+      "name": "GOBELINS",
+      "quantity": "1 boite",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "Seigneurs des Anneaux",
+      "name": "TROLLS",
+      "quantity": 2,
+      "remarks": "dans la boite des Gob",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "Seigneurs des Anneaux",
+      "name": "HARADRIMS",
+      "quantity": "40 figs env",
+      "remarks": "dont 1 MAMELIK",
+      "location": "petite salle - vitrine 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "Seigneurs des Anneaux",
+      "name": "ROHANS",
+      "quantity": "3 boites",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "Seigneurs des Anneaux",
+      "name": "EFLES",
+      "quantity": 32,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "Seigneurs des Anneaux",
+      "name": "AVENTURIERS",
+      "quantity": 20,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "SAGA",
+      "name": "règle V2",
+      "quantity": 1,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "SAGA",
+      "name": "Age de la Magie = extension",
+      "quantity": 1,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "SAGA",
+      "name": "Age de la magie = figurines",
+      "quantity": "9 squeletettes",
+      "location": "petite salle - vitrine 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "SAGA",
+      "name": "Age des Invasions = figurines",
+      "quantity": "33 piétons et 4 cavaliers",
+      "location": "petite salle - vitrine 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "SAGA",
+      "name": "Age d'Hannibal = extension",
+      "quantity": 1,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "SAGA",
+      "name": "Croissant & Croix = extension",
+      "quantity": 1,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "SAGA",
+      "name": "sets de 8 dés",
+      "quantity": 7,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "CONGO (28mm)",
+      "name": "Figurines + décors",
+      "quantity": "60 env",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "CONGO (28mm)",
+      "name": "Règle",
+      "quantity": 1,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "BOLT ACTION (28mm)",
+      "name": "Figurines : 1 battlegroup USA (en guêtres)",
+      "quantity": "60 env",
+      "remarks": "+ 1 M4A1 +1 HT",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "Flame of War (FOW) (15mm)",
+      "name": "Figurines : compagnie chars USA",
+      "quantity": 1,
+      "remarks": "à monter",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "Flame of War (FOW) (15mm)",
+      "name": "maquettes",
+      "quantity": 2,
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux de figurines",
+      "subcategory": "Flame of War (FOW) (15mm)",
+      "name": "Décors",
+      "remarks": "1 camp prisonniers",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Guerre de l'anneau",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Britannia",
+      "remarks": "version AH",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "An mil",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Barbe Noire",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Empire",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Dipolmacy",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Power",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Bounty Hunter",
+      "remarks": "Shoot at the saloon",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Aces of Aces",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Wanted",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Strike",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Formule D",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Battle for Britain",
+      "remarks": "Blood Red Skies",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "jeu en boites",
+      "name": "Handiap Race",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "Sails of Glory",
+      "name": "règle",
+      "quantity": "1 boite",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "jeux",
+      "subcategory": "Sails of Glory",
+      "name": "bateaux",
+      "quantity": "4 boites",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "Régles",
+      "name": "Au contact",
+      "quantity": 1,
+      "location": "petite salle - armoire 1"
+    },
+    {
+      "typology": "material",
+      "category": "Régles",
+      "name": "Filed of Glory V2 (FoG)",
+      "quantity": 3,
+      "location": "petite salle - armoire 1"
+    },
+    {
+      "typology": "material",
+      "category": "Régles",
+      "name": "V for Victory",
+      "quantity": 1,
+      "location": "petite salle - armoire 1"
+    },
+    {
+      "typology": "material",
+      "category": "Régles",
+      "name": "Art de la Guerre V4 (AdG)",
+      "quantity": 2,
+      "remarks": "dont 1 chez Stéphane M",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "appareils",
+      "name": "machine à café",
+      "quantity": 4,
+      "remarks": "3 filtres et 1 dosettes",
+      "location": "gande salle - pièce 1, petite salle - armoire 1"
+    },
+    {
+      "typology": "material",
+      "category": "appareils",
+      "name": "thermos",
+      "quantity": 3,
+      "remarks": "2 café et 1 eau chaude",
+      "location": "petite salle - armoire 1"
+    },
+    {
+      "typology": "material",
+      "category": "appareils",
+      "name": "plastifieuse",
+      "quantity": 1,
+      "location": "petite salle - armoire 1"
+    },
+    {
+      "typology": "material",
+      "category": "appareils",
+      "name": "rétroprojecteur",
+      "quantity": 1,
+      "location": "petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "appareils",
+      "name": "rallonge électrique",
+      "quantity": 2,
+      "remarks": "1x20m + 1x25m",
+      "location": "petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "appareils",
+      "name": "multiprise",
+      "quantity": 3,
+      "location": "gande salle - pièce 1, petite salle - pièce 2, petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "appareils",
+      "name": "radioCD",
+      "quantity": 1,
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "appareils",
+      "name": "camera",
+      "quantity": 1,
+      "remarks": "Sony FDR-AX43"
+    },
+    {
+      "typology": "material",
+      "category": "appareils",
+      "name": "lumières",
+      "quantity": 2,
+      "remarks": "chez le Préz"
+    },
+    {
+      "typology": "material",
+      "category": "appareils",
+      "name": "pied camera",
+      "quantity": 1,
+      "remarks": "Neewwer - 177cm"
+    },
+    {
+      "typology": "material",
+      "category": "appareils",
+      "name": "pieds lumières",
+      "quantity": 2
+    },
+    {
+      "typology": "material",
+      "category": "appareils",
+      "name": "carte SSD",
+      "quantity": 3,
+      "remarks": "chez le Préz"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "caissette",
+      "name": "caissette avec clé",
+      "quantity": 3,
+      "remarks": "dont 1 avec le fond de caisse",
+      "location": "petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "épée BATARDE en acier",
+      "quantity": 1,
+      "remarks": "Espagne",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "Vitrine",
+      "quantity": 1,
+      "remarks": "tout en verre",
+      "location": "petite salle - vitrine 1"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "coffre à roulettes",
+      "quantity": 1,
+      "remarks": "pour plaques 120cm",
+      "location": "petite salle - vitrine 1"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "mètre-ruban rouge",
+      "quantity": 1,
+      "remarks": "2m",
+      "location": "petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "dé à 6 faces",
+      "quantity": "90 env",
+      "remarks": "en 4 boites",
+      "location": "gande salle - pièce 1, petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "règle métallique 60cm",
+      "quantity": 1,
+      "location": "petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "fournitures de bureau",
+      "location": "petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "ciseaux à Poulets magnétiques",
+      "quantity": 2,
+      "location": "petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "ciseaux à Poulets magnétiques",
+      "quantity": 2,
+      "location": "petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "pintes de bière",
+      "quantity": 24,
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "couteaux, fourchettes, louches…",
+      "location": "petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "marteau",
+      "quantity": 1,
+      "location": "petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "balai",
+      "quantity": 1,
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "balayette",
+      "quantity": 0
+    },
+    {
+      "typology": "material",
+      "category": "matériel divers",
+      "subcategory": "autres",
+      "name": "poubelle",
+      "quantity": 2,
+      "remarks": "avec tri",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "matériel peinture",
+      "name": "1 lampe + accessoires + fig en en libre service",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "cadeaux potentiels",
+      "subcategory": "règle",
+      "name": "FIRESTROM armada",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "cadeaux potentiels",
+      "subcategory": "règle",
+      "name": "Achtung Panzer!",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "cadeaux potentiels",
+      "subcategory": "jeu",
+      "name": "Planet Steams",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "cadeaux potentiels",
+      "subcategory": "jeu",
+      "name": "Dystopian wars",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "cadeaux potentiels",
+      "subcategory": "figurines",
+      "name": "antiques",
+      "remarks": "1 boite de statuettes",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "cadeaux potentiels",
+      "subcategory": "figurines",
+      "name": "médiévales 70mm",
+      "quantity": 27,
+      "remarks": "dans attatché case",
+      "location": "gande salle - pièce 1, petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "cadeaux potentiels",
+      "subcategory": "figurines",
+      "name": "19e - plat d'étain",
+      "quantity": "1-2kg",
+      "remarks": "dans boite en bois",
+      "location": "petite salle - pièce 2"
+    },
+    {
+      "typology": "material",
+      "category": "cadeaux potentiels",
+      "subcategory": "autres",
+      "name": "maquette d'une tour",
+      "quantity": 1,
+      "remarks": "MedFan",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "cadeaux potentiels",
+      "subcategory": "autres",
+      "name": "réglettes ADG 28mm",
+      "quantity": "1 set",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "cadeaux potentiels",
+      "subcategory": "autres",
+      "name": "chemisette grognards",
+      "quantity": 4,
+      "remarks": "XXL",
+      "location": "petite salle - armoire 2"
+    },
+    {
+      "typology": "material",
+      "category": "stock de figruines à vendre",
+      "name": "boites Antiq-Med",
+      "quantity": "1 petite + 6 grandes boites",
+      "location": "gande salle - pièce 1"
+    },
+    {
+      "typology": "material",
+      "category": "stock de figruines à vendre",
+      "name": "listing chez François S",
+      "remarks": "15mm, 28mm, 17e, 18e, 19e"
+    },
+    {
+      "typology": "consumable",
+      "category": "alimentaire",
+      "name": "barres chocolatées",
+      "quantity": "1kg"
+    },
+    {
+      "typology": "consumable",
+      "category": "boissons",
+      "name": "café",
+      "quantity": "2kg"
+    },
+    {
+      "typology": "consumable",
+      "category": "boissons",
+      "name": "jus d'orange",
+      "quantity": "3l"
+    },
+    {
+      "typology": "consumable",
+      "category": "boissons",
+      "name": "boite 80 filtres café",
+      "quantity": 3
+    }
+  ]

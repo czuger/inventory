@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}{{ item.label }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ item.label }}</h1>
+    <div>
+        <a href="{{ url_for('edit', id=item.id) }}" class="btn btn-primary">Modifier</a>
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Retour</a>
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <!-- General -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-bold">Général</div>
+            <div class="card-body">
+                <table class="table table-sm mb-0">
+                    <tr>
+                        <th>Code</th>
+                        <td><span class="badge bg-secondary">{{ item.code }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Catégorie</th>
+                        <td>{{ item.categorie }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sous-catégorie</th>
+                        <td>{{ item.sous_categorie }}</td>
+                    </tr>
+                    <tr>
+                        <th>Échelle</th>
+                        <td>{{ item.echelle }}</td>
+                    </tr>
+                    <tr>
+                        <th>Remarques</th>
+                        <td>{{ item.remarques }}</td>
+                    </tr>
+                    <tr>
+                        <th>Tags</th>
+                        <td>
+                            {% for tag in item.tags %}
+                            <span class="badge bg-info text-dark">{{ tag }}</span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quantite -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-bold">Quantité</div>
+            <div class="card-body">
+                {% if item.quantite %}
+                <table class="table table-sm mb-0">
+                    <tr>
+                        <th>Nombre</th>
+                        <td>{{ item.quantite.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Unité</th>
+                        <td>{{ item.quantite.unite }}</td>
+                    </tr>
+                    <tr>
+                        <th>Détails</th>
+                        <td>{{ item.quantite.details }}</td>
+                    </tr>
+                </table>
+                {% else %}
+                <p class="text-muted">Aucune quantité renseignée.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Localisation -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-bold">Localisation</div>
+            <div class="card-body">
+                {% if item.localisation %}
+                <table class="table table-sm mb-0">
+                    <tr>
+                        <th>Salle</th>
+                        <td>{{ item.localisation.salle }}</td>
+                    </tr>
+                    <tr>
+                        <th>Emplacement</th>
+                        <td>{{ item.localisation.emplacement }}</td>
+                    </tr>
+                </table>
+                {% else %}
+                <p class="text-muted">Aucune localisation renseignée.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Dimensions -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-bold">Dimensions</div>
+            <div class="card-body">
+                {% if item.dimensions %}
+                <table class="table table-sm mb-0">
+                    <tr>
+                        <th>Largeur</th>
+                        <td>{{ item.dimensions.largeur_pouces }}" / {{ item.dimensions.largeur_cm }} cm</td>
+                    </tr>
+                    <tr>
+                        <th>Longueur</th>
+                        <td>{{ item.dimensions.longueur_pouces }}" / {{ item.dimensions.longueur_cm }} cm</td>
+                    </tr>
+                </table>
+                {% else %}
+                <p class="text-muted">Aucune dimension renseignée.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

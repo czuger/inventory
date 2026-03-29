@@ -1,0 +1,2 @@
+mongoengine~=0.29.3
+pymongo~=4.16.0
