@@ -1,4 +1,10 @@
-from mongoengine import Document, StringField, FloatField, ListField, EmbeddedDocument, EmbeddedDocumentField
+from mongoengine import BinaryField
+from mongoengine import Document
+from mongoengine import EmbeddedDocument
+from mongoengine import EmbeddedDocumentField
+from mongoengine import FloatField
+from mongoengine import ListField
+from mongoengine import StringField
 
 
 class Localisation(EmbeddedDocument):
@@ -56,5 +62,6 @@ class Item(Document):
     tags = ListField(StringField())
     dimensions = EmbeddedDocumentField(Dimensions)
     echelle = StringField()  # e.g. "28mm", "15mm"
+    medias = ListField(BinaryField())
 
     meta = {"collection": "inventaire"}

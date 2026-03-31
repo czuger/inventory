@@ -1,11 +1,21 @@
+import base64
 import logging
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from bson import Binary
+from flask import Flask
+from flask import flash
+from flask import redirect
+from flask import render_template
+from flask import request
+from flask import url_for
 
 from inventory.libs.categories import Category
 from inventory.libs.get_or_404 import get_or_404
 from inventory.libs.initialization import initialize
-from inventory.libs.item import Item, Quantite, Localisation, Dimensions
+from inventory.libs.item import Dimensions
+from inventory.libs.item import Item
+from inventory.libs.item import Localisation
+from inventory.libs.item import Quantite
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -43,14 +53,21 @@ def index():
 
 
 @app.route("/item/<id>")
-def show(id):
+def show(id: str):
+    """Show a single item.
+
+    Args:
+        id: The item id.
+    """
     item = get_or_404(Item, id)
-    return render_template("show.html", item=item)
+    images_b64 = [base64.b64encode(m).decode('utf-8') for m in item.medias]
+    return render_template("show.html", item=item, images_b64=images_b64)
 
 
 @app.route("/item/<id>/edit", methods=["GET", "POST"])
 def edit(id):
     item = get_or_404(Item, id)
+    item: Item
 
     if request.method == "POST":
         item.code = request.form.get("code")
@@ -60,6 +77,12 @@ def edit(id):
         item.remarques = request.form.get("remarques")
         item.echelle = request.form.get("echelle")
         item.tags = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
+
+        media_data = None
+        media_file = request.files.get('media')
+        if media_file and media_file.filename:
+            media_data = Binary(media_file.read())
+        item.medias.append(media_data)
 
         item.quantite = Quantite(
             nombre=request.form.get("quantite_nombre") or None,

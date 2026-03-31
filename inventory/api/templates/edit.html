@@ -8,7 +8,7 @@
   <a href="{{ url_for('show', id=item.id) }}" class="btn btn-outline-secondary">Annuler</a>
 </div>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
 
   <!-- General -->
   <div class="card mb-4">
@@ -35,10 +35,17 @@
           <label class="form-label">Label</label>
           <input class="form-control" name="label" value="{{ item.label or '' }}">
         </div>
+
         <div class="col-md-4">
           <label class="form-label">Tags <small class="text-muted">(séparés par virgule)</small></label>
           <input class="form-control" name="tags" value="{{ item.tags | join(', ') }}">
         </div>
+                  <div class="col-md-12">
+          <label for="media" class="form-label">Media</label>
+          <input type="file" class="form-control" id="media" name="media"
+            accept="image/*,video/*">
+        </div>
+
         <div class="col-12">
           <label class="form-label">Remarques</label>
           <textarea class="form-control" name="remarques" rows="2">{{ item.remarques or '' }}</textarea>
