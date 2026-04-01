@@ -25,6 +25,11 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+# Suppress Flask/Werkzeug debug logs
+logging.getLogger("werkzeug").setLevel(logging.INFO)
+logging.getLogger("flask").setLevel(logging.INFO)
+logging.getLogger("pymongo").setLevel(logging.INFO)
+
 app = Flask(__name__)
 
 app_context = initialize(app)
