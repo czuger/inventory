@@ -9,7 +9,6 @@ services:
     environment:
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
-      - SCRIPT_NAME=/grognards
     restart: unless-stopped
     networks:
       - mongo-network

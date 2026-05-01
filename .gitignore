@@ -174,3 +174,6 @@ cython_debug/
 .pypirc
 /old_version/config/config.json
 /.python-version
+
+config.json
+.idea
