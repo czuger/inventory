@@ -12,6 +12,7 @@ from flask import url_for
 from inventory.api.routes import (
     board_game, book, consumable, equipment, miniature, rulebook, tablecloth, terrain,
 )
+from inventory.db.association import Association as AssociationModel
 from inventory.libs.categories import Category
 from inventory.libs.get_or_404 import get_or_404
 from inventory.libs.initialization import initialize
@@ -48,6 +49,12 @@ app.register_blueprint(board_game.bp)
 app.register_blueprint(book.bp)
 app.register_blueprint(equipment.bp)
 app.register_blueprint(consumable.bp)
+
+CURRENT_ASSOCIATION_NAME = "Les Grognards du Dimanche"
+current_assoc = AssociationModel.objects(name=CURRENT_ASSOCIATION_NAME).first()
+if current_assoc is None:
+    current_assoc = AssociationModel(name=CURRENT_ASSOCIATION_NAME).save()
+app.config['CURRENT_ASSOCIATION'] = current_assoc
 
 
 @app.route("/")

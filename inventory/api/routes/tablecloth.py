@@ -1,6 +1,5 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 
-from inventory.db.association import Association
 from inventory.db.category import Category
 from inventory.db.game import Game
 from inventory.db.location import Location
@@ -13,17 +12,17 @@ bp = Blueprint('tablecloths', __name__, url_prefix='/tablecloths')
 
 def _refs():
     return dict(
-        associations=Association.objects.order_by('name'),
         categories=Category.objects.order_by('name'),
         games=Game.objects.order_by('name'),
         sizes=TableclothSize.objects.all(),
-        locations=Location.objects.all(),
+        locations=Location.objects.filter(association=current_app.config['CURRENT_ASSOCIATION']),
     )
 
 
 @bp.route('/')
 def index():
-    items = Tablecloth.objects.all()
+    assoc = current_app.config['CURRENT_ASSOCIATION']
+    items = Tablecloth.objects.filter(association=assoc)
     return render_template('tablecloth/list.html', items=items)
 
 
@@ -37,7 +36,7 @@ def show(id):
 def create():
     if request.method == 'POST':
         item = Tablecloth(
-            association=Association.objects.get(id=request.form['association']),
+            association=current_app.config['CURRENT_ASSOCIATION'],
             category=Category.objects.get(id=request.form['category']),
             type=request.form['type'],
             game=Game.objects.get(id=request.form['game']),
@@ -54,7 +53,7 @@ def create():
 def edit(id):
     item = get_or_404(Tablecloth, id)
     if request.method == 'POST':
-        item.association = Association.objects.get(id=request.form['association'])
+        item.association = current_app.config['CURRENT_ASSOCIATION']
         item.category = Category.objects.get(id=request.form['category'])
         item.type = request.form['type']
         item.game = Game.objects.get(id=request.form['game'])

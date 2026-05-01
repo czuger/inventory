@@ -4,15 +4,6 @@
 <h1>{% if obj %}Edit Consumable{% else %}New Consumable{% endif %}</h1>
 <form method="post" action="{{ action }}" class="mt-3" style="max-width: 600px;">
     <div class="mb-3">
-        <label class="form-label">Association</label>
-        <select name="association" class="form-select" required>
-            <option value="">-- Select --</option>
-            {% for a in associations %}
-            <option value="{{ a.id }}" {% if obj and obj.association.id == a.id %}selected{% endif %}>{{ a.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="mb-3">
         <label class="form-label">Category</label>
         <select name="category" class="form-select" required>
             <option value="">-- Select --</option>
@@ -39,7 +30,7 @@
             <option value="">-- Select --</option>
             {% for loc in locations %}
             <option value="{{ loc.id }}" {% if obj and obj.location.id == loc.id %}selected{% endif %}>
-                {{ loc.association.name }} / {{ loc.room }}{% if loc.spot %} – {{ loc.spot }}{% endif %}
+                {{ loc.room }}{% if loc.spot %} – {{ loc.spot }}{% endif %}
             </option>
             {% endfor %}
         </select>

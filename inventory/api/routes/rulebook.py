@@ -1,6 +1,5 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 
-from inventory.db.association import Association
 from inventory.db.category import Category
 from inventory.db.game import Game
 from inventory.db.location import Location
@@ -12,16 +11,16 @@ bp = Blueprint('rulebooks', __name__, url_prefix='/rulebooks')
 
 def _refs():
     return dict(
-        associations=Association.objects.order_by('name'),
         categories=Category.objects.order_by('name'),
         games=Game.objects.order_by('name'),
-        locations=Location.objects.all(),
+        locations=Location.objects.filter(association=current_app.config['CURRENT_ASSOCIATION']),
     )
 
 
 @bp.route('/')
 def index():
-    items = Rulebook.objects.all()
+    assoc = current_app.config['CURRENT_ASSOCIATION']
+    items = Rulebook.objects.filter(association=assoc)
     return render_template('rulebook/list.html', items=items)
 
 
@@ -35,7 +34,7 @@ def show(id):
 def create():
     if request.method == 'POST':
         item = Rulebook(
-            association=Association.objects.get(id=request.form['association']),
+            association=current_app.config['CURRENT_ASSOCIATION'],
             category=Category.objects.get(id=request.form['category']),
             name=request.form['name'],
             game=Game.objects.get(id=request.form['game']),
@@ -53,7 +52,7 @@ def create():
 def edit(id):
     item = get_or_404(Rulebook, id)
     if request.method == 'POST':
-        item.association = Association.objects.get(id=request.form['association'])
+        item.association = current_app.config['CURRENT_ASSOCIATION']
         item.category = Category.objects.get(id=request.form['category'])
         item.name = request.form['name']
         item.game = Game.objects.get(id=request.form['game'])
