@@ -9,6 +9,9 @@ from flask import render_template
 from flask import request
 from flask import url_for
 
+from inventory.api.routes import (
+    board_game, book, consumable, equipment, miniature, rulebook, tablecloth, terrain,
+)
 from inventory.libs.categories import Category
 from inventory.libs.get_or_404 import get_or_404
 from inventory.libs.initialization import initialize
@@ -36,6 +39,15 @@ app_context = initialize(app)
 app = app_context.app
 
 app.secret_key = app_context.secret_key
+
+app.register_blueprint(tablecloth.bp)
+app.register_blueprint(miniature.bp)
+app.register_blueprint(terrain.bp)
+app.register_blueprint(rulebook.bp)
+app.register_blueprint(board_game.bp)
+app.register_blueprint(book.bp)
+app.register_blueprint(equipment.bp)
+app.register_blueprint(consumable.bp)
 
 
 @app.route("/")

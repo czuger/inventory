@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Terrains{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Terrains</h1>
+    <a href="{{ url_for('terrains.create') }}" class="btn btn-primary">New terrain</a>
+</div>
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Association</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Game</th>
+            <th>Scale</th>
+            <th>Theater</th>
+            <th>Location</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.association.name }}</td>
+            <td>{{ item.category.name }}</td>
+            <td>{{ item.type }}</td>
+            <td>{{ item.game.name }}</td>
+            <td>{{ item.scale.value }}</td>
+            <td>{{ item.theater or '—' }}</td>
+            <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
+            <td class="text-end">
+                <a href="{{ url_for('terrains.show', id=item.id) }}" class="btn btn-sm btn-outline-secondary">View</a>
+                <a href="{{ url_for('terrains.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                <form method="post" action="{{ url_for('terrains.delete', id=item.id) }}" class="d-inline"
+                      onsubmit="return confirm('Delete this terrain?')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="text-center text-muted">No terrains found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Rulebook{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>{{ item.name }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('rulebooks.edit', id=item.id) }}" class="btn btn-warning">Edit</a>
+        <form method="post" action="{{ url_for('rulebooks.delete', id=item.id) }}"
+              onsubmit="return confirm('Delete this rulebook?')">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+        <a href="{{ url_for('rulebooks.index') }}" class="btn btn-outline-secondary">Back</a>
+    </div>
+</div>
+<dl class="row">
+    <dt class="col-sm-3">Association</dt>
+    <dd class="col-sm-9">{{ item.association.name }}</dd>
+    <dt class="col-sm-3">Category</dt>
+    <dd class="col-sm-9">{{ item.category.name }}</dd>
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">{{ item.name }}</dd>
+    <dt class="col-sm-3">Game</dt>
+    <dd class="col-sm-9">{{ item.game.name }}</dd>
+    <dt class="col-sm-3">Supplement</dt>
+    <dd class="col-sm-9">{% if item.supplement %}<span class="badge bg-info">Yes</span>{% else %}No{% endif %}</dd>
+    <dt class="col-sm-3">Quantity</dt>
+    <dd class="col-sm-9">{{ item.quantity }}</dd>
+    <dt class="col-sm-3">Location</dt>
+    <dd class="col-sm-9">
+        {{ item.location.association.name }} / {{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}
+    </dd>
+</dl>
+{% endblock %}

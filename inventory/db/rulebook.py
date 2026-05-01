@@ -1,0 +1,17 @@
+from mongoengine import Document, StringField, BooleanField, IntField, ReferenceField
+
+from .association import Association
+from .category import Category
+from .game import Game
+from .location import Location
+
+
+class Rulebook(Document):
+    association = ReferenceField(Association, required=True)
+    category = ReferenceField(Category, required=True)
+    name = StringField(required=True)
+    game = ReferenceField(Game, required=True)
+    supplement = BooleanField(default=False)
+    quantity = IntField(default=1)
+    location = ReferenceField(Location, required=True)
+    meta = {'collection': 'rulebooks'}

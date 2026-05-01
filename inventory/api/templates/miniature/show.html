@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Miniature{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Miniature</h1>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('miniatures.edit', id=item.id) }}" class="btn btn-warning">Edit</a>
+        <form method="post" action="{{ url_for('miniatures.delete', id=item.id) }}"
+              onsubmit="return confirm('Delete this miniature?')">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+        <a href="{{ url_for('miniatures.index') }}" class="btn btn-outline-secondary">Back</a>
+    </div>
+</div>
+<dl class="row">
+    <dt class="col-sm-3">Association</dt>
+    <dd class="col-sm-9">{{ item.association.name }}</dd>
+    <dt class="col-sm-3">Category</dt>
+    <dd class="col-sm-9">{{ item.category.name }}</dd>
+    <dt class="col-sm-3">Type</dt>
+    <dd class="col-sm-9">{{ item.type }}</dd>
+    <dt class="col-sm-3">Game</dt>
+    <dd class="col-sm-9">{{ item.game.name }}</dd>
+    <dt class="col-sm-3">Scale</dt>
+    <dd class="col-sm-9">{{ item.scale.value }}</dd>
+    <dt class="col-sm-3">Quantity</dt>
+    <dd class="col-sm-9">{{ item.quantity }}</dd>
+    <dt class="col-sm-3">Location</dt>
+    <dd class="col-sm-9">
+        {{ item.location.association.name }} / {{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}
+    </dd>
+</dl>
+{% endblock %}

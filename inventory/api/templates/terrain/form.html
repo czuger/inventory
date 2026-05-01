@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}{% if obj %}Edit Terrain{% else %}New Terrain{% endif %}{% endblock %}
+{% block content %}
+<h1>{% if obj %}Edit Terrain{% else %}New Terrain{% endif %}</h1>
+<form method="post" action="{{ action }}" class="mt-3" style="max-width: 600px;">
+    <div class="mb-3">
+        <label class="form-label">Association</label>
+        <select name="association" class="form-select" required>
+            <option value="">-- Select --</option>
+            {% for a in associations %}
+            <option value="{{ a.id }}" {% if obj and obj.association.id == a.id %}selected{% endif %}>{{ a.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Category</label>
+        <select name="category" class="form-select" required>
+            <option value="">-- Select --</option>
+            {% for c in categories %}
+            <option value="{{ c.id }}" {% if obj and obj.category.id == c.id %}selected{% endif %}>{{ c.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Type</label>
+        <input type="text" name="type" class="form-control" value="{{ obj.type if obj else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Game</label>
+        <select name="game" class="form-select" required>
+            <option value="">-- Select --</option>
+            {% for g in games %}
+            <option value="{{ g.id }}" {% if obj and obj.game.id == g.id %}selected{% endif %}>{{ g.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Scale</label>
+        <select name="scale" class="form-select" required>
+            <option value="">-- Select --</option>
+            {% for s in scales %}
+            <option value="{{ s.id }}" {% if obj and obj.scale.id == s.id %}selected{% endif %}>{{ s.value }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Theater <span class="text-muted">(optional)</span></label>
+        <input type="text" name="theater" class="form-control" value="{{ obj.theater if obj else '' }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Location</label>
+        <select name="location" class="form-select" required>
+            <option value="">-- Select --</option>
+            {% for loc in locations %}
+            <option value="{{ loc.id }}" {% if obj and obj.location.id == loc.id %}selected{% endif %}>
+                {{ loc.association.name }} / {{ loc.room }}{% if loc.spot %} – {{ loc.spot }}{% endif %}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{{ url_for('terrains.index') }}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}
