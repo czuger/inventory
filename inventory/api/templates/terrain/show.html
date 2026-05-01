@@ -1,29 +1,29 @@
 {% extends "base.html" %}
-{% block title %}Terrain{% endblock %}
+{% block title %}{{ t.terrain }}{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Terrain</h1>
+    <h1>{{ t.terrain }}</h1>
     <div class="d-flex gap-2">
-        <a href="{{ url_for('terrains.edit', id=item.id) }}" class="btn btn-warning">Edit</a>
+        <a href="{{ url_for('terrains.edit', id=item.id) }}" class="btn btn-warning">{{ t.edit }}</a>
         <form method="post" action="{{ url_for('terrains.delete', id=item.id) }}"
-              onsubmit="return confirm('Delete this terrain?')">
-            <button type="submit" class="btn btn-danger">Delete</button>
+              onsubmit="return confirm('{{ t.confirm_terrain }}')">
+            <button type="submit" class="btn btn-danger">{{ t.delete }}</button>
         </form>
-        <a href="{{ url_for('terrains.index') }}" class="btn btn-outline-secondary">Back</a>
+        <a href="{{ url_for('terrains.index') }}" class="btn btn-outline-secondary">{{ t.back }}</a>
     </div>
 </div>
 <dl class="row">
-    <dt class="col-sm-3">Category</dt>
+    <dt class="col-sm-3">{{ t.category }}</dt>
     <dd class="col-sm-9">{{ item.category.name }}</dd>
-    <dt class="col-sm-3">Type</dt>
+    <dt class="col-sm-3">{{ t.type }}</dt>
     <dd class="col-sm-9">{{ item.type }}</dd>
-    <dt class="col-sm-3">Game</dt>
+    <dt class="col-sm-3">{{ t.game }}</dt>
     <dd class="col-sm-9">{{ item.game.name }}</dd>
-    <dt class="col-sm-3">Scale</dt>
+    <dt class="col-sm-3">{{ t.scale }}</dt>
     <dd class="col-sm-9">{{ item.scale.value }}</dd>
-    <dt class="col-sm-3">Theater</dt>
+    <dt class="col-sm-3">{{ t.theater }}</dt>
     <dd class="col-sm-9">{{ item.theater or '—' }}</dd>
-    <dt class="col-sm-3">Location</dt>
+    <dt class="col-sm-3">{{ t.location }}</dt>
     <dd class="col-sm-9">
         {{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}
     </dd>

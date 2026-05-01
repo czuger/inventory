@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Books{% endblock %}
+{% block title %}{{ t.books }}{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Books</h1>
-    <a href="{{ url_for('books.create') }}" class="btn btn-primary">New book</a>
+    <h1>{{ t.books }}</h1>
+    <a href="{{ url_for('books.create') }}" class="btn btn-primary">{{ t.new_book }}</a>
 </div>
 <table class="table table-striped table-hover">
     <thead>
         <tr>
-            <th>Category</th>
-            <th>Name</th>
-            <th>Universe</th>
-            <th>Period</th>
-            <th>Location</th>
+            <th>{{ t.category }}</th>
+            <th>{{ t.name }}</th>
+            <th>{{ t.universe }}</th>
+            <th>{{ t.period }}</th>
+            <th>{{ t.location }}</th>
             <th></th>
         </tr>
     </thead>
@@ -25,16 +25,16 @@
             <td>{{ item.period or '—' }}</td>
             <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
             <td class="text-end">
-                <a href="{{ url_for('books.show', id=item.id) }}" class="btn btn-sm btn-outline-secondary">View</a>
-                <a href="{{ url_for('books.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                <a href="{{ url_for('books.show', id=item.id) }}" class="btn btn-sm btn-outline-secondary">{{ t.view }}</a>
+                <a href="{{ url_for('books.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning">{{ t.edit }}</a>
                 <form method="post" action="{{ url_for('books.delete', id=item.id) }}" class="d-inline"
-                      onsubmit="return confirm('Delete this book?')">
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                      onsubmit="return confirm('{{ t.confirm_book }}')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ t.delete }}</button>
                 </form>
             </td>
         </tr>
         {% else %}
-        <tr><td colspan="7" class="text-center text-muted">No books found.</td></tr>
+        <tr><td colspan="7" class="text-center text-muted">{{ t.empty_books }}</td></tr>
         {% endfor %}
     </tbody>
 </table>

@@ -1,19 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Rulebooks{% endblock %}
+{% block title %}{{ t.rulebooks }}{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Rulebooks</h1>
-    <a href="{{ url_for('rulebooks.create') }}" class="btn btn-primary">New rulebook</a>
+    <h1>{{ t.rulebooks }}</h1>
+    <a href="{{ url_for('rulebooks.create') }}" class="btn btn-primary">{{ t.new_rulebook }}</a>
 </div>
 <table class="table table-striped table-hover">
     <thead>
         <tr>
-            <th>Category</th>
-            <th>Name</th>
-            <th>Game</th>
-            <th>Supplement</th>
-            <th>Qty</th>
-            <th>Location</th>
+            <th>{{ t.category }}</th>
+            <th>{{ t.name }}</th>
+            <th>{{ t.game }}</th>
+            <th>{{ t.supplement }}</th>
+            <th>{{ t.qty }}</th>
+            <th>{{ t.location }}</th>
             <th></th>
         </tr>
     </thead>
@@ -23,20 +23,20 @@
             <td>{{ item.category.name }}</td>
             <td>{{ item.name }}</td>
             <td>{{ item.game.name }}</td>
-            <td>{% if item.supplement %}<span class="badge bg-info">Yes</span>{% else %}—{% endif %}</td>
+            <td>{% if item.supplement %}<span class="badge bg-info">{{ t.yes }}</span>{% else %}—{% endif %}</td>
             <td>{{ item.quantity }}</td>
             <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
             <td class="text-end">
-                <a href="{{ url_for('rulebooks.show', id=item.id) }}" class="btn btn-sm btn-outline-secondary">View</a>
-                <a href="{{ url_for('rulebooks.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                <a href="{{ url_for('rulebooks.show', id=item.id) }}" class="btn btn-sm btn-outline-secondary">{{ t.view }}</a>
+                <a href="{{ url_for('rulebooks.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning">{{ t.edit }}</a>
                 <form method="post" action="{{ url_for('rulebooks.delete', id=item.id) }}" class="d-inline"
-                      onsubmit="return confirm('Delete this rulebook?')">
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                      onsubmit="return confirm('{{ t.confirm_rulebook }}')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ t.delete }}</button>
                 </form>
             </td>
         </tr>
         {% else %}
-        <tr><td colspan="8" class="text-center text-muted">No rulebooks found.</td></tr>
+        <tr><td colspan="8" class="text-center text-muted">{{ t.empty_rulebooks }}</td></tr>
         {% endfor %}
     </tbody>
 </table>

@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Board Games{% endblock %}
+{% block title %}{{ t.board_games }}{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Board Games</h1>
-    <a href="{{ url_for('board_games.create') }}" class="btn btn-primary">New board game</a>
+    <h1>{{ t.board_games }}</h1>
+    <a href="{{ url_for('board_games.create') }}" class="btn btn-primary">{{ t.new_board_game }}</a>
 </div>
 <table class="table table-striped table-hover">
     <thead>
         <tr>
-            <th>Category</th>
-            <th>Name</th>
-            <th>Universe</th>
-            <th>Location</th>
+            <th>{{ t.category }}</th>
+            <th>{{ t.name }}</th>
+            <th>{{ t.universe }}</th>
+            <th>{{ t.location }}</th>
             <th></th>
         </tr>
     </thead>
@@ -23,16 +23,16 @@
             <td>{{ item.universe or '—' }}</td>
             <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
             <td class="text-end">
-                <a href="{{ url_for('board_games.show', id=item.id) }}" class="btn btn-sm btn-outline-secondary">View</a>
-                <a href="{{ url_for('board_games.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                <a href="{{ url_for('board_games.show', id=item.id) }}" class="btn btn-sm btn-outline-secondary">{{ t.view }}</a>
+                <a href="{{ url_for('board_games.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning">{{ t.edit }}</a>
                 <form method="post" action="{{ url_for('board_games.delete', id=item.id) }}" class="d-inline"
-                      onsubmit="return confirm('Delete this board game?')">
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                      onsubmit="return confirm('{{ t.confirm_board_game }}')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ t.delete }}</button>
                 </form>
             </td>
         </tr>
         {% else %}
-        <tr><td colspan="6" class="text-center text-muted">No board games found.</td></tr>
+        <tr><td colspan="6" class="text-center text-muted">{{ t.empty_board_games }}</td></tr>
         {% endfor %}
     </tbody>
 </table>

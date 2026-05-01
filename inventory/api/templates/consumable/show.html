@@ -1,27 +1,27 @@
 {% extends "base.html" %}
-{% block title %}Consumable{% endblock %}
+{% block title %}{{ t.consumable }}{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1>{{ item.type }}</h1>
     <div class="d-flex gap-2">
-        <a href="{{ url_for('consumables.edit', id=item.id) }}" class="btn btn-warning">Edit</a>
+        <a href="{{ url_for('consumables.edit', id=item.id) }}" class="btn btn-warning">{{ t.edit }}</a>
         <form method="post" action="{{ url_for('consumables.delete', id=item.id) }}"
-              onsubmit="return confirm('Delete this consumable?')">
-            <button type="submit" class="btn btn-danger">Delete</button>
+              onsubmit="return confirm('{{ t.confirm_consumable }}')">
+            <button type="submit" class="btn btn-danger">{{ t.delete }}</button>
         </form>
-        <a href="{{ url_for('consumables.index') }}" class="btn btn-outline-secondary">Back</a>
+        <a href="{{ url_for('consumables.index') }}" class="btn btn-outline-secondary">{{ t.back }}</a>
     </div>
 </div>
 <dl class="row">
-    <dt class="col-sm-3">Category</dt>
+    <dt class="col-sm-3">{{ t.category }}</dt>
     <dd class="col-sm-9">{{ item.category.name }}</dd>
-    <dt class="col-sm-3">Type</dt>
+    <dt class="col-sm-3">{{ t.type }}</dt>
     <dd class="col-sm-9">{{ item.type }}</dd>
-    <dt class="col-sm-3">Unit</dt>
+    <dt class="col-sm-3">{{ t.unit }}</dt>
     <dd class="col-sm-9">{{ item.unit or '—' }}</dd>
-    <dt class="col-sm-3">Quantity</dt>
+    <dt class="col-sm-3">{{ t.quantity }}</dt>
     <dd class="col-sm-9">{{ item.quantity }}</dd>
-    <dt class="col-sm-3">Location</dt>
+    <dt class="col-sm-3">{{ t.location }}</dt>
     <dd class="col-sm-9">
         {{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}
     </dd>

@@ -2,11 +2,14 @@ import logging
 
 from flask import Flask
 from flask import redirect
+from flask import request
+from flask import session
 from flask import url_for
 
 from inventory.api.routes import (
     board_game, book, consumable, equipment, miniature, rulebook, tablecloth, terrain,
 )
+from inventory.api.translations import TRANSLATIONS
 from inventory.db.association import Association as AssociationModel
 from inventory.libs.initialization import initialize
 
@@ -29,6 +32,20 @@ app_context = initialize(app)
 app = app_context.app
 
 app.secret_key = app_context.secret_key
+
+
+@app.context_processor
+def inject_translations():
+    lang = session.get('lang', 'fr')
+    return dict(t=TRANSLATIONS[lang], lang=lang)
+
+
+@app.route('/set-language/<lang>')
+def set_language(lang):
+    if lang in ('en', 'fr'):
+        session['lang'] = lang
+    return redirect(request.referrer or url_for('index'))
+
 
 app.register_blueprint(tablecloth.bp)
 app.register_blueprint(miniature.bp)

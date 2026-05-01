@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Tablecloths{% endblock %}
+{% block title %}{{ t.tablecloths }}{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Tablecloths</h1>
-    <a href="{{ url_for('tablecloths.create') }}" class="btn btn-primary">New tablecloth</a>
+    <h1>{{ t.tablecloths }}</h1>
+    <a href="{{ url_for('tablecloths.create') }}" class="btn btn-primary">{{ t.new_tablecloth }}</a>
 </div>
 <table class="table table-striped table-hover">
     <thead>
         <tr>
-            <th>Category</th>
-            <th>Type</th>
-            <th>Game</th>
-            <th>Size</th>
-            <th>Location</th>
+            <th>{{ t.category }}</th>
+            <th>{{ t.type }}</th>
+            <th>{{ t.game }}</th>
+            <th>{{ t.size }}</th>
+            <th>{{ t.location }}</th>
             <th></th>
         </tr>
     </thead>
@@ -25,16 +25,16 @@
             <td>{{ item.size.size_cm }}</td>
             <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
             <td class="text-end">
-                <a href="{{ url_for('tablecloths.show', id=item.id) }}" class="btn btn-sm btn-outline-secondary">View</a>
-                <a href="{{ url_for('tablecloths.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                <a href="{{ url_for('tablecloths.show', id=item.id) }}" class="btn btn-sm btn-outline-secondary">{{ t.view }}</a>
+                <a href="{{ url_for('tablecloths.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning">{{ t.edit }}</a>
                 <form method="post" action="{{ url_for('tablecloths.delete', id=item.id) }}" class="d-inline"
-                      onsubmit="return confirm('Delete this tablecloth?')">
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                      onsubmit="return confirm('{{ t.confirm_tablecloth }}')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ t.delete }}</button>
                 </form>
             </td>
         </tr>
         {% else %}
-        <tr><td colspan="7" class="text-center text-muted">No tablecloths found.</td></tr>
+        <tr><td colspan="7" class="text-center text-muted">{{ t.empty_tablecloths }}</td></tr>
         {% endfor %}
     </tbody>
 </table>

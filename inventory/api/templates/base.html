@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,15 +15,21 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-3">
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('miniatures.index') }}">Miniatures</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('terrains.index') }}">Terrains</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('tablecloths.index') }}">Tablecloths</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('rulebooks.index') }}">Rulebooks</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('board_games.index') }}">Board Games</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('books.index') }}">Books</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('equipment.index') }}">Equipment</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('consumables.index') }}">Consumables</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('miniatures.index') }}">{{ t.nav_miniatures }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('terrains.index') }}">{{ t.nav_terrains }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('tablecloths.index') }}">{{ t.nav_tablecloths }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('rulebooks.index') }}">{{ t.nav_rulebooks }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('board_games.index') }}">{{ t.nav_board_games }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('books.index') }}">{{ t.nav_books }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('equipment.index') }}">{{ t.nav_equipment }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('consumables.index') }}">{{ t.nav_consumables }}</a></li>
             </ul>
+            <div class="ms-auto d-flex gap-1">
+                <a href="{{ url_for('set_language', lang='fr') }}"
+                   class="btn btn-sm {% if lang == 'fr' %}btn-light{% else %}btn-outline-light{% endif %}">FR</a>
+                <a href="{{ url_for('set_language', lang='en') }}"
+                   class="btn btn-sm {% if lang == 'en' %}btn-light{% else %}btn-outline-light{% endif %}">EN</a>
+            </div>
         </div>
     </div>
 </nav>
