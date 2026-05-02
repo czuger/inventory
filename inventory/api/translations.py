@@ -17,7 +17,7 @@ TRANSLATIONS = {
         'nav_consumables': 'Consumables',
 
         'category':   'Category',
-        'number':     'Number',
+
         'type':       'Type',
         'location':   'Location',
         'quantity':   'Quantity',
@@ -130,7 +130,7 @@ TRANSLATIONS = {
         'nav_consumables': 'Consommables',
 
         'category':   'Catégorie',
-        'number':     'Nombre',
+
         'type':       'Type',
         'location':   'Emplacement',
         'quantity':   'Quantité',

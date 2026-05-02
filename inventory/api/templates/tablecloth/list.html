@@ -12,10 +12,10 @@
         <tr>
             <th>{{ t.category }}</th>
             <th>{{ t.type }}</th>
-            <th>{{ t.number }}</th>
-            <th>{{ t.material }}</th>
             <th>{{ t.game }}</th>
             <th>{{ t.size }}</th>
+            <th>{{ t.material }}</th>
+            <th>{{ t.qty }}</th>
             <th>{{ t.location }}</th>
             {% if admin %}<th></th>{% endif %}
         </tr>
@@ -25,10 +25,10 @@
         <tr onclick="window.location='{{ url_for('tablecloths.show', id=item.id) }}'" style="cursor:pointer">
             <td>{{ t.categories[item.category] }}</td>
             <td>{{ item.type }}</td>
-            <td>{{ item.number if item.number is not none else '' }}</td>
-            <td>{{ t.materials[item.material] if item.material else '' }}</td>
             <td>{{ item.game.name }}</td>
             <td>{{ item.size }}</td>
+            <td>{{ t.materials[item.material] if item.material else '' }}</td>
+            <td>{{ item.quantity }}</td>
             <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
             {% if admin %}
             <td class="text-end">

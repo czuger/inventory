@@ -15,6 +15,7 @@
             <th>{{ t.game }}</th>
             <th>{{ t.scale }}</th>
             <th>{{ t.theater }}</th>
+            <th>{{ t.qty }}</th>
             <th>{{ t.location }}</th>
             {% if admin %}<th></th>{% endif %}
         </tr>
@@ -27,6 +28,7 @@
             <td>{{ item.game.name }}</td>
             <td>{{ item.scale }}</td>
             <td>{{ item.theater or '—' }}</td>
+            <td>{{ item.quantity }}</td>
             <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
             {% if admin %}
             <td class="text-end">

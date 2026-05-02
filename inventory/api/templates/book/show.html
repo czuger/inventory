@@ -23,6 +23,8 @@
     <dd class="col-sm-9">{{ item.universe or '—' }}</dd>
     <dt class="col-sm-3">{{ t.period }}</dt>
     <dd class="col-sm-9">{{ item.period or '—' }}</dd>
+    <dt class="col-sm-3">{{ t.quantity }}</dt>
+    <dd class="col-sm-9">{{ item.quantity }}</dd>
     <dt class="col-sm-3">{{ t.location }}</dt>
     <dd class="col-sm-9">
         {{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}

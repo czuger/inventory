@@ -40,6 +40,7 @@ def create():
             name=request.form['name'],
             universe=request.form.get('universe', ''),
             period=request.form.get('period', ''),
+            quantity=int(request.form.get('quantity') or 1),
             location=Location.objects.get(id=request.form['location']),
         )
         item.save()
@@ -57,6 +58,7 @@ def edit(id):
         item.name = request.form['name']
         item.universe = request.form.get('universe', '')
         item.period = request.form.get('period', '')
+        item.quantity = int(request.form.get('quantity') or 1)
         item.location = Location.objects.get(id=request.form['location'])
         item.save()
         flash('Book updated.', 'success')

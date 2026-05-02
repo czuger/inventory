@@ -39,6 +39,7 @@ def create():
             category=request.form['category'],
             name=request.form['name'],
             universe=request.form.get('universe', ''),
+            quantity=int(request.form.get('quantity') or 1),
             location=Location.objects.get(id=request.form['location']),
         )
         item.save()
@@ -55,6 +56,7 @@ def edit(id):
         item.category = request.form['category']
         item.name = request.form['name']
         item.universe = request.form.get('universe', '')
+        item.quantity = int(request.form.get('quantity') or 1)
         item.location = Location.objects.get(id=request.form['location'])
         item.save()
         flash('Board game updated.', 'success')

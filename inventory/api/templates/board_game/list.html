@@ -13,6 +13,7 @@
             <th>{{ t.category }}</th>
             <th>{{ t.name }}</th>
             <th>{{ t.universe }}</th>
+            <th>{{ t.qty }}</th>
             <th>{{ t.location }}</th>
             {% if admin %}<th></th>{% endif %}
         </tr>
@@ -23,6 +24,7 @@
             <td>{{ t.categories[item.category] }}</td>
             <td>{{ item.name }}</td>
             <td>{{ item.universe or '—' }}</td>
+            <td>{{ item.quantity }}</td>
             <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
             {% if admin %}
             <td class="text-end">

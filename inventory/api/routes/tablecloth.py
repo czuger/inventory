@@ -42,7 +42,7 @@ def create():
         item = Tablecloth(
             association=g.assoc,
             category=request.form['category'],
-            number=request.form.get('number') or None,
+            quantity=int(request.form.get('quantity') or 1),
             type=request.form['type'],
             material=request.form.get('material') or None,
             game=Game.objects.get(id=request.form['game']),
@@ -62,7 +62,7 @@ def edit(id):
     if request.method == 'POST':
         item.association = g.assoc
         item.category = request.form['category']
-        item.number = request.form.get('number') or None
+        item.quantity = int(request.form.get('quantity') or 1)
         item.type = request.form['type']
         item.material = request.form.get('material') or None
         item.game = Game.objects.get(id=request.form['game'])

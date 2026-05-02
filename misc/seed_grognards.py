@@ -86,91 +86,91 @@ def seed():
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe floquée", material="textured", game=game_generic,
-        number=23, size="120x180", location=loc_ps_arm1
+        quantity=23, size="120x180", location=loc_ps_arm1
     ).save()
 
     # 1.1.1.2 — nappes tissu (1,2x1,8) ×6
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe tissu", material="cloth", game=game_generic,
-        number=6, size="120x180", location=loc_ps_arm1
+        quantity=6, size="120x180", location=loc_ps_arm1
     ).save()
 
     # 1.1.1.3 — nappes mousse (1,2x0,9) ×25 — SAGA
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe mousse", material="mousepad (neoprene)", game=game_saga,
-        number=25, size="120x90", location=loc_gs_pl1
+        quantity=25, size="120x90", location=loc_gs_pl1
     ).save()
 
     # 1.1.1.4 — nappes mousse (0,9x0,9) ×8 — Guildball
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe mousse", material="mousepad (neoprene)", game=game_guildball,
-        number=8, size="90x90", location=loc_gs_pl1
+        quantity=8, size="90x90", location=loc_gs_pl1
     ).save()
 
     # 1.1.1.5 — nappes mousse (0,9x0,9) ×2 — Malifaux, placard 1 porte
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe mousse", material="mousepad (neoprene)", game=game_malifaux,
-        number=2, size="90x90", remarks="en housse", location=loc_gs_pl1
+        quantity=2, size="90x90", remarks="en housse", location=loc_gs_pl1
     ).save()
 
     # 1.1.1.5 — nappes mousse (0,9x0,9) ×2 — Malifaux, pièce 1
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe mousse", material="mousepad (neoprene)", game=game_malifaux,
-        number=2, size="90x90", remarks="en housse", location=loc_gs_p1
+        quantity=2, size="90x90", remarks="en housse", location=loc_gs_p1
     ).save()
 
     # 1.1.1.6 — nappes mousse (1,2x1,8) ×1 — désert
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe mousse désert", material="mousepad (neoprene)", game=game_generic,
-        number=1, size="120x180", location=loc_gs_pl1
+        quantity=1, size="120x180", location=loc_gs_pl1
     ).save()
 
     # 1.1.1.6 — nappes mousse (1,2x1,8) ×1 — glace
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe mousse glace", material="mousepad (neoprene)", game=game_generic,
-        number=1, size="120x180", location=loc_gs_pl1
+        quantity=1, size="120x180", location=loc_gs_pl1
     ).save()
 
     # 1.1.1.6 — nappes mousse (1,2x1,8) ×1 — feu
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe mousse feu", material="mousepad (neoprene)", game=game_generic,
-        number=1, size="120x180", location=loc_gs_pl1
+        quantity=1, size="120x180", location=loc_gs_pl1
     ).save()
 
     # 1.1.1.7 — nappes mousse (1,2x1,2) ×4 — désert+plage
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe mousse désert/plage", material="mousepad (neoprene)", game=game_generic,
-        number=4, size="120x120", location=loc_gs_p1
+        quantity=4, size="120x120", location=loc_gs_p1
     ).save()
 
     # 1.1.1.8 — nappes mousse (1,2x1,8) ×2 — Star Wars
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe mousse Star Wars", material="mousepad (neoprene)", game=game_starwars,
-        number=2, size="120x180", location=loc_gs_p1
+        quantity=2, size="120x180", location=loc_gs_p1
     ).save()
 
     # 1.1.1.9 — nappes ADG (1,2x0,8) ×1 mousepad — perdues dans la masse
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe ADG", material="mousepad (neoprene)", game=game_adg,
-        number=1, size="120x80", remarks="perdues dans la masse", location=loc_gs_pl1
+        quantity=1, size="120x80", remarks="perdues dans la masse", location=loc_gs_pl1
     ).save()
 
     # 1.1.1.9 — nappes ADG (1,2x0,8) ×4 texturées — perdues dans la masse
     Tablecloth(
         association=assoc, category="Tablecloth",
         type="Nappe ADG", material="textured", game=game_adg,
-        number=4, size="120x80", remarks="perdues dans la masse", location=loc_gs_pl1
+        quantity=4, size="120x80", remarks="perdues dans la masse", location=loc_gs_pl1
     ).save()
 
     # ─────────────────────────────────────────

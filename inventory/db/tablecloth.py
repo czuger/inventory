@@ -4,14 +4,13 @@ from .association import Association
 from .game import Game
 from .location import Location
 
-
 TABLECLOTH_MATERIALS = ["mousepad (neoprene)", "vinyl", "cloth", "textured"]
 
 
 class Tablecloth(Document):
     association = ReferenceField(Association, required=True)
     category = StringField(required=True)
-    number = IntField()
+    quantity = IntField(default=1)
     type = StringField(required=True)
     material = StringField(choices=TABLECLOTH_MATERIALS)
     game = ReferenceField(Game, required=True)

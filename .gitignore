@@ -182,3 +182,5 @@ config.json
 # Uploaded images
 inventory/api/static/uploads/*
 !inventory/api/static/uploads/.gitkeep
+
+*.tsv

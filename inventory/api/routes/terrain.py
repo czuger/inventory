@@ -44,6 +44,7 @@ def create():
             game=Game.objects.get(id=request.form['game']),
             scale=request.form['scale'],
             theater=request.form.get('theater', ''),
+            quantity=int(request.form.get('quantity') or 1),
             location=Location.objects.get(id=request.form['location']),
         )
         item.save()
@@ -62,6 +63,7 @@ def edit(id):
         item.game = Game.objects.get(id=request.form['game'])
         item.scale = request.form['scale']
         item.theater = request.form.get('theater', '')
+        item.quantity = int(request.form.get('quantity') or 1)
         item.location = Location.objects.get(id=request.form['location'])
         item.save()
         flash('Terrain updated.', 'success')

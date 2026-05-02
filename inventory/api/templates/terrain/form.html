@@ -44,6 +44,10 @@
         <input type="text" name="theater" class="form-control" value="{{ obj.theater if obj else '' }}">
     </div>
     <div class="mb-3">
+        <label class="form-label">{{ t.quantity }}</label>
+        <input type="number" name="quantity" class="form-control" min="0" value="{{ obj.quantity if obj else 1 }}" required>
+    </div>
+    <div class="mb-3">
         <label class="form-label">{{ t.location }}</label>
         <select name="location" class="form-select" required>
             <option value="">{{ t.select_placeholder }}</option>
