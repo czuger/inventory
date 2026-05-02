@@ -1,9 +1,11 @@
+import io
 import os
 import uuid
 
-from flask import abort, current_app, g, redirect, request
+from flask import abort, current_app, g, redirect, request, send_file, url_for
 from werkzeug.utils import secure_filename
 
+from inventory.api.pdf import make_stickers_pdf
 from inventory.db.association import Association
 from inventory.db.borrowing import Borrowing
 from inventory.libs.get_or_404 import get_or_404
@@ -25,7 +27,7 @@ def register_assoc_hooks(bp):
     @bp.before_request
     def check_admin():
         view = (request.endpoint or '').rsplit('.', 1)[-1]
-        if view in ('create', 'edit', 'delete', 'upload_image', 'delete_image'):
+        if view in ('create', 'edit', 'delete', 'upload_image', 'delete_image', 'stickers'):
             current_user = getattr(g, 'current_user', None)
             if not (current_user and current_user.is_admin):
                 abort(403)
@@ -91,3 +93,20 @@ def register_borrow_routes(bp, item_type, Model):
         item.borrowing_count = max(0, (item.borrowing_count or 0) - 1)
         item.save()
         return redirect(request.referrer)
+
+
+def register_sticker_routes(bp, Model, get_lines):
+    @bp.route('/stickers')
+    def stickers():
+        items = Model.objects.filter(association=g.assoc)
+        data = []
+        for item in items:
+            item_url = url_for(request.blueprint + '.show', id=item.id, _external=True)
+            data.append((get_lines(item), item_url))
+        pdf_bytes = make_stickers_pdf(data)
+        return send_file(
+            io.BytesIO(pdf_bytes),
+            mimetype='application/pdf',
+            as_attachment=False,
+            download_name='stickers.pdf',
+        )

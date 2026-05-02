@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
-from inventory.api.utils import register_assoc_hooks, register_borrow_routes, register_image_routes
+from inventory.api.utils import register_assoc_hooks, register_borrow_routes, register_image_routes, register_sticker_routes
 from inventory.db.constants import CATEGORIES, SCALES
 from inventory.db.game import Game
 from inventory.db.location import Location
@@ -11,6 +11,13 @@ bp = Blueprint('miniatures', __name__, url_prefix='/<slug>/miniatures')
 register_assoc_hooks(bp)
 register_image_routes(bp, Miniature)
 register_borrow_routes(bp, 'miniature', Miniature)
+register_sticker_routes(bp, Miniature, lambda item: [
+    item.type,
+    item.game.name,
+    item.scale,
+    f"Qté : {item.quantity}",
+    f"{item.location.room}{' – ' + item.location.spot if item.location.spot else ''}",
+])
 
 
 def _refs():
