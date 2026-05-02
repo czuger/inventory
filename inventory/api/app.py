@@ -4,7 +4,7 @@ from flask import Flask, g, redirect, request, session, url_for
 
 from inventory.api.oauth import oauth
 from inventory.api.routes import (
-    auth, board_game, book, consumable, equipment, miniature, rulebook, tablecloth, terrain,
+    auth, board_game, book, consumable, equipment, miniature, print_page, rulebook, tablecloth, terrain,
 )
 from inventory.api.translations import TRANSLATIONS
 from inventory.db.association import Association
@@ -88,6 +88,7 @@ app.register_blueprint(board_game.bp)
 app.register_blueprint(book.bp)
 app.register_blueprint(equipment.bp)
 app.register_blueprint(consumable.bp)
+app.register_blueprint(print_page.bp)
 
 
 @app.route("/")

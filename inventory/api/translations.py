@@ -121,6 +121,11 @@ TRANSLATIONS = {
         'date':                'Date',
         'borrower':            'Borrower',
         'action':              'Action',
+
+        'print':         'Print',
+        'print_stickers':'Print stickers',
+        'print_list':    'Print list',
+        'all':           'All',
     },
 
     'fr': {
@@ -245,5 +250,10 @@ TRANSLATIONS = {
         'date':                'Date',
         'borrower':            'Emprunteur',
         'action':              'Action',
+
+        'print':         'Impression',
+        'print_stickers':'Imprimer les étiquettes',
+        'print_list':    'Imprimer la liste',
+        'all':           'Tous',
     },
 }

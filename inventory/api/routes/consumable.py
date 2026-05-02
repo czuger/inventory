@@ -1,5 +1,6 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
+from inventory.api.item_labels import get_sticker_lines
 from inventory.api.utils import register_assoc_hooks, register_borrow_routes, register_image_routes, register_sticker_routes
 from inventory.db.constants import CATEGORIES
 from inventory.db.consumable import Consumable
@@ -10,12 +11,7 @@ bp = Blueprint('consumables', __name__, url_prefix='/<slug>/consumables')
 register_assoc_hooks(bp)
 register_image_routes(bp, Consumable)
 register_borrow_routes(bp, 'consumable', Consumable)
-register_sticker_routes(bp, Consumable, lambda item: [
-    item.type,
-    *([item.unit] if item.unit else []),
-    f"Qté : {item.quantity}",
-    f"{item.location.room}{' – ' + item.location.spot if item.location.spot else ''}",
-])
+register_sticker_routes(bp, Consumable, lambda item: get_sticker_lines('consumable', item))
 
 
 def _refs():
