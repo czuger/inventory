@@ -3,7 +3,9 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1>{{ t.consumables }}</h1>
+    {% if admin %}
     <a href="{{ url_for('consumables.create') }}" class="btn btn-primary">{{ t.new_consumable }}</a>
+    {% endif %}
 </div>
 <table class="table table-striped table-hover">
     <thead>
@@ -26,11 +28,13 @@
             <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
             <td class="text-end">
                 <a href="{{ url_for('consumables.show', id=item.id) }}" class="btn btn-sm btn-outline-secondary">{{ t.view }}</a>
+                {% if admin %}
                 <a href="{{ url_for('consumables.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning">{{ t.edit }}</a>
                 <form method="post" action="{{ url_for('consumables.delete', id=item.id) }}" class="d-inline"
                       onsubmit="return confirm('{{ t.confirm_consumable }}')">
                     <button type="submit" class="btn btn-sm btn-outline-danger">{{ t.delete }}</button>
                 </form>
+                {% endif %}
             </td>
         </tr>
         {% else %}

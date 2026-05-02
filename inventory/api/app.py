@@ -26,18 +26,21 @@ logging.getLogger("werkzeug").setLevel(logging.INFO)
 logging.getLogger("flask").setLevel(logging.INFO)
 logging.getLogger("pymongo").setLevel(logging.INFO)
 
+ADMIN = False
+
 app = Flask(__name__)
 
 app_context = initialize(app)
 app = app_context.app
 
 app.secret_key = app_context.secret_key
+app.config['ADMIN'] = ADMIN
 
 
 @app.context_processor
 def inject_translations():
     lang = session.get('lang', 'fr')
-    return dict(t=TRANSLATIONS[lang], lang=lang)
+    return dict(t=TRANSLATIONS[lang], lang=lang, admin=app.config['ADMIN'])
 
 
 @app.route('/set-language/<lang>')

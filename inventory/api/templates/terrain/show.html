@@ -4,11 +4,13 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1>{{ t.terrain }}</h1>
     <div class="d-flex gap-2">
+        {% if admin %}
         <a href="{{ url_for('terrains.edit', id=item.id) }}" class="btn btn-warning">{{ t.edit }}</a>
         <form method="post" action="{{ url_for('terrains.delete', id=item.id) }}"
               onsubmit="return confirm('{{ t.confirm_terrain }}')">
             <button type="submit" class="btn btn-danger">{{ t.delete }}</button>
         </form>
+        {% endif %}
         <a href="{{ url_for('terrains.index') }}" class="btn btn-outline-secondary">{{ t.back }}</a>
     </div>
 </div>
