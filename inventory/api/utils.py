@@ -5,6 +5,7 @@ from flask import abort, current_app, g, redirect, request
 from werkzeug.utils import secure_filename
 
 from inventory.db.association import Association
+from inventory.db.borrowing import Borrowing
 from inventory.libs.get_or_404 import get_or_404
 
 
@@ -55,4 +56,32 @@ def register_image_routes(bp, Model):
                 os.remove(path)
             item.images.remove(filename)
             item.save()
+        return redirect(request.referrer)
+
+
+def register_borrow_routes(bp, item_type):
+    @bp.route('/<id>/borrow', methods=['POST'])
+    def borrow(id):
+        if not g.current_user:
+            abort(401)
+        Borrowing(
+            association=g.assoc,
+            borrower=g.current_user,
+            item_id=id,
+            item_type=item_type,
+            action='borrow',
+        ).save()
+        return redirect(request.referrer)
+
+    @bp.route('/<id>/return', methods=['POST'])
+    def return_item(id):
+        if not g.current_user:
+            abort(401)
+        Borrowing(
+            association=g.assoc,
+            borrower=g.current_user,
+            item_id=id,
+            item_type=item_type,
+            action='return',
+        ).save()
         return redirect(request.referrer)

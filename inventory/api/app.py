@@ -8,6 +8,7 @@ from inventory.api.routes import (
 )
 from inventory.api.translations import TRANSLATIONS
 from inventory.db.association import Association
+from inventory.db.borrowing import Borrowing
 from inventory.db.user import User
 from inventory.libs.initialization import initialize
 
@@ -59,6 +60,16 @@ def inject_globals():
         admin=bool(current_user and current_user.is_admin),
         current_user=current_user,
     )
+
+
+@app.template_global()
+def get_borrow_status(item_id, item_type):
+    return Borrowing.objects(item_id=str(item_id), item_type=item_type).order_by('-date').first()
+
+
+@app.template_global()
+def get_borrow_history(item_id, item_type):
+    return list(Borrowing.objects(item_id=str(item_id), item_type=item_type).order_by('-date'))
 
 
 @app.route('/set-language/<lang>')

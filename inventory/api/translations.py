@@ -110,6 +110,15 @@ TRANSLATIONS = {
         'confirm_book':       'Delete this book?',
         'confirm_equipment':  'Delete this equipment?',
         'confirm_consumable': 'Delete this consumable?',
+
+        'borrow':              'Borrow',
+        'return_item':         'Return',
+        'borrowed_by':         'Borrowed by',
+        'borrowing_history':   'Borrowing history',
+        'no_borrowing_history': 'No borrowing history.',
+        'date':                'Date',
+        'borrower':            'Borrower',
+        'action':              'Action',
     },
 
     'fr': {
@@ -223,5 +232,14 @@ TRANSLATIONS = {
         'confirm_book':       'Supprimer ce livre ?',
         'confirm_equipment':  'Supprimer ce matériel ?',
         'confirm_consumable': 'Supprimer ce consommable ?',
+
+        'borrow':              'Emprunter',
+        'return_item':         'Rendre',
+        'borrowed_by':         'Emprunté par',
+        'borrowing_history':   'Historique des emprunts',
+        'no_borrowing_history': 'Aucun emprunt enregistré.',
+        'date':                'Date',
+        'borrower':            'Emprunteur',
+        'action':              'Action',
     },
 }

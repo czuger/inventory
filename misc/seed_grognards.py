@@ -2,6 +2,7 @@ from mongoengine import *
 
 from inventory.db.association import Association
 from inventory.db.board_game import BoardGame
+from inventory.db.borrowing import Borrowing
 from inventory.db.consumable import Consumable
 from inventory.db.equipment import Equipment
 from inventory.db.game import Game
@@ -33,8 +34,8 @@ def get_or_create(model, **kwargs):
 
 
 def clear():
-    for model in [Tablecloth, Terrain, Miniature, Rulebook, BoardGame, Equipment, Consumable,
-                  Location, Game, Association]:
+    for model in [Borrowing, Tablecloth, Terrain, Miniature, Rulebook, BoardGame, Equipment,
+                  Consumable, Location, Game, Association]:
         model.objects.delete()
 
 

@@ -59,4 +59,43 @@
     </div>
 </form>
 {% endif %}
+<hr>
+{% if current_user %}
+{% set borrow = get_borrow_status(item.id, 'book') %}
+<div class="mt-3 mb-3">
+{% if borrow and borrow.action == 'borrow' %}
+  {% if borrow.borrower.id == current_user.id %}
+  <form method="post" action="{{ url_for(request.blueprint ~ '.return_item', id=item.id) }}">
+      <button type="submit" class="btn btn-warning"><i class="bi bi-arrow-return-left"></i> {{ t.return_item }}</button>
+  </form>
+  {% else %}
+  <form method="post" action="{{ url_for(request.blueprint ~ '.borrow', id=item.id) }}" class="d-inline">
+      <button type="submit" class="btn btn-primary"><i class="bi bi-box-arrow-in-down"></i> {{ t.borrow }}</button>
+  </form>
+  {% endif %}
+{% else %}
+<form method="post" action="{{ url_for(request.blueprint ~ '.borrow', id=item.id) }}">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-box-arrow-in-down"></i> {{ t.borrow }}</button>
+</form>
+{% endif %}
+</div>
+{% endif %}
+<h5>{{ t.borrowing_history }}</h5>
+{% set history = get_borrow_history(item.id, 'book') %}
+{% if history %}
+<table class="table table-sm">
+    <thead><tr><th>{{ t.date }}</th><th>{{ t.borrower }}</th><th>{{ t.action }}</th></tr></thead>
+    <tbody>
+    {% for b in history %}
+    <tr>
+        <td>{{ b.date.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ b.borrower.username }}</td>
+        <td>{% if b.action == 'borrow' %}<span class="badge bg-primary">{{ t.borrow }}</span>{% else %}<span class="badge bg-success">{{ t.return_item }}</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="text-muted small">{{ t.no_borrowing_history }}</p>
+{% endif %}
 {% endblock %}
