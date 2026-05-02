@@ -15,27 +15,26 @@
             <th>{{ t.universe }}</th>
             <th>{{ t.period }}</th>
             <th>{{ t.location }}</th>
-            <th></th>
+            {% if admin %}<th></th>{% endif %}
         </tr>
     </thead>
     <tbody>
         {% for item in items %}
-        <tr>
+        <tr onclick="window.location='{{ url_for('books.show', id=item.id) }}'" style="cursor:pointer">
             <td>{{ t.categories[item.category] }}</td>
             <td>{{ item.name }}</td>
             <td>{{ item.universe or '—' }}</td>
             <td>{{ item.period or '—' }}</td>
             <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
+            {% if admin %}
             <td class="text-end">
-                <a href="{{ url_for('books.show', id=item.id) }}" class="btn btn-sm btn-outline-secondary">{{ t.view }}</a>
-                {% if admin %}
                 <a href="{{ url_for('books.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning">{{ t.edit }}</a>
                 <form method="post" action="{{ url_for('books.delete', id=item.id) }}" class="d-inline"
                       onsubmit="return confirm('{{ t.confirm_book }}')">
                     <button type="submit" class="btn btn-sm btn-outline-danger">{{ t.delete }}</button>
                 </form>
-                {% endif %}
             </td>
+            {% endif %}
         </tr>
         {% else %}
         <tr><td colspan="7" class="text-center text-muted">{{ t.empty_books }}</td></tr>
