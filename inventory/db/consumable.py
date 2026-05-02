@@ -9,7 +9,8 @@ class Consumable(Document):
     category = StringField(required=True)
     type = StringField(required=True)
     unit = StringField()
-    quantity = IntField(default=0)
+    quantity        = IntField(default=0)
+    borrowing_count = IntField(default=0)
     location = ReferenceField(Location, required=True)
     images = ListField(StringField(), default=list)
 

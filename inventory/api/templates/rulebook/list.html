@@ -26,7 +26,7 @@
             <td>{{ item.name }}</td>
             <td>{{ item.game.name }}</td>
             <td>{% if item.supplement %}<span class="badge bg-info">{{ t.yes }}</span>{% else %}—{% endif %}</td>
-            <td>{{ item.quantity }}</td>
+            <td><span class="badge bg-{% if item.borrowing_count == 0 %}success{% elif item.borrowing_count >= item.quantity %}danger{% else %}warning{% endif %}">{{ item.quantity }}</span></td>
             <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
             {% if admin %}
             <td class="text-end">

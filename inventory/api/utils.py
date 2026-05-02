@@ -59,7 +59,7 @@ def register_image_routes(bp, Model):
         return redirect(request.referrer)
 
 
-def register_borrow_routes(bp, item_type):
+def register_borrow_routes(bp, item_type, Model):
     @bp.route('/<id>/borrow', methods=['POST'])
     def borrow(id):
         if not g.current_user:
@@ -71,6 +71,9 @@ def register_borrow_routes(bp, item_type):
             item_type=item_type,
             action='borrow',
         ).save()
+        item = get_or_404(Model, id)
+        item.borrowing_count = (item.borrowing_count or 0) + 1
+        item.save()
         return redirect(request.referrer)
 
     @bp.route('/<id>/return', methods=['POST'])
@@ -84,4 +87,7 @@ def register_borrow_routes(bp, item_type):
             item_type=item_type,
             action='return',
         ).save()
+        item = get_or_404(Model, id)
+        item.borrowing_count = max(0, (item.borrowing_count or 0) - 1)
+        item.save()
         return redirect(request.referrer)

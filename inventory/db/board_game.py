@@ -9,7 +9,8 @@ class BoardGame(Document):
     category = StringField(required=True)
     name = StringField(required=True)
     universe = StringField()
-    quantity = IntField(default=1)
+    quantity        = IntField(default=1)
+    borrowing_count = IntField(default=0)
     location = ReferenceField(Location, required=True)
     images = ListField(StringField(), default=list)
 

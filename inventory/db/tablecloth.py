@@ -10,7 +10,8 @@ TABLECLOTH_MATERIALS = ["mousepad (neoprene)", "vinyl", "cloth", "textured"]
 class Tablecloth(Document):
     association = ReferenceField(Association, required=True)
     category = StringField(required=True)
-    quantity = IntField(default=1)
+    quantity        = IntField(default=1)
+    borrowing_count = IntField(default=0)
     type = StringField(required=True)
     material = StringField(choices=TABLECLOTH_MATERIALS)
     game = ReferenceField(Game, required=True)

@@ -112,7 +112,9 @@ TRANSLATIONS = {
         'confirm_consumable': 'Delete this consumable?',
 
         'borrow':              'Borrow',
+        'borrowed':            'Borrowed',
         'return_item':         'Return',
+        'returned':            'Returned',
         'borrowed_by':         'Borrowed by',
         'borrowing_history':   'Borrowing history',
         'no_borrowing_history': 'No borrowing history.',
@@ -234,7 +236,9 @@ TRANSLATIONS = {
         'confirm_consumable': 'Supprimer ce consommable ?',
 
         'borrow':              'Emprunter',
+        'borrowed':            'Emprunté',
         'return_item':         'Rendre',
+        'returned':            'Rendu',
         'borrowed_by':         'Emprunté par',
         'borrowing_history':   'Historique des emprunts',
         'no_borrowing_history': 'Aucun emprunt enregistré.',

@@ -9,7 +9,7 @@ from inventory.libs.get_or_404 import get_or_404
 bp = Blueprint('consumables', __name__, url_prefix='/<slug>/consumables')
 register_assoc_hooks(bp)
 register_image_routes(bp, Consumable)
-register_borrow_routes(bp, 'consumable')
+register_borrow_routes(bp, 'consumable', Consumable)
 
 
 def _refs():

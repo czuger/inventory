@@ -11,7 +11,8 @@ class Rulebook(Document):
     name = StringField(required=True)
     game = ReferenceField(Game, required=True)
     supplement = BooleanField(default=False)
-    quantity = IntField(default=1)
+    quantity        = IntField(default=1)
+    borrowing_count = IntField(default=0)
     location = ReferenceField(Location, required=True)
     images = ListField(StringField(), default=list)
 

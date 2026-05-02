@@ -10,7 +10,7 @@ from inventory.libs.get_or_404 import get_or_404
 bp = Blueprint('rulebooks', __name__, url_prefix='/<slug>/rulebooks')
 register_assoc_hooks(bp)
 register_image_routes(bp, Rulebook)
-register_borrow_routes(bp, 'rulebook')
+register_borrow_routes(bp, 'rulebook', Rulebook)
 
 
 def _refs():
