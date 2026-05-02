@@ -25,11 +25,21 @@
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('equipment.index') }}">{{ t.nav_equipment }}</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('consumables.index') }}">{{ t.nav_consumables }}</a></li>
             </ul>
-            <div class="ms-auto d-flex gap-1">
+            <div class="ms-auto d-flex gap-1 align-items-center">
                 <a href="{{ url_for('set_language', lang='fr') }}"
                    class="btn btn-sm {% if lang == 'fr' %}btn-light{% else %}btn-outline-light{% endif %}">FR</a>
                 <a href="{{ url_for('set_language', lang='en') }}"
                    class="btn btn-sm {% if lang == 'en' %}btn-light{% else %}btn-outline-light{% endif %}">EN</a>
+                {% if current_user %}
+                <span class="navbar-text text-light small ms-2">{{ current_user.username }}</span>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-outline-light">
+                    <i class="bi bi-box-arrow-right"></i>
+                </a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-sm btn-outline-light ms-2">
+                    <i class="bi bi-discord"></i>
+                </a>
+                {% endif %}
             </div>
         </div>
     </div>

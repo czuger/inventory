@@ -24,8 +24,10 @@ def register_assoc_hooks(bp):
     @bp.before_request
     def check_admin():
         view = (request.endpoint or '').rsplit('.', 1)[-1]
-        if view in ('create', 'edit', 'delete', 'upload_image', 'delete_image') and not current_app.config.get('ADMIN'):
-            abort(403)
+        if view in ('create', 'edit', 'delete', 'upload_image', 'delete_image'):
+            current_user = getattr(g, 'current_user', None)
+            if not (current_user and current_user.is_admin):
+                abort(403)
 
 
 def register_image_routes(bp, Model):

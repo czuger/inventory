@@ -1,16 +1,14 @@
 import logging
 
-from flask import Flask
-from flask import redirect
-from flask import request
-from flask import session
-from flask import url_for
+from flask import Flask, g, redirect, request, session, url_for
 
+from inventory.api.oauth import oauth
 from inventory.api.routes import (
-    board_game, book, consumable, equipment, miniature, rulebook, tablecloth, terrain,
+    auth, board_game, book, consumable, equipment, miniature, rulebook, tablecloth, terrain,
 )
 from inventory.api.translations import TRANSLATIONS
 from inventory.db.association import Association
+from inventory.db.user import User
 from inventory.libs.initialization import initialize
 
 logging.basicConfig(
@@ -21,26 +19,46 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Suppress Flask/Werkzeug debug logs
 logging.getLogger("werkzeug").setLevel(logging.INFO)
 logging.getLogger("flask").setLevel(logging.INFO)
 logging.getLogger("pymongo").setLevel(logging.INFO)
-
-ADMIN = True
 
 app = Flask(__name__)
 
 app_context = initialize(app)
 app = app_context.app
+config = app_context.config
 
 app.secret_key = app_context.secret_key
-app.config['ADMIN'] = ADMIN
+
+oauth.init_app(app)
+oauth.register(
+    name='discord',
+    client_id=config['discord']['client_id'],
+    client_secret=config['discord']['client_secret'],
+    access_token_url='https://discord.com/api/oauth2/token',
+    authorize_url='https://discord.com/api/oauth2/authorize',
+    api_base_url='https://discord.com/api/',
+    client_kwargs={'scope': 'identify'},
+)
+
+
+@app.before_request
+def load_current_user():
+    user_id = session.get('user_id')
+    g.current_user = User.objects(id=user_id).first() if user_id else None
 
 
 @app.context_processor
-def inject_translations():
+def inject_globals():
     lang = session.get('lang', 'fr')
-    return dict(t=TRANSLATIONS[lang], lang=lang, admin=app.config['ADMIN'])
+    current_user = getattr(g, 'current_user', None)
+    return dict(
+        t=TRANSLATIONS[lang],
+        lang=lang,
+        admin=bool(current_user and current_user.is_admin),
+        current_user=current_user,
+    )
 
 
 @app.route('/set-language/<lang>')
@@ -50,6 +68,7 @@ def set_language(lang):
     return redirect(request.referrer or url_for('index'))
 
 
+app.register_blueprint(auth.bp)
 app.register_blueprint(tablecloth.bp)
 app.register_blueprint(miniature.bp)
 app.register_blueprint(terrain.bp)
