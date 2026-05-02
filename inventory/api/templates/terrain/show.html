@@ -5,10 +5,10 @@
     <h1>{{ t.terrain }}</h1>
     <div class="d-flex gap-2">
         {% if admin %}
-        <a href="{{ url_for('terrains.edit', id=item.id) }}" class="btn btn-warning">{{ t.edit }}</a>
+        <a href="{{ url_for('terrains.edit', id=item.id) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
         <form method="post" action="{{ url_for('terrains.delete', id=item.id) }}"
               onsubmit="return confirm('{{ t.confirm_terrain }}')">
-            <button type="submit" class="btn btn-danger">{{ t.delete }}</button>
+            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
         </form>
         {% endif %}
         <a href="{{ url_for('terrains.index') }}" class="btn btn-outline-secondary">{{ t.back }}</a>
@@ -42,7 +42,7 @@
         </a>
         {% if admin %}
         <form method="post" action="{{ url_for(request.blueprint ~ '.delete_image', id=item.id, filename=img) }}" class="mt-1">
-            <button type="submit" class="btn btn-sm btn-outline-danger w-100">{{ t.delete }}</button>
+            <button type="submit" class="btn btn-sm btn-outline-danger w-100"><i class="bi bi-trash"></i></button>
         </form>
         {% endif %}
     </div>

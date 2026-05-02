@@ -28,10 +28,10 @@
             <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
             {% if admin %}
             <td class="text-end">
-                <a href="{{ url_for('consumables.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning">{{ t.edit }}</a>
+                <a href="{{ url_for('consumables.edit', id=item.id) }}" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
                 <form method="post" action="{{ url_for('consumables.delete', id=item.id) }}" class="d-inline"
                       onsubmit="return confirm('{{ t.confirm_consumable }}')">
-                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ t.delete }}</button>
+                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                 </form>
             </td>
             {% endif %}
