@@ -87,7 +87,7 @@
     {% for b in history %}
     <tr>
         <td>{{ b.date.strftime('%Y-%m-%d %H:%M') }}</td>
-        <td>{{ b.borrower.username }}</td>
+        <td>{% if b.borrower.display_name %}{{ b.borrower.display_name }} ({{ b.borrower.username }}){% else %}{{ b.borrower.username }}{% endif %}</td>
         <td>{% if b.action == 'borrow' %}<span class="badge bg-primary">{{ t.borrow }}</span>{% else %}<span class="badge bg-success">{{ t.return_item }}</span>{% endif %}</td>
     </tr>
     {% endfor %}

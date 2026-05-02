@@ -17,11 +17,14 @@ def callback():
     token = oauth.discord.authorize_access_token()
     info = oauth.discord.get('https://discord.com/api/users/@me', token=token).json()
     user = User.objects(discord_id=str(info['id'])).first()
+    new_username     = info['username']
+    new_display_name = info.get('global_name') or None
     if not user:
-        user = User(discord_id=str(info['id']), username=info['username'])
+        user = User(discord_id=str(info['id']), username=new_username, display_name=new_display_name)
         user.save()
-    elif user.username != info['username']:
-        user.username = info['username']
+    elif user.username != new_username or user.display_name != new_display_name:
+        user.username     = new_username
+        user.display_name = new_display_name
         user.save()
     session['user_id'] = str(user.id)
     return redirect(url_for('index'))
