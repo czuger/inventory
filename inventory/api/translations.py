@@ -17,6 +17,7 @@ TRANSLATIONS = {
         'nav_consumables': 'Consumables',
 
         'category':   'Category',
+        'number':     'Number',
         'type':       'Type',
         'location':   'Location',
         'quantity':   'Quantity',
@@ -30,6 +31,14 @@ TRANSLATIONS = {
         'universe':   'Universe',
         'period':     'Period',
         'supplement': 'Supplement',
+        'material':   'Material',
+        'remarks':    'Remarks',
+        'materials': {
+            'mousepad (neoprene)': 'Mousepad (neoprene)',
+            'vinyl':               'Vinyl',
+            'cloth':               'Cloth',
+            'textured':            'Textured',
+        },
 
         'select_placeholder': '-- Select --',
 
@@ -97,7 +106,7 @@ TRANSLATIONS = {
         'cancel': 'Annuler',
         'view':   'Voir',
 
-        'nav_miniatures':  'Miniatures',
+        'nav_miniatures':  'Figurines',
         'nav_terrains':    'Terrains',
         'nav_tablecloths': 'Nappes',
         'nav_rulebooks':   'Livres de règles',
@@ -107,6 +116,7 @@ TRANSLATIONS = {
         'nav_consumables': 'Consommables',
 
         'category':   'Catégorie',
+        'number':     'Nombre',
         'type':       'Type',
         'location':   'Emplacement',
         'quantity':   'Quantité',
@@ -120,14 +130,22 @@ TRANSLATIONS = {
         'universe':   'Univers',
         'period':     'Période',
         'supplement': 'Supplément',
+        'material':   'Matière',
+        'remarks':    'Remarques',
+        'materials': {
+            'mousepad (neoprene)': 'Mousepad (néoprène)',
+            'vinyl':               'Vinyle',
+            'cloth':               'Tissu',
+            'textured':            'Texturé',
+        },
 
         'select_placeholder': '-- Choisir --',
 
         'yes': 'Oui',
         'no':  'Non',
 
-        'miniature':   'Miniature',
-        'miniatures':  'Miniatures',
+        'miniature':   'Figurine',
+        'miniatures':  'Figurines',
         'terrain':     'Terrain',
         'terrains':    'Terrains',
         'tablecloth':  'Nappe',
@@ -142,7 +160,7 @@ TRANSLATIONS = {
         'consumable':  'Consommable',
         'consumables': 'Consommables',
 
-        'new_miniature':  'Nouvelle miniature',
+        'new_miniature':  'Nouvelle figurine',
         'new_terrain':    'Nouveau terrain',
         'new_tablecloth': 'Nouvelle nappe',
         'new_rulebook':   'Nouveau livre de règles',
@@ -151,7 +169,7 @@ TRANSLATIONS = {
         'new_equipment':  'Nouveau matériel',
         'new_consumable': 'Nouveau consommable',
 
-        'edit_miniature':  'Modifier miniature',
+        'edit_miniature':  'Modifier figurine',
         'edit_terrain':    'Modifier terrain',
         'edit_tablecloth': 'Modifier nappe',
         'edit_rulebook':   'Modifier livre de règles',
@@ -160,7 +178,7 @@ TRANSLATIONS = {
         'edit_equipment':  'Modifier matériel',
         'edit_consumable': 'Modifier consommable',
 
-        'empty_miniatures':  'Aucune miniature trouvée.',
+        'empty_miniatures':  'Aucune figurine trouvée.',
         'empty_terrains':    'Aucun terrain trouvé.',
         'empty_tablecloths': 'Aucune nappe trouvée.',
         'empty_rulebooks':   'Aucun livre de règles trouvé.',
@@ -169,7 +187,7 @@ TRANSLATIONS = {
         'empty_equipment':   'Aucun matériel trouvé.',
         'empty_consumables': 'Aucun consommable trouvé.',
 
-        'confirm_miniature':  'Supprimer cette miniature ?',
+        'confirm_miniature':  'Supprimer cette figurine ?',
         'confirm_terrain':    'Supprimer ce terrain ?',
         'confirm_tablecloth': 'Supprimer cette nappe ?',
         'confirm_rulebook':   'Supprimer ce livre de règles ?',

@@ -13,8 +13,21 @@
         </select>
     </div>
     <div class="mb-3">
+        <label class="form-label">{{ t.number }} <span class="text-muted">(optional)</span></label>
+        <input type="number" name="number" class="form-control" value="{{ obj.number if obj and obj.number is not none else '' }}">
+    </div>
+    <div class="mb-3">
         <label class="form-label">{{ t.type }}</label>
         <input type="text" name="type" class="form-control" value="{{ obj.type if obj else '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">{{ t.material }} <span class="text-muted">(optional)</span></label>
+        <select name="material" class="form-select">
+            <option value="">{{ t.select_placeholder }}</option>
+            {% for m in materials %}
+            <option value="{{ m }}" {% if obj and obj.material == m %}selected{% endif %}>{{ t.materials[m] }}</option>
+            {% endfor %}
+        </select>
     </div>
     <div class="mb-3">
         <label class="form-label">{{ t.game }}</label>
@@ -33,6 +46,10 @@
             <option value="{{ s.id }}" {% if obj and obj.size.id == s.id %}selected{% endif %}>{{ s.size_cm }} ({{ s.size_inches }})</option>
             {% endfor %}
         </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">{{ t.remarks }} <span class="text-muted">(optional)</span></label>
+        <input type="text" name="remarks" class="form-control" value="{{ obj.remarks if obj and obj.remarks else '' }}">
     </div>
     <div class="mb-3">
         <label class="form-label">{{ t.location }}</label>

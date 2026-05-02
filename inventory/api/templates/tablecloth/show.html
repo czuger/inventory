@@ -15,12 +15,24 @@
 <dl class="row">
     <dt class="col-sm-3">{{ t.category }}</dt>
     <dd class="col-sm-9">{{ item.category.name }}</dd>
+    {% if item.number is not none %}
+    <dt class="col-sm-3">{{ t.number }}</dt>
+    <dd class="col-sm-9">{{ item.number }}</dd>
+    {% endif %}
     <dt class="col-sm-3">{{ t.type }}</dt>
     <dd class="col-sm-9">{{ item.type }}</dd>
+    {% if item.material %}
+    <dt class="col-sm-3">{{ t.material }}</dt>
+    <dd class="col-sm-9">{{ t.materials[item.material] }}</dd>
+    {% endif %}
     <dt class="col-sm-3">{{ t.game }}</dt>
     <dd class="col-sm-9">{{ item.game.name }}</dd>
     <dt class="col-sm-3">{{ t.size }}</dt>
     <dd class="col-sm-9">{{ item.size.size_cm }} ({{ item.size.size_inches }})</dd>
+    {% if item.remarks %}
+    <dt class="col-sm-3">{{ t.remarks }}</dt>
+    <dd class="col-sm-9">{{ item.remarks }}</dd>
+    {% endif %}
     <dt class="col-sm-3">{{ t.location }}</dt>
     <dd class="col-sm-9">
         {{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}

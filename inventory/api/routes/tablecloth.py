@@ -3,7 +3,7 @@ from flask import Blueprint, current_app, flash, redirect, render_template, requ
 from inventory.db.category import Category
 from inventory.db.game import Game
 from inventory.db.location import Location
-from inventory.db.tablecloth import Tablecloth
+from inventory.db.tablecloth import Tablecloth, TABLECLOTH_MATERIALS
 from inventory.db.tablecloth_size import TableclothSize
 from inventory.libs.get_or_404 import get_or_404
 
@@ -16,6 +16,7 @@ def _refs():
         games=Game.objects.order_by('name'),
         sizes=TableclothSize.objects.all(),
         locations=Location.objects.filter(association=current_app.config['CURRENT_ASSOCIATION']),
+        materials=TABLECLOTH_MATERIALS,
     )
 
 
@@ -38,9 +39,12 @@ def create():
         item = Tablecloth(
             association=current_app.config['CURRENT_ASSOCIATION'],
             category=Category.objects.get(id=request.form['category']),
+            number=request.form.get('number') or None,
             type=request.form['type'],
+            material=request.form.get('material') or None,
             game=Game.objects.get(id=request.form['game']),
             size=TableclothSize.objects.get(id=request.form['size']),
+            remarks=request.form.get('remarks') or None,
             location=Location.objects.get(id=request.form['location']),
         )
         item.save()
@@ -55,9 +59,12 @@ def edit(id):
     if request.method == 'POST':
         item.association = current_app.config['CURRENT_ASSOCIATION']
         item.category = Category.objects.get(id=request.form['category'])
+        item.number = request.form.get('number') or None
         item.type = request.form['type']
+        item.material = request.form.get('material') or None
         item.game = Game.objects.get(id=request.form['game'])
         item.size = TableclothSize.objects.get(id=request.form['size'])
+        item.remarks = request.form.get('remarks') or None
         item.location = Location.objects.get(id=request.form['location'])
         item.save()
         flash('Tablecloth updated.', 'success')
