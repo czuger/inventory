@@ -5,7 +5,7 @@ import secrets
 from dataclasses import dataclass
 
 from flask import Flask
-from mongoengine import connect
+from mongoengine import connect, disconnect_all
 
 
 @dataclass
@@ -92,6 +92,7 @@ def initialize(app: Flask = None, test: bool = False) -> AppContext:
 
     db_name = config['mongo']['database'] + ('_test' if test else '')
 
+    disconnect_all()
     connect(
         db=db_name,
         host=config['mongo']['server'],
