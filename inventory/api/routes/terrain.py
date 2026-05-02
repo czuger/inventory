@@ -1,12 +1,14 @@
-from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
+from inventory.api.utils import register_assoc_hooks
 from inventory.db.constants import CATEGORIES, SCALES
 from inventory.db.game import Game
 from inventory.db.location import Location
 from inventory.db.terrain import Terrain
 from inventory.libs.get_or_404 import get_or_404
 
-bp = Blueprint('terrains', __name__, url_prefix='/terrains')
+bp = Blueprint('terrains', __name__, url_prefix='/<slug>/terrains')
+register_assoc_hooks(bp)
 
 
 def _refs():
@@ -14,14 +16,13 @@ def _refs():
         categories=CATEGORIES,
         games=Game.objects.order_by('name'),
         scales=SCALES,
-        locations=Location.objects.filter(association=current_app.config['CURRENT_ASSOCIATION']),
+        locations=Location.objects.filter(association=g.assoc),
     )
 
 
 @bp.route('/')
 def index():
-    assoc = current_app.config['CURRENT_ASSOCIATION']
-    items = Terrain.objects.filter(association=assoc)
+    items = Terrain.objects.filter(association=g.assoc)
     return render_template('terrain/list.html', items=items)
 
 
@@ -35,7 +36,7 @@ def show(id):
 def create():
     if request.method == 'POST':
         item = Terrain(
-            association=current_app.config['CURRENT_ASSOCIATION'],
+            association=g.assoc,
             category=request.form['category'],
             type=request.form['type'],
             game=Game.objects.get(id=request.form['game']),
@@ -53,7 +54,7 @@ def create():
 def edit(id):
     item = get_or_404(Terrain, id)
     if request.method == 'POST':
-        item.association = current_app.config['CURRENT_ASSOCIATION']
+        item.association = g.assoc
         item.category = request.form['category']
         item.type = request.form['type']
         item.game = Game.objects.get(id=request.form['game'])

@@ -1,24 +1,25 @@
-from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
+from inventory.api.utils import register_assoc_hooks
 from inventory.db.constants import CATEGORIES
 from inventory.db.equipment import Equipment
 from inventory.db.location import Location
 from inventory.libs.get_or_404 import get_or_404
 
-bp = Blueprint('equipment', __name__, url_prefix='/equipment')
+bp = Blueprint('equipment', __name__, url_prefix='/<slug>/equipment')
+register_assoc_hooks(bp)
 
 
 def _refs():
     return dict(
         categories=CATEGORIES,
-        locations=Location.objects.filter(association=current_app.config['CURRENT_ASSOCIATION']),
+        locations=Location.objects.filter(association=g.assoc),
     )
 
 
 @bp.route('/')
 def index():
-    assoc = current_app.config['CURRENT_ASSOCIATION']
-    items = Equipment.objects.filter(association=assoc)
+    items = Equipment.objects.filter(association=g.assoc)
     return render_template('equipment/list.html', items=items)
 
 
@@ -32,7 +33,7 @@ def show(id):
 def create():
     if request.method == 'POST':
         item = Equipment(
-            association=current_app.config['CURRENT_ASSOCIATION'],
+            association=g.assoc,
             category=request.form['category'],
             type=request.form['type'],
             quantity=int(request.form.get('quantity') or 1),
@@ -48,7 +49,7 @@ def create():
 def edit(id):
     item = get_or_404(Equipment, id)
     if request.method == 'POST':
-        item.association = current_app.config['CURRENT_ASSOCIATION']
+        item.association = g.assoc
         item.category = request.form['category']
         item.type = request.form['type']
         item.quantity = int(request.form.get('quantity') or 1)

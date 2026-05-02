@@ -1,24 +1,25 @@
-from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
+from inventory.api.utils import register_assoc_hooks
 from inventory.db.book import Book
 from inventory.db.constants import CATEGORIES
 from inventory.db.location import Location
 from inventory.libs.get_or_404 import get_or_404
 
-bp = Blueprint('books', __name__, url_prefix='/books')
+bp = Blueprint('books', __name__, url_prefix='/<slug>/books')
+register_assoc_hooks(bp)
 
 
 def _refs():
     return dict(
         categories=CATEGORIES,
-        locations=Location.objects.filter(association=current_app.config['CURRENT_ASSOCIATION']),
+        locations=Location.objects.filter(association=g.assoc),
     )
 
 
 @bp.route('/')
 def index():
-    assoc = current_app.config['CURRENT_ASSOCIATION']
-    items = Book.objects.filter(association=assoc)
+    items = Book.objects.filter(association=g.assoc)
     return render_template('book/list.html', items=items)
 
 
@@ -32,7 +33,7 @@ def show(id):
 def create():
     if request.method == 'POST':
         item = Book(
-            association=current_app.config['CURRENT_ASSOCIATION'],
+            association=g.assoc,
             category=request.form['category'],
             name=request.form['name'],
             universe=request.form.get('universe', ''),
@@ -49,7 +50,7 @@ def create():
 def edit(id):
     item = get_or_404(Book, id)
     if request.method == 'POST':
-        item.association = current_app.config['CURRENT_ASSOCIATION']
+        item.association = g.assoc
         item.category = request.form['category']
         item.name = request.form['name']
         item.universe = request.form.get('universe', '')

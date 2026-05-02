@@ -2,7 +2,6 @@ from mongoengine import *
 
 from inventory.db.association import Association
 from inventory.db.board_game import BoardGame
-from inventory.db.book import Book
 from inventory.db.consumable import Consumable
 from inventory.db.equipment import Equipment
 from inventory.db.game import Game
@@ -45,37 +44,37 @@ def seed():
     # ─────────────────────────────────────────
     # Association
     # ─────────────────────────────────────────
-    assoc = get_or_create(Association, name="Les Grognards du Dimanche")
+    assoc = get_or_create(Association, name="Les Grognards d'Alsace", slug="grognards")
 
     # ─────────────────────────────────────────
     # Games
     # ─────────────────────────────────────────
-    game_generic   = get_or_create(Game, name="Generic")
-    game_saga      = get_or_create(Game, name="SAGA")
+    game_generic = get_or_create(Game, name="Generic")
+    game_saga = get_or_create(Game, name="SAGA")
     game_guildball = get_or_create(Game, name="Guildball")
-    game_malifaux  = get_or_create(Game, name="Malifaux")
-    game_starwars  = get_or_create(Game, name="Star Wars")
-    game_adg       = get_or_create(Game, name="Art de la Guerre")
-    game_armada    = get_or_create(Game, name="Star Wars Armada")
-    game_sda       = get_or_create(Game, name="Seigneur des Anneaux")
-    game_congo     = get_or_create(Game, name="CONGO")
-    game_bolt      = get_or_create(Game, name="Bolt Action")
-    game_fow       = get_or_create(Game, name="Flames of War")
-    game_sails     = get_or_create(Game, name="Sails of Glory")
-    game_jugula    = get_or_create(Game, name="Jugula")
-    game_briskars  = get_or_create(Game, name="Briskars")
+    game_malifaux = get_or_create(Game, name="Malifaux")
+    game_starwars = get_or_create(Game, name="Star Wars")
+    game_adg = get_or_create(Game, name="Art de la Guerre")
+    game_armada = get_or_create(Game, name="Star Wars Armada")
+    game_sda = get_or_create(Game, name="Seigneur des Anneaux")
+    game_congo = get_or_create(Game, name="CONGO")
+    game_bolt = get_or_create(Game, name="Bolt Action")
+    game_fow = get_or_create(Game, name="Flames of War")
+    game_sails = get_or_create(Game, name="Sails of Glory")
+    game_jugula = get_or_create(Game, name="Jugula")
+    game_briskars = get_or_create(Game, name="Briskars")
 
     # ─────────────────────────────────────────
     # Locations
     #   Grande salle: placard 1 porte, placard 2 portes, pièce 1, vitrine 1, vitrine 2
     #   Petite salle: pièce 2, armoire 1, armoire 2
     # ─────────────────────────────────────────
-    loc_gs_pl1  = get_or_create(Location, association=assoc, room="Grande salle", spot="Placard 1 porte")
-    loc_gs_pl2  = get_or_create(Location, association=assoc, room="Grande salle", spot="Placard 2 portes")
-    loc_gs_p1   = get_or_create(Location, association=assoc, room="Grande salle", spot="Pièce 1")
-    loc_gs_v1   = get_or_create(Location, association=assoc, room="Grande salle", spot="Vitrine 1")
-    loc_gs_v2   = get_or_create(Location, association=assoc, room="Grande salle", spot="Vitrine 2")
-    loc_ps_p2   = get_or_create(Location, association=assoc, room="Petite salle", spot="Pièce 2")
+    loc_gs_pl1 = get_or_create(Location, association=assoc, room="Grande salle", spot="Placard 1 porte")
+    loc_gs_pl2 = get_or_create(Location, association=assoc, room="Grande salle", spot="Placard 2 portes")
+    loc_gs_p1 = get_or_create(Location, association=assoc, room="Grande salle", spot="Pièce 1")
+    loc_gs_v1 = get_or_create(Location, association=assoc, room="Grande salle", spot="Vitrine 1")
+    loc_gs_v2 = get_or_create(Location, association=assoc, room="Grande salle", spot="Vitrine 2")
+    loc_ps_p2 = get_or_create(Location, association=assoc, room="Petite salle", spot="Pièce 2")
     loc_ps_arm1 = get_or_create(Location, association=assoc, room="Petite salle", spot="Armoire 1")
     loc_ps_arm2 = get_or_create(Location, association=assoc, room="Petite salle", spot="Armoire 2")
 

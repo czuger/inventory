@@ -10,7 +10,7 @@ from inventory.api.routes import (
     board_game, book, consumable, equipment, miniature, rulebook, tablecloth, terrain,
 )
 from inventory.api.translations import TRANSLATIONS
-from inventory.db.association import Association as AssociationModel
+from inventory.db.association import Association
 from inventory.libs.initialization import initialize
 
 logging.basicConfig(
@@ -56,16 +56,13 @@ app.register_blueprint(book.bp)
 app.register_blueprint(equipment.bp)
 app.register_blueprint(consumable.bp)
 
-CURRENT_ASSOCIATION_NAME = "Les Grognards du Dimanche"
-current_assoc = AssociationModel.objects(name=CURRENT_ASSOCIATION_NAME).first()
-if current_assoc is None:
-    current_assoc = AssociationModel(name=CURRENT_ASSOCIATION_NAME).save()
-app.config['CURRENT_ASSOCIATION'] = current_assoc
-
 
 @app.route("/")
 def index():
-    return redirect(url_for("miniatures.index"))
+    assoc = Association.objects.first()
+    if assoc is None:
+        return "No association found.", 404
+    return redirect(url_for("miniatures.index", slug=assoc.slug))
 
 
 if __name__ == "__main__":
