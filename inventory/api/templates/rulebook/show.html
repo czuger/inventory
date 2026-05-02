@@ -30,4 +30,33 @@
         {{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}
     </dd>
 </dl>
+<hr>
+<h5>{{ t.images }}</h5>
+{% if item.images %}
+<div class="row g-2 mb-3">
+    {% for img in item.images %}
+    <div class="col-auto">
+        <a href="{{ url_for('static', filename='uploads/' ~ item.category.lower().replace(' ', '_') ~ '/' ~ item.id|string ~ '/' ~ img) }}" target="_blank">
+            <img src="{{ url_for('static', filename='uploads/' ~ item.category.lower().replace(' ', '_') ~ '/' ~ item.id|string ~ '/' ~ img) }}"
+                 class="img-thumbnail" style="max-height:200px">
+        </a>
+        {% if admin %}
+        <form method="post" action="{{ url_for(request.blueprint ~ '.delete_image', id=item.id, filename=img) }}" class="mt-1">
+            <button type="submit" class="btn btn-sm btn-outline-danger w-100">{{ t.delete }}</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-muted small">{{ t.no_images }}</p>
+{% endif %}
+{% if admin %}
+<form method="post" action="{{ url_for(request.blueprint ~ '.upload_image', id=item.id) }}" enctype="multipart/form-data" class="mt-2">
+    <div class="d-flex gap-2 align-items-center">
+        <input type="file" name="images" multiple accept="image/*" class="form-control form-control-sm" style="max-width:300px">
+        <button type="submit" class="btn btn-sm btn-outline-primary">{{ t.upload_images }}</button>
+    </div>
+</form>
+{% endif %}
 {% endblock %}

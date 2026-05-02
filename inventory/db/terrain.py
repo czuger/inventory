@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, ReferenceField
+from mongoengine import Document, ListField, ReferenceField, StringField
 
 from .association import Association
 from .game import Game
@@ -13,4 +13,6 @@ class Terrain(Document):
     scale = StringField(required=True)
     theater = StringField()
     location = ReferenceField(Location, required=True)
+    images = ListField(StringField(), default=list)
+
     meta = {'collection': 'terrains'}

@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, BooleanField, IntField, ReferenceField
+from mongoengine import BooleanField, Document, IntField, ListField, ReferenceField, StringField
 
 from .association import Association
 from .game import Game
@@ -13,4 +13,6 @@ class Rulebook(Document):
     supplement = BooleanField(default=False)
     quantity = IntField(default=1)
     location = ReferenceField(Location, required=True)
+    images = ListField(StringField(), default=list)
+
     meta = {'collection': 'rulebooks'}

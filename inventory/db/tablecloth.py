@@ -1,4 +1,4 @@
-from mongoengine import Document, IntField, StringField, ReferenceField
+from mongoengine import Document, IntField, ListField, ReferenceField, StringField
 
 from .association import Association
 from .game import Game
@@ -18,4 +18,6 @@ class Tablecloth(Document):
     size = StringField(required=True)
     remarks = StringField()
     location = ReferenceField(Location, required=True)
+    images = ListField(StringField(), default=list)
+
     meta = {'collection': 'tablecoths'}

@@ -26,7 +26,7 @@ logging.getLogger("werkzeug").setLevel(logging.INFO)
 logging.getLogger("flask").setLevel(logging.INFO)
 logging.getLogger("pymongo").setLevel(logging.INFO)
 
-ADMIN = False
+ADMIN = True
 
 app = Flask(__name__)
 

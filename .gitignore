@@ -178,3 +178,7 @@ cython_debug/
 config.json
 .idea
 *.gz
+
+# Uploaded images
+inventory/api/static/uploads/*
+!inventory/api/static/uploads/.gitkeep

@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
-from inventory.api.utils import register_assoc_hooks
+from inventory.api.utils import register_assoc_hooks, register_image_routes
 from inventory.db.book import Book
 from inventory.db.constants import CATEGORIES
 from inventory.db.location import Location
@@ -8,6 +8,7 @@ from inventory.libs.get_or_404 import get_or_404
 
 bp = Blueprint('books', __name__, url_prefix='/<slug>/books')
 register_assoc_hooks(bp)
+register_image_routes(bp, Book)
 
 
 def _refs():

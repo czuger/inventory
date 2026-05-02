@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, IntField, ReferenceField
+from mongoengine import Document, IntField, ListField, ReferenceField, StringField
 
 from .association import Association
 from .game import Game
@@ -13,4 +13,6 @@ class Miniature(Document):
     scale = StringField(required=True)
     quantity = IntField(default=1)
     location = ReferenceField(Location, required=True)
+    images = ListField(StringField(), default=list)
+
     meta = {'collection': 'miniatures'}

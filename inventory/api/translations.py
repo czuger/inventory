@@ -98,6 +98,10 @@ TRANSLATIONS = {
         'empty_equipment':   'No equipment found.',
         'empty_consumables': 'No consumables found.',
 
+        'images':        'Images',
+        'no_images':     'No images.',
+        'upload_images': 'Add images',
+
         'confirm_miniature':  'Delete this miniature?',
         'confirm_terrain':    'Delete this terrain?',
         'confirm_tablecloth': 'Delete this tablecloth?',
@@ -206,6 +210,10 @@ TRANSLATIONS = {
         'empty_books':       'Aucun livre trouvé.',
         'empty_equipment':   'Aucun matériel trouvé.',
         'empty_consumables': 'Aucun consommable trouvé.',
+
+        'images':        'Images',
+        'no_images':     'Aucune image.',
+        'upload_images': 'Ajouter des images',
 
         'confirm_miniature':  'Supprimer cette figurine ?',
         'confirm_terrain':    'Supprimer ce terrain ?',

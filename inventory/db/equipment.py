@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, IntField, ReferenceField
+from mongoengine import Document, IntField, ListField, ReferenceField, StringField
 
 from .association import Association
 from .location import Location
@@ -10,4 +10,6 @@ class Equipment(Document):
     type = StringField(required=True)
     quantity = IntField(default=1)
     location = ReferenceField(Location, required=True)
+    images = ListField(StringField(), default=list)
+
     meta = {'collection': 'equipment'}
