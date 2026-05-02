@@ -8,7 +8,7 @@
         <select name="category" class="form-select" required>
             <option value="">{{ t.select_placeholder }}</option>
             {% for c in categories %}
-            <option value="{{ c.id }}" {% if obj and obj.category.id == c.id %}selected{% endif %}>{{ c.name }}</option>
+            <option value="{{ c }}" {% if obj and obj.category == c %}selected{% endif %}>{{ t.categories[c] }}</option>
             {% endfor %}
         </select>
     </div>
@@ -43,7 +43,7 @@
         <select name="size" class="form-select" required>
             <option value="">{{ t.select_placeholder }}</option>
             {% for s in sizes %}
-            <option value="{{ s.id }}" {% if obj and obj.size.id == s.id %}selected{% endif %}>{{ s.size_cm }} ({{ s.size_inches }})</option>
+            <option value="{{ s[0] }}" {% if obj and obj.size == s[0] %}selected{% endif %}>{{ s[0] }} ({{ s[1] }})</option>
             {% endfor %}
         </select>
     </div>

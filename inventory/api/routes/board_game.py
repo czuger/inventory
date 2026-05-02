@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 
 from inventory.db.board_game import BoardGame
-from inventory.db.category import Category
+from inventory.db.constants import CATEGORIES
 from inventory.db.location import Location
 from inventory.libs.get_or_404 import get_or_404
 
@@ -10,7 +10,7 @@ bp = Blueprint('board_games', __name__, url_prefix='/board-games')
 
 def _refs():
     return dict(
-        categories=Category.objects.order_by('name'),
+        categories=CATEGORIES,
         locations=Location.objects.filter(association=current_app.config['CURRENT_ASSOCIATION']),
     )
 
@@ -33,7 +33,7 @@ def create():
     if request.method == 'POST':
         item = BoardGame(
             association=current_app.config['CURRENT_ASSOCIATION'],
-            category=Category.objects.get(id=request.form['category']),
+            category=request.form['category'],
             name=request.form['name'],
             universe=request.form.get('universe', ''),
             location=Location.objects.get(id=request.form['location']),
@@ -49,7 +49,7 @@ def edit(id):
     item = get_or_404(BoardGame, id)
     if request.method == 'POST':
         item.association = current_app.config['CURRENT_ASSOCIATION']
-        item.category = Category.objects.get(id=request.form['category'])
+        item.category = request.form['category']
         item.name = request.form['name']
         item.universe = request.form.get('universe', '')
         item.location = Location.objects.get(id=request.form['location'])

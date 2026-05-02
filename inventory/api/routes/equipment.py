@@ -1,6 +1,6 @@
 from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 
-from inventory.db.category import Category
+from inventory.db.constants import CATEGORIES
 from inventory.db.equipment import Equipment
 from inventory.db.location import Location
 from inventory.libs.get_or_404 import get_or_404
@@ -10,7 +10,7 @@ bp = Blueprint('equipment', __name__, url_prefix='/equipment')
 
 def _refs():
     return dict(
-        categories=Category.objects.order_by('name'),
+        categories=CATEGORIES,
         locations=Location.objects.filter(association=current_app.config['CURRENT_ASSOCIATION']),
     )
 
@@ -33,7 +33,7 @@ def create():
     if request.method == 'POST':
         item = Equipment(
             association=current_app.config['CURRENT_ASSOCIATION'],
-            category=Category.objects.get(id=request.form['category']),
+            category=request.form['category'],
             type=request.form['type'],
             quantity=int(request.form.get('quantity') or 1),
             location=Location.objects.get(id=request.form['location']),
@@ -49,7 +49,7 @@ def edit(id):
     item = get_or_404(Equipment, id)
     if request.method == 'POST':
         item.association = current_app.config['CURRENT_ASSOCIATION']
-        item.category = Category.objects.get(id=request.form['category'])
+        item.category = request.form['category']
         item.type = request.form['type']
         item.quantity = int(request.form.get('quantity') or 1)
         item.location = Location.objects.get(id=request.form['location'])

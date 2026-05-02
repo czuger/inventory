@@ -39,6 +39,16 @@ TRANSLATIONS = {
             'cloth':               'Cloth',
             'textured':            'Textured',
         },
+        'categories': {
+            'Tablecloth': 'Tablecloth',
+            'Miniature':  'Miniature',
+            'Terrain':    'Terrain',
+            'Rulebook':   'Rulebook',
+            'Board Game': 'Board Game',
+            'Book':       'Book',
+            'Equipment':  'Equipment',
+            'Consumable': 'Consumable',
+        },
 
         'select_placeholder': '-- Select --',
 
@@ -137,6 +147,16 @@ TRANSLATIONS = {
             'vinyl':               'Vinyle',
             'cloth':               'Tissu',
             'textured':            'Texturé',
+        },
+        'categories': {
+            'Tablecloth': 'Nappe',
+            'Miniature':  'Figurine',
+            'Terrain':    'Terrain',
+            'Rulebook':   'Livre de règles',
+            'Board Game': 'Jeu de société',
+            'Book':       'Livre',
+            'Equipment':  'Matériel',
+            'Consumable': 'Consommable',
         },
 
         'select_placeholder': '-- Choisir --',

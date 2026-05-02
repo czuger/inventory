@@ -20,7 +20,7 @@
     <tbody>
         {% for item in items %}
         <tr>
-            <td>{{ item.category.name }}</td>
+            <td>{{ t.categories[item.category] }}</td>
             <td>{{ item.name }}</td>
             <td>{{ item.game.name }}</td>
             <td>{% if item.supplement %}<span class="badge bg-info">{{ t.yes }}</span>{% else %}—{% endif %}</td>

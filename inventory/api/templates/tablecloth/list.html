@@ -21,12 +21,12 @@
     <tbody>
         {% for item in items %}
         <tr>
-            <td>{{ item.category.name }}</td>
+            <td>{{ t.categories[item.category] }}</td>
             <td>{{ item.type }}</td>
             <td>{{ item.number if item.number is not none else '' }}</td>
             <td>{{ t.materials[item.material] if item.material else '' }}</td>
             <td>{{ item.game.name }}</td>
-            <td>{{ item.size.size_cm }}</td>
+            <td>{{ item.size }}</td>
             <td>{{ item.location.room }}{% if item.location.spot %} – {{ item.location.spot }}{% endif %}</td>
             <td class="text-end">
                 <a href="{{ url_for('tablecloths.show', id=item.id) }}" class="btn btn-sm btn-outline-secondary">{{ t.view }}</a>

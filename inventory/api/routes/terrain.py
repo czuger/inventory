@@ -1,9 +1,8 @@
 from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 
-from inventory.db.category import Category
+from inventory.db.constants import CATEGORIES, SCALES
 from inventory.db.game import Game
 from inventory.db.location import Location
-from inventory.db.scale import Scale
 from inventory.db.terrain import Terrain
 from inventory.libs.get_or_404 import get_or_404
 
@@ -12,9 +11,9 @@ bp = Blueprint('terrains', __name__, url_prefix='/terrains')
 
 def _refs():
     return dict(
-        categories=Category.objects.order_by('name'),
+        categories=CATEGORIES,
         games=Game.objects.order_by('name'),
-        scales=Scale.objects.order_by('value'),
+        scales=SCALES,
         locations=Location.objects.filter(association=current_app.config['CURRENT_ASSOCIATION']),
     )
 
@@ -37,10 +36,10 @@ def create():
     if request.method == 'POST':
         item = Terrain(
             association=current_app.config['CURRENT_ASSOCIATION'],
-            category=Category.objects.get(id=request.form['category']),
+            category=request.form['category'],
             type=request.form['type'],
             game=Game.objects.get(id=request.form['game']),
-            scale=Scale.objects.get(id=request.form['scale']),
+            scale=request.form['scale'],
             theater=request.form.get('theater', ''),
             location=Location.objects.get(id=request.form['location']),
         )
@@ -55,10 +54,10 @@ def edit(id):
     item = get_or_404(Terrain, id)
     if request.method == 'POST':
         item.association = current_app.config['CURRENT_ASSOCIATION']
-        item.category = Category.objects.get(id=request.form['category'])
+        item.category = request.form['category']
         item.type = request.form['type']
         item.game = Game.objects.get(id=request.form['game'])
-        item.scale = Scale.objects.get(id=request.form['scale'])
+        item.scale = request.form['scale']
         item.theater = request.form.get('theater', '')
         item.location = Location.objects.get(id=request.form['location'])
         item.save()

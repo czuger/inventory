@@ -1,10 +1,9 @@
 from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 
-from inventory.db.category import Category
+from inventory.db.constants import CATEGORIES, SCALES
 from inventory.db.game import Game
 from inventory.db.location import Location
 from inventory.db.miniature import Miniature
-from inventory.db.scale import Scale
 from inventory.libs.get_or_404 import get_or_404
 
 bp = Blueprint('miniatures', __name__, url_prefix='/miniatures')
@@ -12,9 +11,9 @@ bp = Blueprint('miniatures', __name__, url_prefix='/miniatures')
 
 def _refs():
     return dict(
-        categories=Category.objects.order_by('name'),
+        categories=CATEGORIES,
         games=Game.objects.order_by('name'),
-        scales=Scale.objects.order_by('value'),
+        scales=SCALES,
         locations=Location.objects.filter(association=current_app.config['CURRENT_ASSOCIATION']),
     )
 
@@ -37,10 +36,10 @@ def create():
     if request.method == 'POST':
         item = Miniature(
             association=current_app.config['CURRENT_ASSOCIATION'],
-            category=Category.objects.get(id=request.form['category']),
+            category=request.form['category'],
             type=request.form['type'],
             game=Game.objects.get(id=request.form['game']),
-            scale=Scale.objects.get(id=request.form['scale']),
+            scale=request.form['scale'],
             quantity=int(request.form.get('quantity') or 1),
             location=Location.objects.get(id=request.form['location']),
         )
@@ -55,10 +54,10 @@ def edit(id):
     item = get_or_404(Miniature, id)
     if request.method == 'POST':
         item.association = current_app.config['CURRENT_ASSOCIATION']
-        item.category = Category.objects.get(id=request.form['category'])
+        item.category = request.form['category']
         item.type = request.form['type']
         item.game = Game.objects.get(id=request.form['game'])
-        item.scale = Scale.objects.get(id=request.form['scale'])
+        item.scale = request.form['scale']
         item.quantity = int(request.form.get('quantity') or 1)
         item.location = Location.objects.get(id=request.form['location'])
         item.save()

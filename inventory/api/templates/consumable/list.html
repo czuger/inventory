@@ -19,7 +19,7 @@
     <tbody>
         {% for item in items %}
         <tr>
-            <td>{{ item.category.name }}</td>
+            <td>{{ t.categories[item.category] }}</td>
             <td>{{ item.type }}</td>
             <td>{{ item.unit or '—' }}</td>
             <td>{{ item.quantity }}</td>

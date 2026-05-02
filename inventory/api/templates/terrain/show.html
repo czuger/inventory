@@ -14,13 +14,13 @@
 </div>
 <dl class="row">
     <dt class="col-sm-3">{{ t.category }}</dt>
-    <dd class="col-sm-9">{{ item.category.name }}</dd>
+    <dd class="col-sm-9">{{ t.categories[item.category] }}</dd>
     <dt class="col-sm-3">{{ t.type }}</dt>
     <dd class="col-sm-9">{{ item.type }}</dd>
     <dt class="col-sm-3">{{ t.game }}</dt>
     <dd class="col-sm-9">{{ item.game.name }}</dd>
     <dt class="col-sm-3">{{ t.scale }}</dt>
-    <dd class="col-sm-9">{{ item.scale.value }}</dd>
+    <dd class="col-sm-9">{{ item.scale }}</dd>
     <dt class="col-sm-3">{{ t.theater }}</dt>
     <dd class="col-sm-9">{{ item.theater or '—' }}</dd>
     <dt class="col-sm-3">{{ t.location }}</dt>
