@@ -40,6 +40,13 @@
             {% endfor %}
         </select>
     </div>
+    {% if obj %}
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" name="sticker_printed" id="sticker_printed"
+               {% if obj.sticker_printed %}checked{% endif %}>
+        <label class="form-check-label" for="sticker_printed">{{ t.sticker_printed }}</label>
+    </div>
+    {% endif %}
     <div class="d-flex gap-2">
         <button type="submit" class="btn btn-primary">{{ t.save }}</button>
         <a href="{{ url_for('consumables.index') }}" class="btn btn-outline-secondary">{{ t.cancel }}</a>

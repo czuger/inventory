@@ -61,6 +61,7 @@ def edit(id):
         item.universe = request.form.get('universe', '')
         item.quantity = int(request.form.get('quantity') or 1)
         item.location = Location.objects.get(id=request.form['location'])
+        item.sticker_printed = 'sticker_printed' in request.form
         item.save()
         flash('Board game updated.', 'success')
         return redirect(url_for('board_games.show', id=item.id))

@@ -65,6 +65,7 @@ def edit(id):
         item.supplement = 'supplement' in request.form
         item.quantity = int(request.form.get('quantity') or 1)
         item.location = Location.objects.get(id=request.form['location'])
+        item.sticker_printed = 'sticker_printed' in request.form
         item.save()
         flash('Rulebook updated.', 'success')
         return redirect(url_for('rulebooks.show', id=item.id))

@@ -111,6 +111,8 @@ TRANSLATIONS = {
         'confirm_equipment':  'Delete this equipment?',
         'confirm_consumable': 'Delete this consumable?',
 
+        'sticker_printed':     'Sticker printed',
+
         'borrow':              'Borrow',
         'borrowed':            'Borrowed',
         'return_item':         'Return',
@@ -122,10 +124,14 @@ TRANSLATIONS = {
         'borrower':            'Borrower',
         'action':              'Action',
 
-        'print':         'Print',
-        'print_stickers':'Print stickers',
-        'print_list':    'Print list',
-        'all':           'All',
+        'print':             'Print',
+        'print_stickers':    'Print stickers',
+        'print_new_stickers':'Print new stickers',
+        'print_list':        'Print list',
+        'all':               'All',
+        'print_mode_full':     'All items',
+        'print_mode_new':      'New only (sticker not yet printed)',
+        'print_mode_category': 'By category',
     },
 
     'fr': {
@@ -240,6 +246,8 @@ TRANSLATIONS = {
         'confirm_equipment':  'Supprimer ce matériel ?',
         'confirm_consumable': 'Supprimer ce consommable ?',
 
+        'sticker_printed':     'Étiquette imprimée',
+
         'borrow':              'Emprunter',
         'borrowed':            'Emprunté',
         'return_item':         'Rendre',
@@ -251,9 +259,13 @@ TRANSLATIONS = {
         'borrower':            'Emprunteur',
         'action':              'Action',
 
-        'print':         'Impression',
-        'print_stickers':'Imprimer les étiquettes',
-        'print_list':    'Imprimer la liste',
-        'all':           'Tous',
+        'print':             'Impression',
+        'print_stickers':    'Imprimer les étiquettes',
+        'print_new_stickers':'Imprimer les nouvelles étiquettes',
+        'print_list':        'Imprimer la liste',
+        'all':               'Tous',
+        'print_mode_full':     'Tous les articles',
+        'print_mode_new':      'Nouveaux seulement (étiquette non encore imprimée)',
+        'print_mode_category': 'Par catégorie',
     },
 }

@@ -61,6 +61,7 @@ def edit(id):
         item.unit = request.form.get('unit', '')
         item.quantity = int(request.form.get('quantity') or 0)
         item.location = Location.objects.get(id=request.form['location'])
+        item.sticker_printed = 'sticker_printed' in request.form
         item.save()
         flash('Consumable updated.', 'success')
         return redirect(url_for('consumables.show', id=item.id))

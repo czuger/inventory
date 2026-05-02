@@ -72,6 +72,7 @@ def edit(id):
         item.size = request.form['size']
         item.remarks = request.form.get('remarks') or None
         item.location = Location.objects.get(id=request.form['location'])
+        item.sticker_printed = 'sticker_printed' in request.form
         item.save()
         flash('Tablecloth updated.', 'success')
         return redirect(url_for('tablecloths.show', id=item.id))

@@ -13,6 +13,7 @@ class Rulebook(Document):
     supplement = BooleanField(default=False)
     quantity        = IntField(default=1)
     borrowing_count = IntField(default=0)
+    sticker_printed = BooleanField(default=False)
     location = ReferenceField(Location, required=True)
     images = ListField(StringField(), default=list)
 

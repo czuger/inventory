@@ -66,6 +66,7 @@ def edit(id):
         item.scale = request.form['scale']
         item.quantity = int(request.form.get('quantity') or 1)
         item.location = Location.objects.get(id=request.form['location'])
+        item.sticker_printed = 'sticker_printed' in request.form
         item.save()
         flash('Miniature updated.', 'success')
         return redirect(url_for('miniatures.show', id=item.id))

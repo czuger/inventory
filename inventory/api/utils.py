@@ -98,12 +98,13 @@ def register_borrow_routes(bp, item_type, Model):
 def register_sticker_routes(bp, Model, get_lines):
     @bp.route('/stickers')
     def stickers():
-        items = Model.objects.filter(association=g.assoc)
-        data = []
-        for item in items:
-            item_url = url_for(request.blueprint + '.show', id=item.id, _external=True)
-            data.append((get_lines(item), item_url))
+        items = list(Model.objects.filter(association=g.assoc))
+        data = [(get_lines(item), url_for(request.blueprint + '.show', id=item.id, _external=True))
+                for item in items]
         pdf_bytes = make_stickers_pdf(data)
+        for item in items:
+            item.sticker_printed = True
+            item.save()
         return send_file(
             io.BytesIO(pdf_bytes),
             mimetype='application/pdf',

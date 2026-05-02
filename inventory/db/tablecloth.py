@@ -1,4 +1,4 @@
-from mongoengine import Document, IntField, ListField, ReferenceField, StringField
+from mongoengine import BooleanField, Document, IntField, ListField, ReferenceField, StringField
 
 from .association import Association
 from .game import Game
@@ -12,6 +12,7 @@ class Tablecloth(Document):
     category = StringField(required=True)
     quantity        = IntField(default=1)
     borrowing_count = IntField(default=0)
+    sticker_printed = BooleanField(default=False)
     type = StringField(required=True)
     material = StringField(choices=TABLECLOTH_MATERIALS)
     game = ReferenceField(Game, required=True)

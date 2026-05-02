@@ -68,6 +68,7 @@ def edit(id):
         item.theater = request.form.get('theater', '')
         item.quantity = int(request.form.get('quantity') or 1)
         item.location = Location.objects.get(id=request.form['location'])
+        item.sticker_printed = 'sticker_printed' in request.form
         item.save()
         flash('Terrain updated.', 'success')
         return redirect(url_for('terrains.show', id=item.id))
