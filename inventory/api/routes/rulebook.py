@@ -14,6 +14,7 @@ register_image_routes(bp, Rulebook)
 
 def _refs():
     return dict(
+        default_category='Rulebook',
         categories=CATEGORIES,
         games=Game.objects.order_by('name'),
         locations=Location.objects.filter(association=g.assoc),

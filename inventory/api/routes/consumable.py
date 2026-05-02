@@ -13,6 +13,7 @@ register_image_routes(bp, Consumable)
 
 def _refs():
     return dict(
+        default_category='Consumable',
         categories=CATEGORIES,
         locations=Location.objects.filter(association=g.assoc),
     )

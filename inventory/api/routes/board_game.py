@@ -13,6 +13,7 @@ register_image_routes(bp, BoardGame)
 
 def _refs():
     return dict(
+        default_category='Board Game',
         categories=CATEGORIES,
         locations=Location.objects.filter(association=g.assoc),
     )

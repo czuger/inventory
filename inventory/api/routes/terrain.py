@@ -14,6 +14,7 @@ register_image_routes(bp, Terrain)
 
 def _refs():
     return dict(
+        default_category='Terrain',
         categories=CATEGORIES,
         games=Game.objects.order_by('name'),
         scales=SCALES,

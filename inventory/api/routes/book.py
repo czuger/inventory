@@ -13,6 +13,7 @@ register_image_routes(bp, Book)
 
 def _refs():
     return dict(
+        default_category='Book',
         categories=CATEGORIES,
         locations=Location.objects.filter(association=g.assoc),
     )

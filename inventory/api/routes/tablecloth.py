@@ -14,6 +14,7 @@ register_image_routes(bp, Tablecloth)
 
 def _refs():
     return dict(
+        default_category='Tablecloth',
         categories=CATEGORIES,
         games=Game.objects.order_by('name'),
         sizes=TABLECLOTH_SIZES,

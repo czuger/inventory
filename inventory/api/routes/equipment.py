@@ -13,6 +13,7 @@ register_image_routes(bp, Equipment)
 
 def _refs():
     return dict(
+        default_category='Equipment',
         categories=CATEGORIES,
         locations=Location.objects.filter(association=g.assoc),
     )

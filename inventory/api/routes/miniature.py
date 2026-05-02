@@ -14,6 +14,7 @@ register_image_routes(bp, Miniature)
 
 def _refs():
     return dict(
+        default_category='Miniature',
         categories=CATEGORIES,
         games=Game.objects.order_by('name'),
         scales=SCALES,
