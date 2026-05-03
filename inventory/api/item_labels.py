@@ -55,3 +55,54 @@ def get_list_row(item_type, item):
     if item_type == 'consumable':
         return (item.type, item.unit or '', item.quantity, loc)
     return (str(item.id), '', item.quantity, loc)
+
+
+_TYPE_BLUEPRINT_MAP = {
+    'miniature':  'miniatures',
+    'terrain':    'terrains',
+    'tablecloth': 'tablecloths',
+    'rulebook':   'rulebooks',
+    'board_game': 'board_games',
+    'book':       'books',
+    'equipment':  'equipment',
+    'consumable': 'consumables',
+}
+
+_type_model_map = None
+
+
+def _get_type_model_map():
+    global _type_model_map
+    if _type_model_map is None:
+        from inventory.db.board_game import BoardGame
+        from inventory.db.book import Book
+        from inventory.db.consumable import Consumable
+        from inventory.db.equipment import Equipment
+        from inventory.db.miniature import Miniature
+        from inventory.db.rulebook import Rulebook
+        from inventory.db.tablecloth import Tablecloth
+        from inventory.db.terrain import Terrain
+        _type_model_map = {
+            'miniature':  Miniature,
+            'terrain':    Terrain,
+            'tablecloth': Tablecloth,
+            'rulebook':   Rulebook,
+            'board_game': BoardGame,
+            'book':       Book,
+            'equipment':  Equipment,
+            'consumable': Consumable,
+        }
+    return _type_model_map
+
+
+def get_item_display(item_type, item_id):
+    """Returns (label, endpoint) or (None, None) if the item doesn't exist."""
+    Model = _get_type_model_map().get(item_type)
+    if not Model:
+        return None, None
+    item = Model.objects(id=item_id).first()
+    if not item:
+        return None, None
+    name, details, _, _ = get_list_row(item_type, item)
+    label = f"{name} – {details}" if details else name
+    return label, f"{_TYPE_BLUEPRINT_MAP[item_type]}.show"

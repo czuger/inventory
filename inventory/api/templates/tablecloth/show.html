@@ -68,6 +68,29 @@
 </form>
 {% endif %}
 <hr>
+{% set dup_links = get_duplicate_links(item.id, 'tablecloth') %}
+{% if dup_links or admin %}
+<h5>{{ t.suspected_duplicates }}</h5>
+{% if dup_links %}
+<ul class="list-unstyled mb-2">
+    {% for dup in dup_links %}
+    <li class="d-flex align-items-center gap-2 mb-1">
+        <a href="{{ url_for(dup.endpoint, id=dup.other_id) }}">{{ dup.label }}</a>
+        {% if admin %}
+        <form method="post"
+              action="{{ url_for(request.blueprint ~ '.delete_duplicate', id=item.id, link_id=dup.link_id) }}"
+              class="d-inline">
+            <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-1"><i class="bi bi-x"></i></button>
+        </form>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="text-muted small">{{ t.no_suspected_duplicates }}</p>
+{% endif %}
+{% endif %}
+<hr>
 {% if current_user %}
 {% set borrow = get_borrow_status(item.id, 'tablecloth') %}
 <div class="mt-3 mb-3">

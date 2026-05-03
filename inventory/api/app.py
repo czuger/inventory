@@ -3,12 +3,14 @@ import logging
 from flask import Flask, g, redirect, request, session, url_for
 
 from inventory.api.oauth import oauth
+from inventory.api.item_labels import get_item_display
 from inventory.api.routes import (
     auth, board_game, book, consumable, equipment, miniature, print_page, rulebook, tablecloth, terrain,
 )
 from inventory.api.translations import TRANSLATIONS
 from inventory.db.association import Association
 from inventory.db.borrowing import Borrowing
+from inventory.db.duplicate_link import DuplicateLink
 from inventory.db.user import User
 from inventory.libs.initialization import initialize
 
@@ -67,6 +69,32 @@ def create_app(test: bool = False) -> Flask:
     @_app.template_global()
     def get_borrow_history(item_id, item_type):
         return list(Borrowing.objects(item_id=str(item_id), item_type=item_type).order_by('-date'))
+
+    @_app.template_global()
+    def get_duplicate_links(item_id, item_type):
+        assoc = getattr(g, 'assoc', None)
+        links = DuplicateLink.objects(association=assoc).filter(
+            __raw__={'$or': [
+                {'item1_id': str(item_id), 'item1_type': item_type},
+                {'item2_id': str(item_id), 'item2_type': item_type},
+            ]}
+        )
+        result = []
+        for link in links:
+            if link.item1_id == str(item_id) and link.item1_type == item_type:
+                other_id, other_type = link.item2_id, link.item2_type
+            else:
+                other_id, other_type = link.item1_id, link.item1_type
+            label, endpoint = get_item_display(other_type, other_id)
+            if label is None:
+                continue
+            result.append({
+                'link_id':  str(link.id),
+                'label':    label,
+                'endpoint': endpoint,
+                'other_id': other_id,
+            })
+        return result
 
     @_app.route('/set-language/<lang>')
     def set_language(lang):

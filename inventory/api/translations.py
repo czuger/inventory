@@ -124,6 +124,12 @@ TRANSLATIONS = {
         'borrower':            'Borrower',
         'action':              'Action',
 
+        'suspected_duplicates':      'Suspected Duplicates',
+        'no_suspected_duplicates':   'No suspected duplicates.',
+        'add_duplicate':             'Add suspected duplicate',
+        'duplicate_url_placeholder': 'Paste item URL here…',
+        'remove_duplicate':          'Remove',
+
         'print':             'Print',
         'print_stickers':    'Print stickers',
         'print_new_stickers':'Print new stickers',
@@ -258,6 +264,12 @@ TRANSLATIONS = {
         'date':                'Date',
         'borrower':            'Emprunteur',
         'action':              'Action',
+
+        'suspected_duplicates':      'Doublons suspectés',
+        'no_suspected_duplicates':   'Aucun doublon suspecté.',
+        'add_duplicate':             'Ajouter un doublon suspecté',
+        'duplicate_url_placeholder': "Coller l'URL de l'article ici…",
+        'remove_duplicate':          'Supprimer',
 
         'print':             'Impression',
         'print_stickers':    'Imprimer les étiquettes',

@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
 from inventory.api.item_labels import get_sticker_lines
-from inventory.api.utils import register_assoc_hooks, register_borrow_routes, register_image_routes, register_sticker_routes
+from inventory.api.utils import register_assoc_hooks, register_borrow_routes, register_duplicate_routes, register_image_routes, register_sticker_routes
 from inventory.db.board_game import BoardGame
 from inventory.db.constants import CATEGORIES
 from inventory.db.location import Location
@@ -11,6 +11,7 @@ bp = Blueprint('board_games', __name__, url_prefix='/<slug>/board-games')
 register_assoc_hooks(bp)
 register_image_routes(bp, BoardGame)
 register_borrow_routes(bp, 'board_game', BoardGame)
+register_duplicate_routes(bp, 'board_game', BoardGame)
 register_sticker_routes(bp, BoardGame, lambda item: get_sticker_lines('board_game', item))
 
 

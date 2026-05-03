@@ -48,4 +48,39 @@
         <a href="{{ url_for('equipment.index') }}" class="btn btn-outline-secondary">{{ t.cancel }}</a>
     </div>
 </form>
+{% if obj and admin %}
+<hr class="mt-4">
+<h5>{{ t.suspected_duplicates }}</h5>
+{% set dup_links = get_duplicate_links(obj.id, 'equipment') %}
+{% if dup_links %}
+<ul class="list-unstyled mb-3">
+    {% for dup in dup_links %}
+    <li class="d-flex align-items-center gap-2 mb-1">
+        <a href="{{ url_for(dup.endpoint, id=dup.other_id) }}" target="_blank">{{ dup.label }}</a>
+        <form method="post"
+              action="{{ url_for(request.blueprint ~ '.delete_duplicate', id=obj.id, link_id=dup.link_id) }}"
+              class="d-inline">
+            <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-1">
+                <i class="bi bi-x"></i> {{ t.remove_duplicate }}
+            </button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="text-muted small">{{ t.no_suspected_duplicates }}</p>
+{% endif %}
+<form method="post"
+      action="{{ url_for(request.blueprint ~ '.add_duplicate', id=obj.id) }}"
+      class="d-flex gap-2 align-items-center mt-2"
+      style="max-width: 600px;">
+    <input type="text" name="duplicate_url"
+           class="form-control form-control-sm"
+           placeholder="{{ t.duplicate_url_placeholder }}"
+           required>
+    <button type="submit" class="btn btn-sm btn-outline-secondary text-nowrap">
+        <i class="bi bi-plus"></i> {{ t.add_duplicate }}
+    </button>
+</form>
+{% endif %}
 {% endblock %}

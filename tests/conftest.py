@@ -5,6 +5,7 @@ from inventory.db.association import Association
 from inventory.db.board_game import BoardGame
 from inventory.db.book import Book
 from inventory.db.borrowing import Borrowing
+from inventory.db.duplicate_link import DuplicateLink
 from inventory.db.consumable import Consumable
 from inventory.db.equipment import Equipment
 from inventory.db.game import Game
@@ -38,14 +39,14 @@ def db(app):
     admin = User(discord_id='100', username='admin_user', is_admin=True).save()
     user  = User(discord_id='200', username='plain_user', is_admin=False).save()
     yield dict(assoc=assoc, game=game, loc=loc, admin=admin, user=user)
-    for Model in ALL_ITEM_MODELS + [Borrowing, Location, User, Game, Association]:
+    for Model in ALL_ITEM_MODELS + [Borrowing, DuplicateLink, Location, User, Game, Association]:
         Model.objects.delete()
 
 
 @pytest.fixture(autouse=True)
 def clean_items(db):
     yield
-    for Model in ALL_ITEM_MODELS + [Borrowing]:
+    for Model in ALL_ITEM_MODELS + [Borrowing, DuplicateLink]:
         Model.objects.delete()
 
 

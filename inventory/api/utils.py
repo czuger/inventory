@@ -2,13 +2,36 @@ import io
 import os
 import uuid
 
-from flask import abort, current_app, g, redirect, request, send_file, url_for
+from flask import abort, current_app, flash, g, redirect, request, send_file, url_for
 from werkzeug.utils import secure_filename
 
 from inventory.api.pdf import make_stickers_pdf
 from inventory.db.association import Association
 from inventory.db.borrowing import Borrowing
 from inventory.libs.get_or_404 import get_or_404
+
+_SLUG_TO_TYPE = {
+    'miniatures':  'miniature',
+    'terrains':    'terrain',
+    'tablecloths': 'tablecloth',
+    'rulebooks':   'rulebook',
+    'board-games': 'board_game',
+    'books':       'book',
+    'equipment':   'equipment',
+    'consumables': 'consumable',
+}
+
+
+def _parse_item_url(url_string):
+    """Returns (item_type, item_id) parsed from an item URL, or (None, None)."""
+    from urllib.parse import urlparse
+    try:
+        parts = [p for p in urlparse(url_string.strip()).path.split('/') if p]
+        if len(parts) < 3:
+            return None, None
+        return _SLUG_TO_TYPE.get(parts[1]), parts[2]
+    except Exception:
+        return None, None
 
 
 def register_assoc_hooks(bp):
@@ -93,6 +116,60 @@ def register_borrow_routes(bp, item_type, Model):
         item.borrowing_count = max(0, (item.borrowing_count or 0) - 1)
         item.save()
         return redirect(request.referrer)
+
+
+def register_duplicate_routes(bp, item_type, Model):
+    from inventory.api.item_labels import get_item_display
+    from inventory.db.duplicate_link import DuplicateLink
+
+    @bp.route('/<id>/duplicates', methods=['POST'])
+    def add_duplicate(id):
+        if not (getattr(g, 'current_user', None) and g.current_user.is_admin):
+            abort(403)
+        item = get_or_404(Model, id)
+        other_type, other_id = _parse_item_url(request.form.get('duplicate_url', ''))
+        fallback = request.referrer or url_for(f'{request.blueprint}.show', id=id)
+        if other_type is None or not other_id:
+            flash('Invalid item URL.', 'danger')
+            return redirect(fallback)
+        if other_type == item_type and other_id == str(item.id):
+            flash('Cannot link an item to itself.', 'warning')
+            return redirect(fallback)
+        existing = DuplicateLink.objects(association=g.assoc).filter(
+            __raw__={'$or': [
+                {'item1_id': str(item.id), 'item1_type': item_type,
+                 'item2_id': other_id,     'item2_type': other_type},
+                {'item1_id': other_id,     'item1_type': other_type,
+                 'item2_id': str(item.id), 'item2_type': item_type},
+            ]}
+        ).first()
+        if existing:
+            flash('This link already exists.', 'warning')
+            return redirect(fallback)
+        label, _ = get_item_display(other_type, other_id)
+        if label is None:
+            flash('Linked item not found.', 'danger')
+            return redirect(fallback)
+        DuplicateLink(
+            association=g.assoc,
+            item1_id=str(item.id),
+            item1_type=item_type,
+            item2_id=other_id,
+            item2_type=other_type,
+        ).save()
+        flash('Suspected duplicate link added.', 'success')
+        return redirect(fallback)
+
+    @bp.route('/<id>/duplicates/<link_id>/delete', methods=['POST'])
+    def delete_duplicate(id, link_id):
+        if not (getattr(g, 'current_user', None) and g.current_user.is_admin):
+            abort(403)
+        get_or_404(Model, id)
+        link = DuplicateLink.objects(id=link_id).first()
+        if link:
+            link.delete()
+            flash('Duplicate link removed.', 'success')
+        return redirect(request.referrer or url_for(f'{request.blueprint}.show', id=id))
 
 
 def register_sticker_routes(bp, Model, get_lines):
