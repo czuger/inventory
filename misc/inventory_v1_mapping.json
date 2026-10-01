@@ -1,0 +1,1107 @@
+{
+ "_comment": "Hand-curated: which rows of the old extraction (application tables, as seeded by misc/seed_grognards.py) come from which lines of the sheet (ids of data/xlsx_extract/inventory_v2.json). misc/compare_inventory_v1.py refuses to run unless every old row and every new item is accounted for exactly once and every old_name still matches the database.",
+ "links": [
+  {
+   "old": "tablecloths:1",
+   "old_name": "Nappe floquée",
+   "new": [
+    "NA:r4"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "tablecloths:2",
+   "old_name": "Nappe tissu",
+   "new": [
+    "NA:r5"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "tablecloths:3",
+   "old_name": "Nappe mousse",
+   "new": [
+    "NA:r6"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "tablecloths:4",
+   "old_name": "Nappe mousse",
+   "new": [
+    "NA:r7"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "tablecloths:5",
+   "old_name": "Nappe mousse",
+   "new": [
+    "NA:r8"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "tablecloths:6",
+   "old_name": "Nappe mousse",
+   "new": [
+    "NA:r9"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "tablecloths:7",
+   "old_name": "Nappe mousse désert",
+   "new": [
+    "NA:r10"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "tablecloths:8",
+   "old_name": "Nappe mousse glace",
+   "new": [
+    "NA:r11"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "tablecloths:9",
+   "old_name": "Nappe mousse feu",
+   "new": [
+    "NA:r12"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "tablecloths:10",
+   "old_name": "Nappe mousse désert/plage",
+   "new": [
+    "NA:r13"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "tablecloths:11",
+   "old_name": "Nappe mousse Star Wars",
+   "new": [
+    "NA:r14"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "tablecloths:12",
+   "old_name": "Nappe ADG",
+   "new": [
+    "NA:r15"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "tablecloths:13",
+   "old_name": "Nappe ADG",
+   "new": [
+    "NA:r16"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:1",
+   "old_name": "Plaques mélaminées peintes/floquées 50x50 (avec rivière)",
+   "new": [
+    "F1:r17"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:2",
+   "old_name": "Plaques polystyrène floquées 60x60 – steppe",
+   "new": [
+    "F1:r18"
+   ],
+   "relation": "split",
+   "note": "v1 split \"11 + 8 + 9\" / \"steppe + plage + neige\" into three rows, one per finish"
+  },
+  {
+   "old": "terrains:3",
+   "old_name": "Plaques polystyrène floquées 60x60 – plage",
+   "new": [
+    "F1:r18"
+   ],
+   "relation": "split",
+   "note": "see terrains:2"
+  },
+  {
+   "old": "terrains:4",
+   "old_name": "Plaques polystyrène floquées 60x60 – neige",
+   "new": [
+    "F1:r18"
+   ],
+   "relation": "split",
+   "note": "see terrains:2"
+  },
+  {
+   "old": "terrains:5",
+   "old_name": "Bâtiments est-européens",
+   "new": [
+    "F1:r25"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:6",
+   "old_name": "Bâtiments ruines",
+   "new": [
+    "F1:r26"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:7",
+   "old_name": "Bâtiments médiévaux (panières)",
+   "new": [
+    "F1:r40"
+   ],
+   "relation": "exact",
+   "note": "the sheet counts \"2 panières\"; v1 put \"(panières)\" in the name and stored quantity 1"
+  },
+  {
+   "old": "terrains:8",
+   "old_name": "Murs (1,5m)",
+   "new": [
+    "F1:r41"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:9",
+   "old_name": "Temple antique",
+   "new": [
+    "F1:r42"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:10",
+   "old_name": "Temple grec",
+   "new": [
+    "F1:r43"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:11",
+   "old_name": "Temple Gondor",
+   "new": [
+    "F1:r44"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:12",
+   "old_name": "Tour féodale",
+   "new": [
+    "F1:r45"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:13",
+   "old_name": "Tour médiévale",
+   "new": [
+    "F1:r46"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:14",
+   "old_name": "Maisons 20e siècle + routes",
+   "new": [
+    "F1:r47",
+    "F1:r48"
+   ],
+   "relation": "merged",
+   "note": "v1 merged \"9 maisons\" (row 47) and \"2-3m routes\" (row 48), both remarked \"20e siècle\""
+  },
+  {
+   "old": "terrains:15",
+   "old_name": "Mur de la mine",
+   "new": [
+    "F1:r49"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:16",
+   "old_name": "Tombeau de Balin",
+   "new": [
+    "F1:r50"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:17",
+   "old_name": "Arène cirque Jugula",
+   "new": [
+    "F1:r51"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:18",
+   "old_name": "Décors désert (2 boîtes)",
+   "new": [
+    "F1:r52"
+   ],
+   "relation": "exact",
+   "note": "the sheet counts \"2 boites\"; v1 put the count in the name and stored quantity 1"
+  },
+  {
+   "old": "terrains:19",
+   "old_name": "Décors Asie",
+   "new": [
+    "F1:r53"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:20",
+   "old_name": "Arbres (dont sapins)",
+   "new": [
+    "F1:r54"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:21",
+   "old_name": "Table Stalingrad",
+   "new": [
+    "F1:r56"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:22",
+   "old_name": "Table France occupée",
+   "new": [
+    "F1:r57"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:23",
+   "old_name": "Table maisons allemagne + gare",
+   "new": [
+    "F1:r58"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:24",
+   "old_name": "Décors Malifaux",
+   "new": [
+    "F1:r60"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:25",
+   "old_name": "Décors Briskars",
+   "new": [
+    "F1:r61"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "terrains:26",
+   "old_name": "Fig Symbiotique",
+   "new": [
+    "F1:r62"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:1",
+   "old_name": "Armada – Alliance & Empire (2 cartons + 1 panière)",
+   "new": [
+    "F1:r69",
+    "F1:r70"
+   ],
+   "relation": "merged",
+   "note": "v1 added \"2 cartons\" (row 69) and \"1 panière\" (row 70) into quantity 3"
+  },
+  {
+   "old": "miniatures:2",
+   "old_name": "Armada – Conflit Corélien (campagne)",
+   "new": [
+    "F1:r71"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:3",
+   "old_name": "Armada – Destroyer stellaire",
+   "new": [
+    "F1:r72"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:4",
+   "old_name": "Armada – Phoenix Home",
+   "new": [
+    "F1:r73"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:5",
+   "old_name": "Uruk-aï",
+   "new": [
+    "F1:r76"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:6",
+   "old_name": "Gobelins",
+   "new": [
+    "F1:r77"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:7",
+   "old_name": "Trolls",
+   "new": [
+    "F1:r78"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:8",
+   "old_name": "Haradrims (dont 1 Mamelik)",
+   "new": [
+    "F1:r79"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:9",
+   "old_name": "Rohans",
+   "new": [
+    "F1:r80"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:10",
+   "old_name": "Elfes",
+   "new": [
+    "F1:r81"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:11",
+   "old_name": "Aventuriers",
+   "new": [
+    "F1:r82"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:12",
+   "old_name": "Age de la Magie – squelettes",
+   "new": [
+    "F1:r86"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:13",
+   "old_name": "Age des Invasions – piétons et cavaliers",
+   "new": [
+    "F1:r87"
+   ],
+   "relation": "exact",
+   "note": "v1 quantity 37 = 33 piétons + 4 cavaliers"
+  },
+  {
+   "old": "miniatures:14",
+   "old_name": "Figurines + décors CONGO",
+   "new": [
+    "F1:r93"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:15",
+   "old_name": "Battlegroup USA (en guêtres) + M4A1 + half-track",
+   "new": [
+    "F1:r97"
+   ],
+   "relation": "exact",
+   "note": "v1 quantity 62 = \"60 env\" + \"1 M4A1\" + \"1 HT\" taken from the remark"
+  },
+  {
+   "old": "miniatures:16",
+   "old_name": "Compagnie chars USA (à monter)",
+   "new": [
+    "F1:r100"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "miniatures:17",
+   "old_name": "Maquettes FOW",
+   "new": [
+    "F1:r101"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "rulebooks:1",
+   "old_name": "SAGA V2",
+   "new": [
+    "F1:r84"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "rulebooks:2",
+   "old_name": "SAGA – Age de la Magie",
+   "new": [
+    "F1:r85"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "rulebooks:3",
+   "old_name": "SAGA – Age d'Hannibal",
+   "new": [
+    "F1:r88"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "rulebooks:4",
+   "old_name": "SAGA – Croissant & Croix",
+   "new": [
+    "F1:r89"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "rulebooks:5",
+   "old_name": "CONGO",
+   "new": [
+    "F1:r94"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "rulebooks:6",
+   "old_name": "Au contact",
+   "new": [
+    "F1:r122"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "rulebooks:7",
+   "old_name": "Field of Glory V2",
+   "new": [
+    "F1:r123"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "rulebooks:8",
+   "old_name": "V for Victory",
+   "new": [
+    "F1:r124"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "rulebooks:9",
+   "old_name": "Art de la Guerre V4",
+   "new": [
+    "F1:r125"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "rulebooks:10",
+   "old_name": "Sails of Glory",
+   "new": [
+    "F1:r118"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:1",
+   "old_name": "Guerre de l'Anneau",
+   "new": [
+    "F1:r104"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:2",
+   "old_name": "Britannia",
+   "new": [
+    "F1:r105"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:3",
+   "old_name": "An Mil",
+   "new": [
+    "F1:r106"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:4",
+   "old_name": "Barbe Noire",
+   "new": [
+    "F1:r107"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:5",
+   "old_name": "Empire",
+   "new": [
+    "F1:r108"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:6",
+   "old_name": "Diplomacy",
+   "new": [
+    "F1:r109"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:7",
+   "old_name": "Power",
+   "new": [
+    "F1:r110"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:8",
+   "old_name": "Bounty Hunter – Shoot at the Saloon",
+   "new": [
+    "F1:r111"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:9",
+   "old_name": "Aces of Aces",
+   "new": [
+    "F1:r112"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:10",
+   "old_name": "Wanted",
+   "new": [
+    "F1:r113"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:11",
+   "old_name": "Strike",
+   "new": [
+    "F1:r114"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:12",
+   "old_name": "Formule D",
+   "new": [
+    "F1:r115"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:13",
+   "old_name": "Battle for Britain – Blood Red Skies",
+   "new": [
+    "F1:r116"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:14",
+   "old_name": "Handicap Race",
+   "new": [
+    "F1:r117"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "board_games:15",
+   "old_name": "Sails of Glory (4 boîtes bateaux)",
+   "new": [
+    "F1:r119"
+   ],
+   "relation": "exact",
+   "note": "the sheet counts \"4  boites\"; v1 put the count in the name and stored quantity 1"
+  },
+  {
+   "old": "equipment:1",
+   "old_name": "Machine à café (3 filtres + 1 dosettes)",
+   "new": [
+    "F1:r131"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:2",
+   "old_name": "Thermos (2 café + 1 eau chaude)",
+   "new": [
+    "F1:r132"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:3",
+   "old_name": "Plastifieuse",
+   "new": [
+    "F1:r133"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:4",
+   "old_name": "Rétroprojecteur",
+   "new": [
+    "F1:r134"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:5",
+   "old_name": "Rallonge électrique (1×20m + 1×25m)",
+   "new": [
+    "F1:r135"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:6",
+   "old_name": "Multiprise",
+   "new": [
+    "F1:r136"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:7",
+   "old_name": "Radio CD",
+   "new": [
+    "F1:r137"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:8",
+   "old_name": "Caméra Sony FDR-AX43",
+   "new": [
+    "F1:r138"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:9",
+   "old_name": "Pied caméra Neewer 177cm",
+   "new": [
+    "F1:r141"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:10",
+   "old_name": "Lumières + pieds",
+   "new": [
+    "F1:r139",
+    "F1:r142"
+   ],
+   "relation": "merged",
+   "note": "v1 merged the lights (row 139, \"chez le Préz\") and their stands (row 142)"
+  },
+  {
+   "old": "equipment:11",
+   "old_name": "Carte SSD",
+   "new": [
+    "F1:r143"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:12",
+   "old_name": "Caissette avec clé",
+   "new": [
+    "F1:r146"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:13",
+   "old_name": "Épée bâtarde en acier (Espagne)",
+   "new": [
+    "F1:r149"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:14",
+   "old_name": "Vitrine tout en verre",
+   "new": [
+    "F1:r150"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:15",
+   "old_name": "Coffre à roulettes (plaques 120cm)",
+   "new": [
+    "F1:r151"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:16",
+   "old_name": "Mètre-ruban rouge 2m",
+   "new": [
+    "F1:r152"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:17",
+   "old_name": "Dés à 6 faces",
+   "new": [
+    "F1:r153"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:18",
+   "old_name": "Règle métallique 60cm",
+   "new": [
+    "F1:r154"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:19",
+   "old_name": "Ciseaux à poulets magnétiques",
+   "new": [
+    "F1:r156"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:20",
+   "old_name": "Pintes de bière",
+   "new": [
+    "F1:r157"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:21",
+   "old_name": "Marteau",
+   "new": [
+    "F1:r159"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:22",
+   "old_name": "Balai",
+   "new": [
+    "F1:r160"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "equipment:23",
+   "old_name": "Poubelle avec tri",
+   "new": [
+    "F1:r162"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "consumables:1",
+   "old_name": "Barres chocolatées",
+   "new": [
+    "F1:r184"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "consumables:2",
+   "old_name": "Café",
+   "new": [
+    "F1:r186"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "consumables:3",
+   "old_name": "Jus d'orange",
+   "new": [
+    "F1:r187"
+   ],
+   "relation": "exact"
+  },
+  {
+   "old": "consumables:4",
+   "old_name": "Filtres à café (boîtes de 80)",
+   "new": [
+    "F1:r188"
+   ],
+   "relation": "exact"
+  }
+ ],
+ "unmapped_old": [
+  {
+   "old": "miniatures:18",
+   "old_name": "Maison européennes",
+   "reason": "added by hand in the application after the seed; not in misc/seed_grognards.py and no row of the sheet states it (nearest: Feuil1 row 24, \"batîments ouest européens\", which has no quantity and no place)"
+  }
+ ],
+ "unmapped_new": [
+  {
+   "new": "F1:r6",
+   "reason": "not_canonical",
+   "detail": "Feuil1 tablecloth row; v1 was built from the Nappes rows that refine it"
+  },
+  {
+   "new": "F1:r7",
+   "reason": "not_canonical",
+   "detail": "Feuil1 tablecloth row; v1 was built from the Nappes rows that refine it"
+  },
+  {
+   "new": "F1:r8",
+   "reason": "not_canonical",
+   "detail": "Feuil1 tablecloth row; v1 was built from the Nappes rows that refine it"
+  },
+  {
+   "new": "F1:r9",
+   "reason": "not_canonical",
+   "detail": "Feuil1 tablecloth row; v1 was built from the Nappes rows that refine it"
+  },
+  {
+   "new": "F1:r10",
+   "reason": "not_canonical",
+   "detail": "Feuil1 tablecloth row; v1 was built from the Nappes rows that refine it"
+  },
+  {
+   "new": "F1:r11",
+   "reason": "not_canonical",
+   "detail": "Feuil1 tablecloth row; v1 was built from the Nappes rows that refine it"
+  },
+  {
+   "new": "F1:r12",
+   "reason": "not_canonical",
+   "detail": "Feuil1 tablecloth row; v1 was built from the Nappes rows that refine it"
+  },
+  {
+   "new": "F1:r13",
+   "reason": "not_canonical",
+   "detail": "Feuil1 tablecloth row; v1 was built from the Nappes rows that refine it"
+  },
+  {
+   "new": "F1:r14",
+   "reason": "not_canonical",
+   "detail": "Feuil1 tablecloth row; v1 was built from the Nappes rows that refine it"
+  },
+  {
+   "new": "F1:r19",
+   "reason": "struck",
+   "detail": "struck through in the sheet; v1 rightly left it out"
+  },
+  {
+   "new": "F1:r20",
+   "reason": "struck",
+   "detail": "struck through in the sheet; v1 rightly left it out"
+  },
+  {
+   "new": "F1:r24",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r27",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r28",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r29",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r30",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r31",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r32",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r33",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r34",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r35",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r36",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r37",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r38",
+   "reason": "placeholder",
+   "detail": "a kind of 15mm scenery named without quantity or place"
+  },
+  {
+   "new": "F1:r161",
+   "reason": "zero",
+   "detail": "the sheet counts zero"
+  },
+  {
+   "new": "F1:r90",
+   "reason": "dropped",
+   "detail": "sets de 8 dés (SAGA)"
+  },
+  {
+   "new": "F1:r102",
+   "reason": "dropped",
+   "detail": "Flames of War scenery: 1 camp prisonniers"
+  },
+  {
+   "new": "F1:r144",
+   "reason": "dropped",
+   "detail": "the X on the heading \"1.5.matériel divers\""
+  },
+  {
+   "new": "F1:r155",
+   "reason": "dropped",
+   "detail": "fournitures de bureau"
+  },
+  {
+   "new": "F1:r158",
+   "reason": "dropped",
+   "detail": "couteaux, fourchettes, louches…"
+  },
+  {
+   "new": "F1:r164",
+   "reason": "dropped",
+   "detail": "1.6.matériel peinture"
+  },
+  {
+   "new": "F1:r167",
+   "reason": "dropped",
+   "detail": "cadeaux potentiels"
+  },
+  {
+   "new": "F1:r168",
+   "reason": "dropped",
+   "detail": "cadeaux potentiels"
+  },
+  {
+   "new": "F1:r169",
+   "reason": "dropped",
+   "detail": "cadeaux potentiels"
+  },
+  {
+   "new": "F1:r170",
+   "reason": "dropped",
+   "detail": "cadeaux potentiels"
+  },
+  {
+   "new": "F1:r172",
+   "reason": "dropped",
+   "detail": "cadeaux potentiels"
+  },
+  {
+   "new": "F1:r173",
+   "reason": "dropped",
+   "detail": "cadeaux potentiels"
+  },
+  {
+   "new": "F1:r174",
+   "reason": "dropped",
+   "detail": "cadeaux potentiels"
+  },
+  {
+   "new": "F1:r176",
+   "reason": "dropped",
+   "detail": "cadeaux potentiels"
+  },
+  {
+   "new": "F1:r177",
+   "reason": "dropped",
+   "detail": "cadeaux potentiels"
+  },
+  {
+   "new": "F1:r178",
+   "reason": "dropped",
+   "detail": "cadeaux potentiels"
+  },
+  {
+   "new": "F1:r180",
+   "reason": "dropped",
+   "detail": "stock de figurines à vendre"
+  },
+  {
+   "new": "F1:r181",
+   "reason": "dropped",
+   "detail": "stock de figurines à vendre: the listing line"
+  }
+ ]
+}

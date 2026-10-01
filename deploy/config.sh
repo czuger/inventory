@@ -119,7 +119,9 @@ upload_remote_script() {
 # validate it before restarting nginx. Used by setup_server.sh and `make nginx`;
 # no deploy ever calls it — routing does not change between versions.
 install_nginx_conf() {
-  local template="$REPO_ROOT/deploy/nginx/$NGINX_CONF_NAME.template"
+  # One template for every instance: all that differs between them is in the
+  # placeholders. Only the deployed file is named after the instance.
+  local template="$REPO_ROOT/deploy/nginx/inventory.conf.template"
   local rendered="$REPO_ROOT/dist/$NGINX_CONF_NAME"
 
   [ -f "$template" ] || { echo "error: $template not found" >&2; return 1; }
