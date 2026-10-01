@@ -1,1 +1,0 @@
-docker network create app-inventory

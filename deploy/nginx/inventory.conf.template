@@ -1,0 +1,54 @@
+# nginx snippet for this app — a `location` block, meant to be included by the
+# server{} that already owns server_name and TLS. It is uploaded to
+# NGINX_CONF_DIR on the server by `make setup` / `make nginx`, never by a deploy.
+#
+# Do not edit the deployed copy on the server: it is rendered from this template
+# and overwritten. The __PLACEHOLDERS__ come from deploy/config.sh, so the prefix,
+# container name and port cannot drift from what the deploy actually runs.
+
+# https://<host>__PREFIX__ (no trailing slash) would otherwise miss the block below.
+location = __PREFIX__ { return 301 __PREFIX__/; }
+
+location __PREFIX__/ {
+    # By container name: the app publishes no port and is only reachable on the
+    # shared docker network both containers are attached to.
+    #
+    # Resolved per request, NOT at startup — that is the whole point of putting the
+    # host in a variable, and it buys three things:
+    #   - `nginx -t` passes before the app has ever been deployed (a literal name
+    #     is a parse-time lookup: "host not found in upstream");
+    #   - nginx still starts when the app is down (a literal name would abort it,
+    #     taking down every other site behind this proxy);
+    #   - each deploy recreates the container with a NEW IP, and nginx picks it up
+    #     within `valid=` instead of caching the dead one until restarted.
+    # 127.0.0.11 is docker's embedded DNS, present on any user-defined network.
+    #
+    # This `set` MUST come before the `rewrite ... break;` below: `break` stops
+    # processing of the rest of the rewrite-module directives in this location, so
+    # a `set` placed after it never runs and the variable stays empty — nginx then
+    # fails every request with "no host in upstream ':__APP_PORT__'".
+    resolver 127.0.0.11 valid=10s ipv6=off;
+    set $upstream___CONTAINER_VAR__ __CONTAINER__;
+
+    # The app is mounted at the root inside the container, so strip the prefix.
+    # It still builds its links under __PREFIX__ because the container is started
+    # with URL_PREFIX set from the same deploy/config.sh that rendered this file.
+    rewrite ^__PREFIX__/(.*)$ /$1 break;
+
+    proxy_pass http://$upstream___CONTAINER_VAR__:__APP_PORT__;
+
+    proxy_set_header Host              $host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # Item photos are uploaded straight from a phone camera, several at a time.
+    # nginx's default is 1m, which rejects a single modern photo with a bare 413
+    # long before the app sees the request.
+    client_max_body_size 32m;
+
+    # /<slug>/print/stickers renders a QR code per item and can walk the whole
+    # inventory in one request; the default 60s proxy read timeout is the limit
+    # that would bite first.
+    proxy_read_timeout 120s;
+}

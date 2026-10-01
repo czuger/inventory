@@ -1,4 +1,5 @@
 import logging
+import os
 
 from flask import Flask, g, redirect, request, session, url_for
 
@@ -27,6 +28,38 @@ logging.getLogger("flask").setLevel(logging.INFO)
 logging.getLogger("pymongo").setLevel(logging.INFO)
 
 
+def mounted_under(wsgi_app, prefix):
+    """Tell the app it is served under `prefix` (e.g. `/inventory`), in production.
+
+    The proxy strips the prefix before forwarding, so routing already matches —
+    but `url_for()`, redirects and static URLs would come out at the site root,
+    outside the proxied location. SCRIPT_NAME is the WSGI way to say "this is the
+    part of the URL that got you here", and Flask prepends it when building URLs.
+
+    That matters more here than in most apps: every item blueprint is mounted at
+    `/<slug>/...` and `register_assoc_hooks` re-injects the slug through
+    `url_defaults`, so essentially every link on every page is generated rather
+    than written out. Get SCRIPT_NAME wrong and the whole site links to itself
+    outside the prefix.
+
+    It is also what makes the Discord callback work: `url_for('auth.callback',
+    _external=True)` has to produce the exact redirect URI registered on the
+    Discord application, prefix included.
+
+    PATH_INFO is deliberately left untouched: the proxy already stripped it, and
+    stripping again would corrupt paths that happen to start with the same word.
+    (That is also why gunicorn's SCRIPT_NAME env var is not usable here — it does
+    strip PATH_INFO.)
+    """
+    prefix = "/" + prefix.strip("/")
+
+    def wrapper(environ, start_response):
+        environ["SCRIPT_NAME"] = prefix
+        return wsgi_app(environ, start_response)
+
+    return wrapper
+
+
 def create_app(test: bool = False) -> Flask:
     _app = Flask(__name__)
 
@@ -34,6 +67,13 @@ def create_app(test: bool = False) -> Flask:
     _app = app_context.app
     _app.secret_key = app_context.secret_key
     config = app_context.config
+
+    # Where the proxy serves us from, handed over by deploy/remote.sh from the
+    # same deploy/config.sh that rendered the nginx snippet. Unset in dev and
+    # ignored under `test`, so both stay at the root.
+    url_prefix = "" if test else os.environ.get("URL_PREFIX", "").strip().strip("/")
+    if url_prefix:
+        _app.wsgi_app = mounted_under(_app.wsgi_app, url_prefix)
 
     oauth.init_app(_app)
     oauth.register(
@@ -112,6 +152,20 @@ def create_app(test: bool = False) -> Flask:
     _app.register_blueprint(equipment.bp)
     _app.register_blueprint(consumable.bp)
     _app.register_blueprint(print_page.bp)
+
+    @_app.route("/health")
+    def health():
+        """What the deploy gates on: `docker exec` probes this from inside the
+        container after every start (deploy/remote.sh), and the image's
+        HEALTHCHECK hits the same path.
+
+        Deliberately does NOT touch MongoDB. It answers the only question the
+        deploy can act on — did gunicorn come up with this image — and a probe
+        that also failed when the database blinked would roll back a perfectly
+        good release. It is registered at the root, so URL_PREFIX (which only
+        changes generated URLs) leaves its path alone.
+        """
+        return "ok", 200, {"Content-Type": "text/plain"}
 
     @_app.route("/")
     def index():
