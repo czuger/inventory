@@ -1,7 +1,9 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from sqlalchemy import select
 
 from inventory.api.item_labels import get_sticker_lines
 from inventory.api.utils import register_assoc_hooks, register_borrow_routes, register_duplicate_routes, register_image_routes, register_sticker_routes
+from inventory.db.base import db
 from inventory.db.constants import CATEGORIES
 from inventory.db.game import Game
 from inventory.db.location import Location
@@ -20,18 +22,18 @@ def _refs():
     return dict(
         default_category='Rulebook',
         categories=CATEGORIES,
-        games=Game.objects.order_by('name'),
-        locations=Location.objects.filter(association=g.assoc),
+        games=db.session.scalars(select(Game).order_by(Game.name)).all(),
+        locations=db.session.scalars(select(Location).filter_by(association=g.assoc)).all(),
     )
 
 
 @bp.route('/')
 def index():
-    items = Rulebook.objects.filter(association=g.assoc)
+    items = db.session.scalars(select(Rulebook).filter_by(association=g.assoc)).all()
     return render_template('rulebook/list.html', items=items)
 
 
-@bp.route('/<id>')
+@bp.route('/<int:id>')
 def show(id):
     item = get_or_404(Rulebook, id)
     return render_template('rulebook/show.html', item=item)
@@ -44,38 +46,40 @@ def create():
             association=g.assoc,
             category=request.form['category'],
             name=request.form['name'],
-            game=Game.objects.get(id=request.form['game']),
+            game=get_or_404(Game, request.form['game']),
             supplement='supplement' in request.form,
             quantity=int(request.form.get('quantity') or 1),
-            location=Location.objects.get(id=request.form['location']),
+            location=get_or_404(Location, request.form['location']),
         )
-        item.save()
+        db.session.add(item)
+        db.session.commit()
         flash('Rulebook created.', 'success')
         return redirect(url_for('rulebooks.show', id=item.id))
     return render_template('rulebook/form.html', obj=None, action=url_for('rulebooks.create'), **_refs())
 
 
-@bp.route('/<id>/edit', methods=['GET', 'POST'])
+@bp.route('/<int:id>/edit', methods=['GET', 'POST'])
 def edit(id):
     item = get_or_404(Rulebook, id)
     if request.method == 'POST':
         item.association = g.assoc
         item.category = request.form['category']
         item.name = request.form['name']
-        item.game = Game.objects.get(id=request.form['game'])
+        item.game = get_or_404(Game, request.form['game'])
         item.supplement = 'supplement' in request.form
         item.quantity = int(request.form.get('quantity') or 1)
-        item.location = Location.objects.get(id=request.form['location'])
+        item.location = get_or_404(Location, request.form['location'])
         item.sticker_printed = 'sticker_printed' in request.form
-        item.save()
+        db.session.commit()
         flash('Rulebook updated.', 'success')
         return redirect(url_for('rulebooks.show', id=item.id))
     return render_template('rulebook/form.html', obj=item, action=url_for('rulebooks.edit', id=item.id), **_refs())
 
 
-@bp.route('/<id>/delete', methods=['POST'])
+@bp.route('/<int:id>/delete', methods=['POST'])
 def delete(id):
     item = get_or_404(Rulebook, id)
-    item.delete()
+    db.session.delete(item)
+    db.session.commit()
     flash('Rulebook deleted.', 'success')
     return redirect(url_for('rulebooks.index'))

@@ -2,7 +2,8 @@
 #
 # It carries code only: config.json and secret_key.txt are mounted from the
 # server's config/ directory at run time — see deploy/remote.sh. Nothing here ever
-# bakes in a credential, which is why .dockerignore drops both files.
+# bakes in a credential, which is why .dockerignore drops both files. Nor any data:
+# the SQLite database lives in the server's data/db/, mounted at /app/data.
 #
 # No `--platform` is pinned here on purpose: deploy.sh passes the *server's*
 # architecture on the build command line (TARGET_PLATFORM, default linux/amd64),
@@ -27,6 +28,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY inventory/ ./inventory/
 COPY misc/set_admin.py ./misc/set_admin.py
 
+# The migrations. A deploy runs them from this image (`python -m
+# inventory.db.migrate`, see deploy/remote.sh) before starting it.
+COPY alembic.ini ./
+COPY alembic/ ./alembic/
+
 # inventory/libs/initialization.py locates the project root by walking up until it
 # finds one of requirements.txt / .git / README.md, and then reads config.json and
 # secret_key.txt from there. requirements.txt above lands in /app, which is what
@@ -34,13 +40,14 @@ COPY misc/set_admin.py ./misc/set_admin.py
 # app looks for them.
 
 # Non-root. The uid is fixed (not auto-assigned) because the server bind-mounts
-# data/uploads onto the uploads directory and has to chown it to the same uid —
-# remote.sh does it before every container start, from a throwaway root container
-# so no host privileges are needed. Without that, saving a photo fails with EACCES
-# (and only then: the deploy and /health both stay green).
+# data/uploads and data/db onto the two directories below and has to chown them to
+# the same uid — remote.sh does it before every container start, from a throwaway
+# root container so no host privileges are needed. Without that, saving a photo
+# fails with EACCES, and SQLite cannot even open the database (it creates its
+# -wal and -shm files next to it, so it needs the directory, not just the file).
 RUN useradd --system --uid 10001 --shell /usr/sbin/nologin appuser \
-    && mkdir -p /app/inventory/api/static/uploads \
-    && chown -R appuser:appuser /app/inventory/api/static/uploads
+    && mkdir -p /app/inventory/api/static/uploads /app/data \
+    && chown -R appuser:appuser /app/inventory/api/static/uploads /app/data
 USER appuser
 
 # No EXPOSE and no published port anywhere: the container runs on its own docker
@@ -52,9 +59,10 @@ USER appuser
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"
 
-# 2 workers, threads left at 1: mongoengine keeps a connection per process and the
-# work here is short request/response, apart from PDF generation which is CPU-bound
-# and gains nothing from threads.
+# 2 workers, threads left at 1: the work here is short request/response, apart
+# from PDF generation which is CPU-bound and gains nothing from threads. Two
+# processes sharing one SQLite file is fine in WAL mode — readers never block, and
+# a writer waits (busy_timeout) for the other's write to finish.
 #
 # --forwarded-allow-ips is what makes `url_for(..., _external=True)` build https://
 # URLs: gunicorn only honours nginx's X-Forwarded-Proto when the client IP is

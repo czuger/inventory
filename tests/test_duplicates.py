@@ -1,22 +1,22 @@
 from inventory.db.board_game import BoardGame
 from inventory.db.duplicate_link import DuplicateLink
 from inventory.db.miniature import Miniature
-from tests.conftest import login, logout
+from tests.conftest import count, first, login, logout, save
 
 
 def _make_mini(db, **kwargs):
-    return Miniature(
+    return save(Miniature(
         association=db['assoc'], category='Miniature',
         type='Infantry', game=db['game'], scale='28mm',
         quantity=1, location=db['loc'], **kwargs,
-    ).save()
+    ))
 
 
 def _make_board_game(db, **kwargs):
-    return BoardGame(
+    return save(BoardGame(
         association=db['assoc'], category='Board Game',
         name='Catan', quantity=1, location=db['loc'], **kwargs,
-    ).save()
+    ))
 
 
 def _mini_url(item):
@@ -35,10 +35,10 @@ def test_add_duplicate_link(client, db):
                     data={'duplicate_url': _mini_url(b)},
                     follow_redirects=True)
     assert r.status_code == 200
-    assert DuplicateLink.objects.count() == 1
-    link = DuplicateLink.objects.first()
-    assert link.item1_id == str(a.id)
-    assert link.item2_id == str(b.id)
+    assert count(DuplicateLink) == 1
+    link = first(DuplicateLink)
+    assert link.item1_id == a.id
+    assert link.item2_id == b.id
 
 
 def test_add_duplicate_requires_admin(client, db):
@@ -48,7 +48,7 @@ def test_add_duplicate_requires_admin(client, db):
     r = client.post(f'/test/miniatures/{a.id}/duplicates',
                     data={'duplicate_url': _mini_url(b)})
     assert r.status_code == 403
-    assert DuplicateLink.objects.count() == 0
+    assert count(DuplicateLink) == 0
 
 
 def test_add_duplicate_rejects_self_link(client, db):
@@ -57,7 +57,7 @@ def test_add_duplicate_rejects_self_link(client, db):
     client.post(f'/test/miniatures/{a.id}/duplicates',
                 data={'duplicate_url': _mini_url(a)},
                 follow_redirects=True)
-    assert DuplicateLink.objects.count() == 0
+    assert count(DuplicateLink) == 0
 
 
 def test_add_duplicate_rejects_double_link(client, db):
@@ -70,7 +70,7 @@ def test_add_duplicate_rejects_double_link(client, db):
     client.post(f'/test/miniatures/{a.id}/duplicates',
                 data={'duplicate_url': _mini_url(b)},
                 follow_redirects=True)
-    assert DuplicateLink.objects.count() == 1
+    assert count(DuplicateLink) == 1
 
 
 def test_add_duplicate_rejects_reverse_double_link(client, db):
@@ -83,7 +83,7 @@ def test_add_duplicate_rejects_reverse_double_link(client, db):
     client.post(f'/test/miniatures/{b.id}/duplicates',
                 data={'duplicate_url': _mini_url(a)},
                 follow_redirects=True)
-    assert DuplicateLink.objects.count() == 1
+    assert count(DuplicateLink) == 1
 
 
 def test_add_duplicate_invalid_url(client, db):
@@ -92,17 +92,17 @@ def test_add_duplicate_invalid_url(client, db):
     client.post(f'/test/miniatures/{a.id}/duplicates',
                 data={'duplicate_url': 'not-a-url'},
                 follow_redirects=True)
-    assert DuplicateLink.objects.count() == 0
+    assert count(DuplicateLink) == 0
 
 
 def test_add_duplicate_nonexistent_item(client, db):
     a = _make_mini(db)
     login(client, db['admin'])
-    fake_id = '000000000000000000000000'
+    fake_id = 999999
     client.post(f'/test/miniatures/{a.id}/duplicates',
                 data={'duplicate_url': f'http://localhost/test/miniatures/{fake_id}'},
                 follow_redirects=True)
-    assert DuplicateLink.objects.count() == 0
+    assert count(DuplicateLink) == 0
 
 
 def test_delete_duplicate_link(client, db):
@@ -112,24 +112,24 @@ def test_delete_duplicate_link(client, db):
     client.post(f'/test/miniatures/{a.id}/duplicates',
                 data={'duplicate_url': _mini_url(b)},
                 follow_redirects=True)
-    link = DuplicateLink.objects.first()
+    link = first(DuplicateLink)
     r = client.post(f'/test/miniatures/{a.id}/duplicates/{link.id}/delete',
                     follow_redirects=True)
     assert r.status_code == 200
-    assert DuplicateLink.objects.count() == 0
+    assert count(DuplicateLink) == 0
 
 
 def test_delete_duplicate_requires_admin(client, db):
     a = _make_mini(db)
     b = _make_mini(db)
-    link = DuplicateLink(
-        association=db['assoc'], item1_id=str(a.id), item1_type='miniature',
-        item2_id=str(b.id), item2_type='miniature',
-    ).save()
+    link = save(DuplicateLink(
+        association=db['assoc'], item1_id=a.id, item1_type='miniature',
+        item2_id=b.id, item2_type='miniature',
+    ))
     login(client, db['user'])
     r = client.post(f'/test/miniatures/{a.id}/duplicates/{link.id}/delete')
     assert r.status_code == 403
-    assert DuplicateLink.objects.count() == 1
+    assert count(DuplicateLink) == 1
 
 
 def test_duplicate_link_is_bidirectional(client, db):
@@ -143,8 +143,8 @@ def test_duplicate_link_is_bidirectional(client, db):
     r = client.get(f'/test/miniatures/{b.id}', follow_redirects=True)
     assert r.status_code == 200
     # The link must be findable when querying from b's perspective
-    link = DuplicateLink.objects.first()
-    assert (link.item2_id == str(b.id) or link.item1_id == str(b.id))
+    link = first(DuplicateLink)
+    assert (link.item2_id == b.id or link.item1_id == b.id)
 
 
 def test_cross_type_duplicate(client, db):
@@ -155,8 +155,8 @@ def test_cross_type_duplicate(client, db):
                     data={'duplicate_url': _board_game_url(bg)},
                     follow_redirects=True)
     assert r.status_code == 200
-    assert DuplicateLink.objects.count() == 1
-    link = DuplicateLink.objects.first()
+    assert count(DuplicateLink) == 1
+    link = first(DuplicateLink)
     assert link.item1_type == 'miniature'
     assert link.item2_type == 'board_game'
 

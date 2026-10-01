@@ -1,20 +1,17 @@
-from mongoengine import BooleanField, Document, IntField, ListField, ReferenceField, StringField
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .association import Association
+from .base import db
 from .game import Game
-from .location import Location
+from .item import ItemMixin, item_table_args
 
 
-class Rulebook(Document):
-    association = ReferenceField(Association, required=True)
-    category = StringField(required=True)
-    name = StringField(required=True)
-    game = ReferenceField(Game, required=True)
-    supplement = BooleanField(default=False)
-    quantity        = IntField(default=1)
-    borrowing_count = IntField(default=0)
-    sticker_printed = BooleanField(default=False)
-    location = ReferenceField(Location, required=True)
-    images = ListField(StringField(), default=list)
+class Rulebook(ItemMixin, db.Model):
+    __tablename__ = 'rulebooks'
+    __table_args__ = item_table_args()
 
-    meta = {'collection': 'rulebooks'}
+    name:       Mapped[str]
+    game_id:    Mapped[int]  = mapped_column(ForeignKey('games.id'))
+    supplement: Mapped[bool] = mapped_column(default=False)
+
+    game: Mapped[Game] = relationship(lazy='joined')

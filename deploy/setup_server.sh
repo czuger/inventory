@@ -24,8 +24,9 @@ fi
 ssh "$SSH_HOST" 'docker --version'
 
 # 2. Directory layout: releases/ (tarballs), config/ (secrets, ours to never touch),
-#    data/uploads/ (the item photos, the only thing the container writes).
-echo "==> Creating $REMOTE_DIR/{releases,config,data/uploads}"
+#    data/uploads/ (the item photos) and data/db/ (the SQLite database) — the only
+#    two things the container writes.
+echo "==> Creating $REMOTE_DIR/{releases,config,data/uploads,data/db}"
 ssh "$SSH_HOST" "mkdir -p '$REMOTE_DIR'"
 upload_remote_script
 remote init
@@ -54,6 +55,8 @@ Layout ready on $SSH_HOST:$REMOTE_DIR
   releases/     deployed .tar images (last $KEEP_RELEASES kept)
   config/       config.json + secret_key.txt — server-owned, no deploy writes here
   data/uploads/ the item photos, mounted at /app/inventory/api/static/uploads
+  data/db/      the SQLite database (+ backups/ taken before each migration),
+                mounted at /app/data — every deploy migrates it before starting
 
 The app publishes no port. It joins nginx's shared '$DOCKER_NETWORK' network and
 answers there at http://$CONTAINER_NAME:$APP_PORT, which is what
@@ -77,11 +80,6 @@ random key per worker, so nobody stays logged in:
   python3 -c "import secrets; print(secrets.token_hex(32))" > secret_key.txt
 
 In that server-side config.json, remember to:
-  - point mongo.server at MongoDB as the CONTAINER sees it:
-      "$MONGO_NETWORK" joined  ->  the mongo container's name
-      MONGO_NETWORK=''         ->  "host.docker.internal"
-        (the container is started with --add-host=host.docker.internal:host-gateway;
-         mongod must then listen on the docker bridge, not on 127.0.0.1 only)
   - set discord.client_id / client_secret, and add the redirect URI
       https://<your-host>${URL_PREFIX%/}/auth/discord/callback
     to the Discord application — OAuth rejects any callback not listed there.

@@ -1,7 +1,12 @@
-from mongoengine import Document, StringField
+from sqlalchemy.orm import Mapped, mapped_column
+
+from .base import STRICT, db
 
 
-class Association(Document):
-    name = StringField(required=True, unique=True)
-    slug = StringField(required=True, unique=True)
-    meta = {'collection': 'associations'}
+class Association(db.Model):
+    __tablename__ = 'associations'
+    __table_args__ = STRICT
+
+    id:   Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(unique=True)
+    slug: Mapped[str] = mapped_column(unique=True)

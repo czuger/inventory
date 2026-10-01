@@ -1,19 +1,13 @@
-from mongoengine import BooleanField, Document, IntField, ListField, ReferenceField, StringField
+from sqlalchemy.orm import Mapped
 
-from .association import Association
-from .location import Location
+from .base import db
+from .item import ItemMixin, item_table_args
 
 
-class Book(Document):
-    association = ReferenceField(Association, required=True)
-    category = StringField(required=True)
-    name = StringField(required=True)
-    universe = StringField()
-    period = StringField()
-    quantity        = IntField(default=1)
-    borrowing_count = IntField(default=0)
-    sticker_printed = BooleanField(default=False)
-    location = ReferenceField(Location, required=True)
-    images = ListField(StringField(), default=list)
+class Book(ItemMixin, db.Model):
+    __tablename__ = 'books'
+    __table_args__ = item_table_args()
 
-    meta = {'collection': 'books'}
+    name:     Mapped[str]
+    universe: Mapped[str | None]
+    period:   Mapped[str | None]

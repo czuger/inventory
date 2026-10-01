@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 from flask import redirect as flask_redirect
 
 from inventory.db.user import User
-from tests.conftest import login
+from tests.conftest import count, first, login, reload, remove, save
 
 
 def test_logout_clears_session(client, db):
@@ -38,39 +38,39 @@ def test_callback_creates_new_user(client, db):
         mock_oauth.discord.get.return_value = resp
         r = client.get('/auth/discord/callback', follow_redirects=False)
     assert r.status_code == 302
-    user = User.objects(discord_id='999').first()
+    user = first(User, discord_id='999')
     assert user is not None
     assert user.username == 'newplayer'
     assert user.display_name == 'New Player'
     with client.session_transaction() as sess:
-        assert sess.get('user_id') == str(user.id)
-    user.delete()
+        assert sess.get('user_id') == user.id
+    remove(user)
 
 
 def test_callback_updates_existing_user(client, db):
-    existing = User(discord_id='888', username='old_name', is_admin=False).save()
+    existing = save(User(discord_id='888', username='old_name', is_admin=False))
     with patch('inventory.api.routes.auth.oauth') as mock_oauth:
         mock_oauth.discord.authorize_access_token.return_value = {'access_token': 'tok'}
         resp = MagicMock()
         resp.json.return_value = {'id': '888', 'username': 'new_name', 'global_name': None}
         mock_oauth.discord.get.return_value = resp
         client.get('/auth/discord/callback', follow_redirects=False)
-    existing.reload()
+    reload(existing)
     assert existing.username == 'new_name'
     assert existing.display_name is None
-    existing.delete()
+    remove(existing)
 
 
 def test_callback_no_update_if_unchanged(client, db):
-    existing = User(discord_id='777', username='stable', display_name='Stable').save()
+    existing = save(User(discord_id='777', username='stable', display_name='Stable'))
     with patch('inventory.api.routes.auth.oauth') as mock_oauth:
         mock_oauth.discord.authorize_access_token.return_value = {'access_token': 'tok'}
         resp = MagicMock()
         resp.json.return_value = {'id': '777', 'username': 'stable', 'global_name': 'Stable'}
         mock_oauth.discord.get.return_value = resp
         client.get('/auth/discord/callback', follow_redirects=False)
-    assert User.objects(discord_id='777').count() == 1
-    existing.delete()
+    assert count(User, discord_id='777') == 1
+    remove(existing)
 
 
 def test_language_switch_to_en(client, db):

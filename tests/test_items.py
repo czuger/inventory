@@ -9,18 +9,18 @@ from inventory.db.miniature import Miniature
 from inventory.db.rulebook import Rulebook
 from inventory.db.tablecloth import Tablecloth
 from inventory.db.terrain import Terrain
-from tests.conftest import login, logout
+from tests.conftest import count, login, reload, save
 
 ITEM_CONFIGS = [
     dict(
         item_type='miniature',
         Model=Miniature,
         prefix='miniatures',
-        make=lambda db: Miniature(
+        make=lambda db: save(Miniature(
             association=db['assoc'], category='Miniature',
             type='Infantry', game=db['game'], scale='28mm',
             quantity=2, location=db['loc'],
-        ).save(),
+        )),
         form=lambda db: dict(
             category='Miniature', type='Infantry',
             game=str(db['game'].id), scale='28mm',
@@ -32,11 +32,11 @@ ITEM_CONFIGS = [
         item_type='terrain',
         Model=Terrain,
         prefix='terrains',
-        make=lambda db: Terrain(
+        make=lambda db: save(Terrain(
             association=db['assoc'], category='Terrain',
             type='Forest', game=db['game'], scale='28mm',
             quantity=1, location=db['loc'],
-        ).save(),
+        )),
         form=lambda db: dict(
             category='Terrain', type='Forest',
             game=str(db['game'].id), scale='28mm',
@@ -48,11 +48,11 @@ ITEM_CONFIGS = [
         item_type='tablecloth',
         Model=Tablecloth,
         prefix='tablecloths',
-        make=lambda db: Tablecloth(
+        make=lambda db: save(Tablecloth(
             association=db['assoc'], category='Tablecloth',
             type='Green Field', game=db['game'], size='120x180',
             quantity=1, location=db['loc'],
-        ).save(),
+        )),
         form=lambda db: dict(
             category='Tablecloth', type='Green Field',
             game=str(db['game'].id), size='120x180',
@@ -64,11 +64,11 @@ ITEM_CONFIGS = [
         item_type='rulebook',
         Model=Rulebook,
         prefix='rulebooks',
-        make=lambda db: Rulebook(
+        make=lambda db: save(Rulebook(
             association=db['assoc'], category='Rulebook',
             name='Core Rules', game=db['game'], supplement=False,
             quantity=1, location=db['loc'],
-        ).save(),
+        )),
         form=lambda db: dict(
             category='Rulebook', name='Core Rules',
             game=str(db['game'].id), quantity='1',
@@ -80,10 +80,10 @@ ITEM_CONFIGS = [
         item_type='board_game',
         Model=BoardGame,
         prefix='board-games',
-        make=lambda db: BoardGame(
+        make=lambda db: save(BoardGame(
             association=db['assoc'], category='Board Game',
             name='Chess', quantity=1, location=db['loc'],
-        ).save(),
+        )),
         form=lambda db: dict(
             category='Board Game', name='Chess',
             quantity='1', location=str(db['loc'].id),
@@ -94,10 +94,10 @@ ITEM_CONFIGS = [
         item_type='book',
         Model=Book,
         prefix='books',
-        make=lambda db: Book(
+        make=lambda db: save(Book(
             association=db['assoc'], category='Book',
             name='War History', quantity=1, location=db['loc'],
-        ).save(),
+        )),
         form=lambda db: dict(
             category='Book', name='War History',
             quantity='1', location=str(db['loc'].id),
@@ -108,10 +108,10 @@ ITEM_CONFIGS = [
         item_type='equipment',
         Model=Equipment,
         prefix='equipment',
-        make=lambda db: Equipment(
+        make=lambda db: save(Equipment(
             association=db['assoc'], category='Equipment',
             type='Brush', quantity=1, location=db['loc'],
-        ).save(),
+        )),
         form=lambda db: dict(
             category='Equipment', type='Brush',
             quantity='1', location=str(db['loc'].id),
@@ -122,10 +122,10 @@ ITEM_CONFIGS = [
         item_type='consumable',
         Model=Consumable,
         prefix='consumables',
-        make=lambda db: Consumable(
+        make=lambda db: save(Consumable(
             association=db['assoc'], category='Consumable',
             type='Paint', quantity=3, location=db['loc'],
-        ).save(),
+        )),
         form=lambda db: dict(
             category='Consumable', type='Paint',
             quantity='3', location=str(db['loc'].id),
@@ -150,7 +150,7 @@ class TestItemCRUD:
         r = client.post(f'/test/{cfg["prefix"]}/new',
                         data=cfg['form'](db), follow_redirects=True)
         assert r.status_code == 200
-        assert cfg['Model'].objects(association=db['assoc']).count() == 1
+        assert count(cfg['Model'], association=db['assoc']) == 1
 
     def test_show(self, client, db, cfg):
         item = cfg['make'](db)
@@ -167,14 +167,14 @@ class TestItemCRUD:
         r = client.post(f'/test/{cfg["prefix"]}/{item.id}/edit',
                         data=form, follow_redirects=True)
         assert r.status_code == 200
-        item.reload()
+        reload(item)
         assert getattr(item, field) == new_val
 
     def test_delete(self, client, db, cfg):
         item = cfg['make'](db)
         login(client, db['admin'])
         client.post(f'/test/{cfg["prefix"]}/{item.id}/delete')
-        assert cfg['Model'].objects(id=item.id).count() == 0
+        assert count(cfg['Model'], id=item.id) == 0
 
     def test_create_requires_admin(self, client, db, cfg):
         login(client, db['user'])
@@ -199,20 +199,20 @@ class TestItemCRUD:
         login(client, db['user'])
         client.post(f'/test/{cfg["prefix"]}/{item.id}/borrow',
                     follow_redirects=True)
-        item.reload()
+        reload(item)
         assert item.borrowing_count == 1
-        assert Borrowing.objects(item_id=str(item.id), action='borrow').count() == 1
+        assert count(Borrowing, item_id=item.id, action='borrow') == 1
 
     def test_return(self, client, db, cfg):
         item = cfg['make'](db)
         item.borrowing_count = 1
-        item.save()
+        save(item)
         login(client, db['user'])
         client.post(f'/test/{cfg["prefix"]}/{item.id}/return',
                     follow_redirects=True)
-        item.reload()
+        reload(item)
         assert item.borrowing_count == 0
-        assert Borrowing.objects(item_id=str(item.id), action='return').count() == 1
+        assert count(Borrowing, item_id=item.id, action='return') == 1
 
     def test_borrow_requires_auth(self, client, db, cfg):
         item = cfg['make'](db)
@@ -226,27 +226,27 @@ class TestItemCRUD:
         r = client.get(f'/test/{cfg["prefix"]}/stickers')
         assert r.status_code == 200
         assert r.content_type == 'application/pdf'
-        item.reload()
+        reload(item)
         assert item.sticker_printed
 
     def test_edit_resets_sticker(self, client, db, cfg):
         item = cfg['make'](db)
         item.sticker_printed = True
-        item.save()
+        save(item)
         login(client, db['admin'])
         client.post(f'/test/{cfg["prefix"]}/{item.id}/edit',
                     data=cfg['form'](db), follow_redirects=True)
-        item.reload()
+        reload(item)
         assert not item.sticker_printed
 
     def test_edit_keeps_sticker_when_checked(self, client, db, cfg):
         item = cfg['make'](db)
         item.sticker_printed = True
-        item.save()
+        save(item)
         login(client, db['admin'])
         form = dict(cfg['form'](db))
         form['sticker_printed'] = 'on'
         client.post(f'/test/{cfg["prefix"]}/{item.id}/edit',
                     data=form, follow_redirects=True)
-        item.reload()
+        reload(item)
         assert item.sticker_printed

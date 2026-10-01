@@ -1,16 +1,26 @@
 from datetime import datetime
 
-from mongoengine import DateTimeField, Document, ReferenceField, StringField
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from inventory.db.association import Association
+from .association import Association
+from .base import STRICT, db, utcnow
 
 
-class DuplicateLink(Document):
-    association = ReferenceField(Association, required=True)
-    item1_id    = StringField(required=True)
-    item1_type  = StringField(required=True)
-    item2_id    = StringField(required=True)
-    item2_type  = StringField(required=True)
-    created_at  = DateTimeField(required=True, default=datetime.utcnow)
+class DuplicateLink(db.Model):
+    """An undirected "these two items may be the same" link: always query both ends.
 
-    meta = {'collection': 'duplicate_links'}
+    Like Borrowing, the (item_type, item_id) pairs cannot carry a foreign key.
+    """
+    __tablename__ = 'duplicate_links'
+    __table_args__ = STRICT
+
+    id:             Mapped[int]      = mapped_column(primary_key=True, autoincrement=True)
+    association_id: Mapped[int]      = mapped_column(ForeignKey('associations.id'), index=True)
+    item1_id:       Mapped[int]
+    item1_type:     Mapped[str]
+    item2_id:       Mapped[int]
+    item2_type:     Mapped[str]
+    created_at:     Mapped[datetime] = mapped_column(default=utcnow)
+
+    association: Mapped[Association] = relationship()

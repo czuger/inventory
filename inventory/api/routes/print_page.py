@@ -1,10 +1,12 @@
 import io
 
 from flask import Blueprint, abort, g, render_template, request, send_file, url_for
+from sqlalchemy import select
 
 from inventory.api.item_labels import get_list_row, get_sticker_lines
 from inventory.api.pdf import make_list_pdf, make_stickers_pdf
 from inventory.api.utils import register_assoc_hooks
+from inventory.db.base import db
 from inventory.db.board_game import BoardGame
 from inventory.db.book import Book
 from inventory.db.constants import CATEGORIES
@@ -58,7 +60,7 @@ def stickers():
     for item_type, cat_name, Model, bp_name in ITEM_TYPES:
         if category and cat_name != category:
             continue
-        for item in Model.objects.filter(association=g.assoc):
+        for item in db.session.scalars(select(Model).filter_by(association=g.assoc)):
             if new_only and item.sticker_printed:
                 continue
             item_url = url_for(bp_name + '.show', id=item.id, _external=True)
@@ -67,7 +69,7 @@ def stickers():
     pdf_bytes = make_stickers_pdf(data)
     for item in to_mark:
         item.sticker_printed = True
-        item.save()
+    db.session.commit()
     return send_file(io.BytesIO(pdf_bytes), mimetype='application/pdf',
                      as_attachment=False, download_name='stickers.pdf')
 
@@ -79,7 +81,7 @@ def print_list():
     for item_type, cat_name, Model, _ in ITEM_TYPES:
         if category and cat_name != category:
             continue
-        for item in Model.objects.filter(association=g.assoc):
+        for item in db.session.scalars(select(Model).filter_by(association=g.assoc)):
             if new_only and item.sticker_printed:
                 continue
             rows.append(get_list_row(item_type, item))

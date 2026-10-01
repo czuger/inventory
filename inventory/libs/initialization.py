@@ -5,7 +5,8 @@ import secrets
 from dataclasses import dataclass
 
 from flask import Flask
-from mongoengine import connect, disconnect_all
+
+from inventory.db.base import db
 
 
 @dataclass
@@ -75,33 +76,46 @@ def load_secret_key() -> str:
         return secrets.token_hex(32)
 
 
+def database_url(test: bool = False) -> str:
+    """The SQLAlchemy URL of the database, shared by the app, Alembic and the scripts.
+
+    `DATABASE_URL` wins when set, except under `test`, which must never be pointed
+    at real data by a stray environment variable. Otherwise it is a SQLite file in
+    <project root>/data/ — /app/data/ in the container, where deploy/remote.sh
+    mounts the server's data/db/ directory. The directory, not the file: WAL keeps
+    two companion files (-wal, -shm) next to the database.
+
+    Args:
+        test: If True, use the test database instead.
+
+    Returns:
+        str: A SQLAlchemy database URL.
+    """
+    if not test and os.environ.get('DATABASE_URL'):
+        return os.environ['DATABASE_URL']
+    data_dir = os.path.join(find_project_root(), 'data')
+    os.makedirs(data_dir, exist_ok=True)
+    return 'sqlite:///' + os.path.join(data_dir, 'inventory_test.sqlite3' if test else 'inventory.sqlite3')
+
+
 def initialize(app: Flask = None, test: bool = False) -> AppContext:
     """Initialize the application configuration.
 
-    Loads config from config.json and sets up Flask, OpenAI, and MongoDB connections.
+    Loads config from config.json and binds the SQLAlchemy extension to the app.
+    The schema itself is Alembic's job (`alembic upgrade head`), not this one's.
 
     Args:
         app: The Flask application instance to configure.
-        test: If True, disables OpenAI API key and uses a test database.
+        test: If True, uses the test database.
 
     Returns:
-        AppContext: A dataclass containing the configured Flask app, Tweepy API,
-                    Tweepy Client, and configuration dictionary.
+        AppContext: A dataclass containing the configured Flask app, its secret
+                    key and the configuration dictionary.
     """
     config = load_config()
 
-    db_name = config['mongo']['database'] + ('_test' if test else '')
-
-    disconnect_all()
-    connect(
-        db=db_name,
-        host=config['mongo']['server'],
-        port=27017,
-        username=config['mongo']['user'],
-        password=config['mongo']['pass'],
-        authentication_source='admin',
-        uuidRepresentation="standard"
-    )
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url(test)
+    db.init_app(app)
 
     secret_key = load_secret_key()
 

@@ -27,11 +27,12 @@ RELEASES_DIR="$REMOTE_DIR/releases"
 CONFIG_DIR="$REMOTE_DIR/config"
 DATA_DIR="$REMOTE_DIR/data"
 UPLOADS_DIR="$DATA_DIR/uploads"
+DB_DIR="$DATA_DIR/db"
 CURRENT_FILE="$REMOTE_DIR/current_version.txt"
 PREVIOUS_FILE="$REMOTE_DIR/previous_version.txt"
 
-# The uid the image's `appuser` runs as; the uploads directory must be writable
-# by it.
+# The uid the image's `appuser` runs as; the uploads and db directories must be
+# writable by it.
 APP_UID=10001
 
 die() { echo "error: $*" >&2; exit 1; }
@@ -48,8 +49,9 @@ check_network() {
     "docker network '$DOCKER_NETWORK' does not exist — it is nginx's. Existing ones:
 $(docker network ls --format '  {{.Name}}')"
 
-  # Same reasoning for Mongo's network when one is configured: joining a network
-  # mongod is not on would fail at the first query, not at start-up.
+  # Same reasoning for Mongo's network when one is configured. The app itself no
+  # longer uses MongoDB; the network is only joined so that rolling back to a
+  # release from before the move to SQLite still finds its database.
   if [ -n "$MONGO_NETWORK" ]; then
     docker network inspect "$MONGO_NETWORK" >/dev/null 2>&1 || die \
       "docker network '$MONGO_NETWORK' does not exist. Set MONGO_NETWORK='' in
@@ -59,28 +61,46 @@ $(docker network ls --format '  {{.Name}}')"
 
 # --- container -------------------------------------------------------------
 
-# Start (or restart) the app on a given version. This is the single source of
-# truth for how the container is run.
-# Make the bind-mounted uploads/ writable by the image's non-root uid.
+# Make the bind-mounted uploads/ and db/ writable by the image's non-root uid.
 #
 # Docker creates a missing host directory as root:root, and `make setup` can only
-# chown it when passwordless sudo happens to be available — so the directory can
-# end up unwritable while every deploy still looks perfectly healthy, and the
-# failure only shows up as an EACCES the first time someone uploads a photo.
+# chown it when passwordless sudo happens to be available — so a directory can
+# end up unwritable while every deploy still looks perfectly healthy: /health
+# never touches either, and the failure only shows up as an EACCES the first time
+# someone uploads a photo, or as a 500 on every page for the database.
 #
 # No host privileges are needed to fix it: the docker daemon runs as root, so a
-# throwaway container running as uid 0 can chown the very directory that is about
-# to be mounted. The image used is the one being started, which start_container
-# has just checked is loaded.
-ensure_uploads_writable() {
+# throwaway container running as uid 0 can chown the very directories that are
+# about to be mounted. The image used is the one being started, which the callers
+# have just checked is loaded.
+ensure_data_writable() {
   local image="$1"
 
-  # -v creates the host directory (as root) if it does not exist yet, which is
+  # -v creates a host directory (as root) if it does not exist yet, which is
   # exactly the case this then repairs.
-  docker run --rm --user 0 -v "$UPLOADS_DIR:/mnt/uploads" "$image" \
-    chown -R "$APP_UID:$APP_UID" /mnt/uploads >/dev/null \
-    || die "could not make $UPLOADS_DIR writable by uid $APP_UID"
+  docker run --rm --user 0 -v "$UPLOADS_DIR:/mnt/uploads" -v "$DB_DIR:/mnt/db" "$image" \
+    chown -R "$APP_UID:$APP_UID" /mnt/uploads /mnt/db >/dev/null \
+    || die "could not make $UPLOADS_DIR and $DB_DIR writable by uid $APP_UID"
 }
+
+# Bring the database schema up to what an image expects, from that image, in a
+# throwaway container, BEFORE that image is started. inventory.db.migrate backs the
+# database up into data/db/backups/ first whenever there is something to apply,
+# and does nothing otherwise. A migration is a single transaction, so one that
+# fails leaves the database as it was — and the running version keeps serving.
+#
+# Only deploys migrate. A rollback starts the previous image on the schema as it
+# now is: fine for additive migrations, otherwise restore a backup by hand.
+run_migrations() {
+  local image="$1"
+
+  ensure_data_writable "$image"
+  docker run --rm -v "$DB_DIR:/app/data" "$image" python -m inventory.db.migrate \
+    || die "migrations failed on $image — nothing was started, the previous version still runs"
+}
+
+# Start (or restart) the app on a given version. This is the single source of
+# truth for how the container is run.
 
 start_container() {
   local version="$1"
@@ -88,8 +108,8 @@ start_container() {
   docker image inspect "$IMAGE_NAME:$version" >/dev/null 2>&1 \
     || die "image $IMAGE_NAME:$version is not loaded on this server"
 
-  # Before the mount, not after: the app has to find it writable on first request.
-  ensure_uploads_writable "$IMAGE_NAME:$version"
+  # Before the mount, not after: the app has to find them writable on first request.
+  ensure_data_writable "$IMAGE_NAME:$version"
 
   # Both are server-owned and never in the image. Without secret_key.txt the app
   # falls back to a random key per process, which silently logs everyone out on
@@ -126,6 +146,9 @@ start_container() {
     `# rebuilt from scratch every release, so anything written inside the` \
     `# container is gone at the next deploy — these are user data.` \
     -v "$UPLOADS_DIR:/app/inventory/api/static/uploads" \
+    `# The SQLite database. The directory, not the file: WAL mode keeps its` \
+    `# -wal and -shm files next to the database, and backups go in there too.` \
+    -v "$DB_DIR:/app/data" \
     "$IMAGE_NAME:$version" >/dev/null
 
   if [ -n "$MONGO_NETWORK" ]; then
@@ -175,6 +198,9 @@ cmd_activate() {
 
   [ -f "$tarball" ] || die "$tarball not found"
   docker load -i "$tarball"
+
+  # Before any bookkeeping: if this fails, nothing about the deploy has happened.
+  run_migrations "$IMAGE_NAME:$version"
 
   # Version bookkeeping happens *before* the restart: if the new container fails
   # to come up, previous_version.txt already points at what to roll back to.
@@ -275,18 +301,18 @@ cmd_versions() {
   ls -1t "$RELEASES_DIR"/*.tar 2>/dev/null | xargs -r -n1 basename || echo "  (none)"
 }
 
-# One-time server preparation: directory layout + an uploads/ the container can
-# write.
+# One-time server preparation: directory layout + an uploads/ and a db/ the
+# container can write.
 cmd_init() {
-  mkdir -p "$RELEASES_DIR" "$CONFIG_DIR" "$UPLOADS_DIR" 2>/dev/null || true
-  # The app runs as uid 10001 inside the container and saves uploaded images into
-  # the bind-mounted uploads/, so that directory has to belong to that uid. Try it
-  # here for tidiness only — `sudo -n` so a password prompt can never hang a
-  # scripted setup — because every start_container repairs it anyway, from inside
-  # docker and without any host privileges.
-  sudo -n chown -R "$APP_UID:$APP_UID" "$UPLOADS_DIR" 2>/dev/null \
-    || chown -R "$APP_UID:$APP_UID" "$UPLOADS_DIR" 2>/dev/null \
-    || echo "note: $UPLOADS_DIR not chowned here — the first deploy will do it" >&2
+  mkdir -p "$RELEASES_DIR" "$CONFIG_DIR" "$UPLOADS_DIR" "$DB_DIR" 2>/dev/null || true
+  # The app runs as uid 10001 inside the container and writes into the
+  # bind-mounted uploads/ and db/, so both have to belong to that uid. Try it here
+  # for tidiness only — `sudo -n` so a password prompt can never hang a scripted
+  # setup — because every deploy repairs it anyway, from inside docker and without
+  # any host privileges.
+  sudo -n chown -R "$APP_UID:$APP_UID" "$UPLOADS_DIR" "$DB_DIR" 2>/dev/null \
+    || chown -R "$APP_UID:$APP_UID" "$UPLOADS_DIR" "$DB_DIR" 2>/dev/null \
+    || echo "note: $UPLOADS_DIR and $DB_DIR not chowned here — the first deploy will do it" >&2
   chmod 700 "$CONFIG_DIR"
   echo "layout ready under $REMOTE_DIR"
 

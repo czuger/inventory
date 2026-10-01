@@ -1,7 +1,9 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from sqlalchemy import select
 
 from inventory.api.item_labels import get_sticker_lines
 from inventory.api.utils import register_assoc_hooks, register_borrow_routes, register_duplicate_routes, register_image_routes, register_sticker_routes
+from inventory.db.base import db
 from inventory.db.constants import CATEGORIES
 from inventory.db.equipment import Equipment
 from inventory.db.location import Location
@@ -19,17 +21,17 @@ def _refs():
     return dict(
         default_category='Equipment',
         categories=CATEGORIES,
-        locations=Location.objects.filter(association=g.assoc),
+        locations=db.session.scalars(select(Location).filter_by(association=g.assoc)).all(),
     )
 
 
 @bp.route('/')
 def index():
-    items = Equipment.objects.filter(association=g.assoc)
+    items = db.session.scalars(select(Equipment).filter_by(association=g.assoc)).all()
     return render_template('equipment/list.html', items=items)
 
 
-@bp.route('/<id>')
+@bp.route('/<int:id>')
 def show(id):
     item = get_or_404(Equipment, id)
     return render_template('equipment/show.html', item=item)
@@ -43,15 +45,16 @@ def create():
             category=request.form['category'],
             type=request.form['type'],
             quantity=int(request.form.get('quantity') or 1),
-            location=Location.objects.get(id=request.form['location']),
+            location=get_or_404(Location, request.form['location']),
         )
-        item.save()
+        db.session.add(item)
+        db.session.commit()
         flash('Equipment created.', 'success')
         return redirect(url_for('equipment.show', id=item.id))
     return render_template('equipment/form.html', obj=None, action=url_for('equipment.create'), **_refs())
 
 
-@bp.route('/<id>/edit', methods=['GET', 'POST'])
+@bp.route('/<int:id>/edit', methods=['GET', 'POST'])
 def edit(id):
     item = get_or_404(Equipment, id)
     if request.method == 'POST':
@@ -59,17 +62,18 @@ def edit(id):
         item.category = request.form['category']
         item.type = request.form['type']
         item.quantity = int(request.form.get('quantity') or 1)
-        item.location = Location.objects.get(id=request.form['location'])
+        item.location = get_or_404(Location, request.form['location'])
         item.sticker_printed = 'sticker_printed' in request.form
-        item.save()
+        db.session.commit()
         flash('Equipment updated.', 'success')
         return redirect(url_for('equipment.show', id=item.id))
     return render_template('equipment/form.html', obj=item, action=url_for('equipment.edit', id=item.id), **_refs())
 
 
-@bp.route('/<id>/delete', methods=['POST'])
+@bp.route('/<int:id>/delete', methods=['POST'])
 def delete(id):
     item = get_or_404(Equipment, id)
-    item.delete()
+    db.session.delete(item)
+    db.session.commit()
     flash('Equipment deleted.', 'success')
     return redirect(url_for('equipment.index'))

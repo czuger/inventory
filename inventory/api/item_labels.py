@@ -100,8 +100,12 @@ def get_item_display(item_type, item_id):
     Model = _get_type_model_map().get(item_type)
     if not Model:
         return None, None
-    item = Model.objects(id=item_id).first()
-    if not item:
+    from flask import g
+
+    from inventory.db.base import db
+    item = db.session.get(Model, item_id)
+    assoc = getattr(g, 'assoc', None)
+    if not item or (assoc is not None and item.association_id != assoc.id):
         return None, None
     name, details, _, _ = get_list_row(item_type, item)
     label = f"{name} – {details}" if details else name

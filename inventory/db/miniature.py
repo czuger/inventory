@@ -1,20 +1,17 @@
-from mongoengine import BooleanField, Document, IntField, ListField, ReferenceField, StringField
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .association import Association
+from .base import db
 from .game import Game
-from .location import Location
+from .item import ItemMixin, item_table_args
 
 
-class Miniature(Document):
-    association = ReferenceField(Association, required=True)
-    category = StringField(required=True)
-    type = StringField(required=True)
-    game = ReferenceField(Game, required=True)
-    scale = StringField(required=True)
-    quantity        = IntField(default=1)
-    borrowing_count = IntField(default=0)
-    sticker_printed = BooleanField(default=False)
-    location = ReferenceField(Location, required=True)
-    images = ListField(StringField(), default=list)
+class Miniature(ItemMixin, db.Model):
+    __tablename__ = 'miniatures'
+    __table_args__ = item_table_args()
 
-    meta = {'collection': 'miniatures'}
+    type:    Mapped[str]
+    game_id: Mapped[int] = mapped_column(ForeignKey('games.id'))
+    scale:   Mapped[str]
+
+    game: Mapped[Game] = relationship(lazy='joined')

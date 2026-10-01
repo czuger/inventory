@@ -1,17 +1,11 @@
-from mongoengine import BooleanField, Document, IntField, ListField, ReferenceField, StringField
+from sqlalchemy.orm import Mapped
 
-from .association import Association
-from .location import Location
+from .base import db
+from .item import ItemMixin, item_table_args
 
 
-class Equipment(Document):
-    association = ReferenceField(Association, required=True)
-    category = StringField(required=True)
-    type = StringField(required=True)
-    quantity        = IntField(default=1)
-    borrowing_count = IntField(default=0)
-    sticker_printed = BooleanField(default=False)
-    location = ReferenceField(Location, required=True)
-    images = ListField(StringField(), default=list)
+class Equipment(ItemMixin, db.Model):
+    __tablename__ = 'equipment'
+    __table_args__ = item_table_args()
 
-    meta = {'collection': 'equipment'}
+    type: Mapped[str]

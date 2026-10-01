@@ -10,8 +10,10 @@ __pycache__/
 config.json
 secret_key.txt
 
-# User data, bind-mounted from the server's data/uploads — never baked in.
+# User data, bind-mounted from the server's data/uploads and data/db — never baked
+# in. data/ is also where a local dev or test database lives.
 inventory/api/static/uploads/
+data/
 
 # Local-only stuff.
 venv/

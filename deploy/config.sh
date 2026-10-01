@@ -27,15 +27,13 @@ APP_PORT="${APP_PORT:-8000}"
 # not attached to would look fine and 502 at request time).
 DOCKER_NETWORK="${DOCKER_NETWORK:-nginx-common-network}"
 
-# MongoDB's network, joined in addition to the one above — this app's Mongo is a
-# container, not a host process (that is what the old docker-compose attached to).
-# The container ends up on both networks: nginx reaches it on one, it reaches
-# Mongo on the other.
+# MongoDB's network, joined in addition to the one above. The app now runs on
+# SQLite and never talks to Mongo; this only keeps `make rollback` working towards
+# a release from before that move, which still reads Mongo through it. Set it to
+# '' once no such release is left on the server (KEEP_RELEASES deploys later).
 #
-# Leave empty if Mongo runs on the HOST instead; the container is always started
-# with --add-host=host.docker.internal:host-gateway, so setting
-# mongo.server = "host.docker.internal" in the server's config.json is then all
-# it takes (mongod must listen on the docker bridge, not on 127.0.0.1 only).
+# Leave empty too if Mongo runs on the HOST instead; the container is always
+# started with --add-host=host.docker.internal:host-gateway for that case.
 MONGO_NETWORK="${MONGO_NETWORK:-mongo-network}"
 
 # The dockerized nginx: its container, and the directory its config includes from.

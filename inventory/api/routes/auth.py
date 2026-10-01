@@ -1,8 +1,10 @@
 import logging
 
 from flask import Blueprint, redirect, session, url_for
+from sqlalchemy import select
 
 from inventory.api.oauth import oauth
+from inventory.db.base import db
 from inventory.db.user import User
 
 logger = logging.getLogger(__name__)
@@ -21,17 +23,18 @@ def login():
 def callback():
     token = oauth.discord.authorize_access_token()
     info = oauth.discord.get('https://discord.com/api/users/@me', token=token).json()
-    user = User.objects(discord_id=str(info['id'])).first()
+    user = db.session.scalar(select(User).filter_by(discord_id=str(info['id'])))
     new_username     = info['username']
     new_display_name = info.get('global_name') or None
     if not user:
         user = User(discord_id=str(info['id']), username=new_username, display_name=new_display_name)
-        user.save()
+        db.session.add(user)
+        db.session.commit()
     elif user.username != new_username or user.display_name != new_display_name:
         user.username     = new_username
         user.display_name = new_display_name
-        user.save()
-    session['user_id'] = str(user.id)
+        db.session.commit()
+    session['user_id'] = user.id
     return redirect(url_for('index'))
 
 

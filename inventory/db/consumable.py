@@ -1,18 +1,14 @@
-from mongoengine import BooleanField, Document, IntField, ListField, ReferenceField, StringField
+from sqlalchemy.orm import Mapped, mapped_column
 
-from .association import Association
-from .location import Location
+from .base import db
+from .item import ItemMixin, item_table_args
 
 
-class Consumable(Document):
-    association = ReferenceField(Association, required=True)
-    category = StringField(required=True)
-    type = StringField(required=True)
-    unit = StringField()
-    quantity        = IntField(default=0)
-    borrowing_count = IntField(default=0)
-    sticker_printed = BooleanField(default=False)
-    location = ReferenceField(Location, required=True)
-    images = ListField(StringField(), default=list)
+class Consumable(ItemMixin, db.Model):
+    __tablename__ = 'consumables'
+    __table_args__ = item_table_args()
 
-    meta = {'collection': 'consumables'}
+    type:     Mapped[str]
+    unit:     Mapped[str | None]
+    # Unlike every other item type, a consumable starts at 0.
+    quantity: Mapped[int] = mapped_column(default=0)

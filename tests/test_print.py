@@ -6,30 +6,30 @@ from inventory.db.miniature import Miniature
 from inventory.db.rulebook import Rulebook
 from inventory.db.tablecloth import Tablecloth
 from inventory.db.terrain import Terrain
-from tests.conftest import login
+from tests.conftest import login, reload, save
 
 
 def _make_one_of_each(db):
-    mini = Miniature(association=db['assoc'], category='Miniature',
+    mini = save(Miniature(association=db['assoc'], category='Miniature',
                      type='Infantry', game=db['game'], scale='28mm',
-                     quantity=1, location=db['loc']).save()
-    terrain = Terrain(association=db['assoc'], category='Terrain',
+                     quantity=1, location=db['loc']))
+    terrain = save(Terrain(association=db['assoc'], category='Terrain',
                       type='Forest', game=db['game'], scale='28mm',
-                      quantity=1, location=db['loc']).save()
-    cloth = Tablecloth(association=db['assoc'], category='Tablecloth',
+                      quantity=1, location=db['loc']))
+    cloth = save(Tablecloth(association=db['assoc'], category='Tablecloth',
                        type='Green', game=db['game'], size='120x180',
-                       quantity=1, location=db['loc']).save()
-    rule = Rulebook(association=db['assoc'], category='Rulebook',
+                       quantity=1, location=db['loc']))
+    rule = save(Rulebook(association=db['assoc'], category='Rulebook',
                     name='Rules', game=db['game'], quantity=1,
-                    location=db['loc']).save()
-    bg = BoardGame(association=db['assoc'], category='Board Game',
-                   name='Chess', quantity=1, location=db['loc']).save()
-    book = Book(association=db['assoc'], category='Book',
-                name='History', quantity=1, location=db['loc']).save()
-    equip = Equipment(association=db['assoc'], category='Equipment',
-                      type='Brush', quantity=1, location=db['loc']).save()
-    cons = Consumable(association=db['assoc'], category='Consumable',
-                      type='Paint', quantity=2, location=db['loc']).save()
+                    location=db['loc']))
+    bg = save(BoardGame(association=db['assoc'], category='Board Game',
+                   name='Chess', quantity=1, location=db['loc']))
+    book = save(Book(association=db['assoc'], category='Book',
+                name='History', quantity=1, location=db['loc']))
+    equip = save(Equipment(association=db['assoc'], category='Equipment',
+                      type='Brush', quantity=1, location=db['loc']))
+    cons = save(Consumable(association=db['assoc'], category='Consumable',
+                      type='Paint', quantity=2, location=db['loc']))
     return dict(mini=mini, terrain=terrain, cloth=cloth, rule=rule,
                 bg=bg, book=book, equip=equip, cons=cons)
 
@@ -66,19 +66,19 @@ def test_stickers_full_marks_all_printed(client, db):
     login(client, db['admin'])
     client.post('/test/print/stickers', data={'mode': 'full'})
     for item in items.values():
-        item.reload()
+        reload(item)
         assert item.sticker_printed
 
 
 def test_stickers_new_only_skips_printed(client, db):
     items = _make_one_of_each(db)
     items['mini'].sticker_printed = True
-    items['mini'].save()
+    save(items['mini'])
     login(client, db['admin'])
     client.post('/test/print/stickers', data={'mode': 'new'})
-    items['mini'].reload()
+    reload(items['mini'])
     assert items['mini'].sticker_printed  # was already True, unchanged
-    items['terrain'].reload()
+    reload(items['terrain'])
     assert items['terrain'].sticker_printed  # was False, now True
 
 
@@ -89,10 +89,10 @@ def test_stickers_new_only_marks_unprinted(client, db):
     client.post('/test/print/stickers', data={'mode': 'full'})
     # reset one item
     items['mini'].sticker_printed = False
-    items['mini'].save()
+    save(items['mini'])
     # second pass: new only
     client.post('/test/print/stickers', data={'mode': 'new'})
-    items['mini'].reload()
+    reload(items['mini'])
     assert items['mini'].sticker_printed
 
 
@@ -103,8 +103,8 @@ def test_stickers_category_filters(client, db):
                     data={'mode': 'category', 'category': 'Miniature'})
     assert r.status_code == 200
     assert r.content_type == 'application/pdf'
-    items['mini'].reload()
-    items['terrain'].reload()
+    reload(items['mini'])
+    reload(items['terrain'])
     assert items['mini'].sticker_printed
     assert not items['terrain'].sticker_printed
 
@@ -121,7 +121,7 @@ def test_print_list_full_returns_pdf(client, db):
 def test_print_list_new_only(client, db):
     items = _make_one_of_each(db)
     items['mini'].sticker_printed = True
-    items['mini'].save()
+    save(items['mini'])
     login(client, db['admin'])
     r = client.post('/test/print/list', data={'mode': 'new'})
     assert r.status_code == 200

@@ -1,24 +1,26 @@
-from mongoengine import BooleanField, Document, IntField, ListField, ReferenceField, StringField
+from sqlalchemy import CheckConstraint, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .association import Association
+from .base import db
 from .game import Game
-from .location import Location
+from .item import ItemMixin, item_table_args
 
 TABLECLOTH_MATERIALS = ["mousepad (neoprene)", "vinyl", "cloth", "textured"]
 
 
-class Tablecloth(Document):
-    association = ReferenceField(Association, required=True)
-    category = StringField(required=True)
-    quantity        = IntField(default=1)
-    borrowing_count = IntField(default=0)
-    sticker_printed = BooleanField(default=False)
-    type = StringField(required=True)
-    material = StringField(choices=TABLECLOTH_MATERIALS)
-    game = ReferenceField(Game, required=True)
-    size = StringField(required=True)
-    remarks = StringField()
-    location = ReferenceField(Location, required=True)
-    images = ListField(StringField(), default=list)
+class Tablecloth(ItemMixin, db.Model):
+    __tablename__ = 'tablecloths'
+    __table_args__ = item_table_args(
+        CheckConstraint(
+            'material IN (' + ', '.join(f"'{m}'" for m in TABLECLOTH_MATERIALS) + ')',
+            name='material_choices',
+        ),
+    )
 
-    meta = {'collection': 'tablecoths'}
+    type:     Mapped[str]
+    material: Mapped[str | None]
+    game_id:  Mapped[int] = mapped_column(ForeignKey('games.id'))
+    size:     Mapped[str]
+    remarks:  Mapped[str | None]
+
+    game: Mapped[Game] = relationship(lazy='joined')

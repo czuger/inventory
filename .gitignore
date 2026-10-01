@@ -187,3 +187,5 @@ inventory/api/static/uploads/*
 
 secret_key.txt
 .DS_Store
+
+data/
