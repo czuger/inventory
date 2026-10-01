@@ -10,13 +10,15 @@
 #                        | prune | status | health | versions>
 set -euo pipefail
 
-# Defaults mirror deploy/config.sh; the caller normally overrides them via env.
+# Defaults mirror deploy/config.sh's production ones; the caller always overrides
+# them via env, which is also how a staging run gets its own names and directory.
 REMOTE_DIR="${REMOTE_DIR:-/home/ced/python/inventory}"
 CONTAINER_NAME="${CONTAINER_NAME:-app-inventory}"
 IMAGE_NAME="${IMAGE_NAME:-inventory}"
 APP_PORT="${APP_PORT:-8000}"
 DOCKER_NETWORK="${DOCKER_NETWORK:-nginx-common-network}"
-MONGO_NETWORK="${MONGO_NETWORK:-mongo-network}"
+# `-`, not `:-`: staging passes MONGO_NETWORK='' and must not get production's.
+MONGO_NETWORK="${MONGO_NETWORK-mongo-network}"
 URL_PREFIX="${URL_PREFIX:-/inventory}"
 KEEP_RELEASES="${KEEP_RELEASES:-3}"
 NGINX_CONTAINER="${NGINX_CONTAINER:-nginx-proxy}"
@@ -319,7 +321,11 @@ cmd_init() {
   # Fail here rather than at the first deploy if a network is not around.
   check_network
   echo "network '$DOCKER_NETWORK' found"
-  [ -n "$MONGO_NETWORK" ] && echo "network '$MONGO_NETWORK' found"
+  # An `if`, not `[ ] && echo`: as the last command, a false test would be the
+  # function's status and fail the whole init when there is no Mongo network.
+  if [ -n "$MONGO_NETWORK" ]; then
+    echo "network '$MONGO_NETWORK' found"
+  fi
 }
 
 # Validate the snippet setup_server.sh just uploaded, then restart nginx.

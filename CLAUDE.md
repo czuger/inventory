@@ -40,6 +40,7 @@ make rollback    # back to the previous version (nothing is rebuilt or transferr
 make status      # running container + /health, as seen from the server
 make logs        # follow the container logs
 make nginx       # re-install the nginx snippet only (after changing URL_PREFIX)
+make deploy ENV=staging   # any of the above, on the staging instance (or: deploy/deploy.sh --env staging)
 ```
 
 `config.json` (gitignored) is required at project root and holds `discord` (client_id/client_secret); a leftover
@@ -158,7 +159,13 @@ card/list rendering for mobile.
 database from the new image** (`python -m inventory.db.migrate`, in a throwaway container) and restarts the
 container — no registry. Ported from the sibling `tasks_manager` project, so the two stay recognisable.
 
-- `deploy/config.sh` holds every setting and is sourced by all the others; `deploy/remote.sh` is the **server
+- **Two instances**, production (default) and staging (`ENV=staging` / `--env staging`). `deploy/config.sh` derives
+  every per-instance name from `APP_NAME` (`inventory` or `inventory_staging`): `REMOTE_DIR` (sibling directories,
+  so separate `config/`, database and uploads), `IMAGE_NAME` (must differ: prune deletes every tag of its image
+  that is not its own current/previous), `CONTAINER_NAME`, `NGINX_CONF_NAME` and `URL_PREFIX`
+  (`/inventory_staging`). Staging joins no Mongo network. Since both share a host, the app names its session
+  cookie after the prefix and scopes its path to it (`create_app`), otherwise each would log the other out.
+- `deploy/config.sh` holds every setting and is sourced by all the others (with their arguments, for `--env`); `deploy/remote.sh` is the **server
   side** and is re-uploaded before every run, so the `docker run` options a rollback uses cannot drift from the
   ones a deploy used.
 - Releases are timestamped, `current_version.txt`/`previous_version.txt` record the swap **before** the restart,

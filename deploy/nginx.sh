@@ -10,7 +10,7 @@
 # the container (remote.sh), so the app knows what to build its links under.
 set -euo pipefail
 
-source "$(dirname "${BASH_SOURCE[0]}")/config.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/config.sh" "$@"
 
-echo "==> Installing $NGINX_CONF_NAME on $SSH_HOST:$NGINX_CONF_DIR"
+echo "==> Installing $NGINX_CONF_NAME ($DEPLOY_ENV) on $SSH_HOST:$NGINX_CONF_DIR"
 install_nginx_conf

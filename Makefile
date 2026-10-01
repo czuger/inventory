@@ -3,17 +3,27 @@
 #
 #   make deploy SSH_HOST=ced@other-box
 #
+# Every target acts on production unless told otherwise. ENV=staging targets the
+# separate staging instance (its own directory, database, container and URL
+# prefix — see deploy/config.sh):
+#
+#   make setup ENV=staging      # once
+#   make deploy ENV=staging
+#   make logs ENV=staging
+#
 .PHONY: help setup nginx deploy rollback logs status versions test
 
-# Read the same settings the scripts use, so logs/status can talk to the server
-# without duplicating them here.
-SSH_HOST ?= ced@nuc150
-REMOTE_DIR ?= /home/ced/python/inventory
-CONTAINER_NAME ?= app-inventory
-APP_PORT ?= 8000
+# Only from the command line: ENV is also a shell variable (sh's startup file), and
+# one inherited from the environment must not pick the instance. Unset, the
+# scripts default to production; DEPLOY_ENV=staging in the environment works too.
+ifeq ($(origin ENV),command line)
+export DEPLOY_ENV := $(ENV)
+endif
 
 help:  ## Show this help
 	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | awk -F':.*?## ' '{printf "  %-10s %s\n", $$1, $$2}'
+	@echo
+	@echo "  Add ENV=staging to act on the staging instance instead of production."
 
 setup:  ## One-time server preparation (directories, Docker check, nginx config)
 	@./deploy/setup_server.sh
@@ -28,23 +38,13 @@ rollback:  ## Switch back to the previously deployed version
 	@./deploy/rollback.sh
 
 logs:  ## Follow the container logs (Ctrl-C to stop)
-	@ssh -t $(SSH_HOST) "docker logs -f --tail 100 $(CONTAINER_NAME)"
+	@./deploy/server.sh logs
 
 status:  ## Running container + /health, as seen from the server
-	@ssh $(SSH_HOST) "docker ps --filter 'name=^/$(CONTAINER_NAME)$$' \
-		--format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'; \
-		echo; \
-		cat $(REMOTE_DIR)/current_version.txt 2>/dev/null | sed 's/^/current : /'; \
-		cat $(REMOTE_DIR)/previous_version.txt 2>/dev/null | sed 's/^/previous: /'; \
-		echo; \
-		docker exec $(CONTAINER_NAME) python -c \
-			\"import urllib.request; urllib.request.urlopen('http://127.0.0.1:$(APP_PORT)/health', timeout=3)\" \
-			> /dev/null 2>&1 \
-			&& echo 'health  : ok' \
-			|| echo 'health  : NOT answering'"
+	@./deploy/server.sh status
 
 versions:  ## List the versions kept on the server
-	@ssh $(SSH_HOST) "ls -1t $(REMOTE_DIR)/releases/*.tar 2>/dev/null | xargs -r -n1 basename"
+	@./deploy/server.sh versions
 
 test:  ## Run the test suite locally
 	@python -m pytest

@@ -226,6 +226,47 @@ stickers are on the shelves.
 `make setup` once, then `make deploy` for each release. `make rollback` goes back to the previous release, and
 `make status` / `make logs` show what is running. Every setting is in `deploy/config.sh`.
 
+| Command         | What it does                                                                               |
+|-----------------|--------------------------------------------------------------------------------------------|
+| `make help`     | List the commands                                                                          |
+| `make setup`    | One-time server preparation: directories, Docker check, nginx snippet                      |
+| `make deploy`   | Build the image for the server's architecture, ship it, migrate, restart, health check     |
+| `make rollback` | Switch back to the previously deployed version (nothing is rebuilt or transferred)         |
+| `make status`   | Running container, current/previous versions, networks and `/health`, as seen from the server |
+| `make logs`     | Follow the container logs (Ctrl-C to stop)                                                 |
+| `make versions` | List the versions kept on the server                                                       |
+| `make nginx`    | Re-install the nginx snippet only (after changing `URL_PREFIX`)                            |
+| `make test`     | Run the test suite locally                                                                 |
+
+Options are passed as `NAME=value` after the command (`make deploy ENV=staging`); all but `ENV` can also come
+from the environment (`SSH_HOST=ced@other-box make deploy`). The defaults live in `deploy/config.sh`:
+
+| Option            | Default                                        | Meaning                                                   |
+|-------------------|------------------------------------------------|-----------------------------------------------------------|
+| `ENV`             | `production`                                   | Which instance to act on: `production` or `staging`       |
+| `SSH_HOST`        | `ced@nuc150`                                   | Server to deploy to                                       |
+| `REMOTE_DIR`      | `/home/ced/python/inventory`                   | Its directory on the server (releases, config, data)      |
+| `CONTAINER_NAME`  | `app-inventory`                                | Container name, which nginx proxies to                    |
+| `IMAGE_NAME`      | `inventory`                                    | Image name; the version is the tag                        |
+| `URL_PREFIX`      | `/inventory`                                   | Sub-path the site is served under (nginx + app links)     |
+| `TARGET_PLATFORM` | `linux/amd64`                                  | Server architecture the image is built for                |
+| `KEEP_RELEASES`   | `3`                                            | Releases kept on the server                               |
+| `MONGO_NETWORK`   | `mongo-network`                                | Extra network joined for pre-SQLite rollbacks; `''` for none |
+| `DOCKER_NETWORK`  | `nginx-common-network`                         | nginx's shared docker network                             |
+| `NGINX_CONTAINER` | `nginx-proxy`                                  | The nginx container restarted by `setup` / `nginx`        |
+| `NGINX_CONF_DIR`  | `/home/ced/services/nginx_proxy/sites/apps`    | Where the nginx snippet is installed                      |
+| `NGINX_CONF_NAME` | `inventory.conf`                               | The snippet's file name                                   |
+| `APP_PORT`        | `8000`                                         | gunicorn's port inside the container (not published)      |
+
+With `ENV=staging`, `REMOTE_DIR`, `CONTAINER_NAME`, `IMAGE_NAME`, `URL_PREFIX` and `NGINX_CONF_NAME` default to
+their `inventory_staging` counterparts, and `MONGO_NETWORK` to none.
+
+Every command also takes `ENV=staging` (`make setup ENV=staging`, `make deploy ENV=staging`, …) to act on a
+separate staging instance instead: its own directory next to production's (`/home/ced/python/inventory_staging`),
+with its own `config/`, database and photos, its own container and image, served under `/inventory_staging`. It
+never reads or writes anything of production's. Its database starts empty, and its Discord redirect URI
+(`https://apps.ieroe.com/inventory_staging/auth/discord/callback`) has to be added to the Discord application.
+
 The SQLite database (`data/db/`) and the photos (`data/uploads/`) live on the server, outside the image.
 **Before** starting a new version, each deploy applies its migrations, taking a backup in `data/db/backups/` first
 when there is something to apply. A rollback never undoes a migration.

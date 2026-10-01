@@ -8,13 +8,43 @@
 # not a secret. Actual secrets live only in $REMOTE_DIR/config/ on the server
 # (config.json and secret_key.txt), which no deploy step reads or writes.
 
+# Which instance every script acts on: `production` (the default, and what all the
+# commands did before staging existed) or `staging`, a second, fully separate copy
+# of the app on the same server:
+#   make deploy ENV=staging        ./deploy/deploy.sh --env staging
+#
+# Staging is production with APP_NAME suffixed `_staging`, and every per-instance
+# name below derives from APP_NAME: its own directory next to production's (so its
+# own config/, database and uploads), its own image, container, nginx snippet and
+# URL prefix. Nothing is shared but the server, docker and the nginx proxy — a
+# staging deploy, rollback or prune never sees a production file or image.
+DEPLOY_ENV="${DEPLOY_ENV:-production}"
+
+# Scripts source this file with their own arguments; --env is the only one.
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --env)   DEPLOY_ENV="${2:?--env needs production or staging}"; shift 2 ;;
+    --env=*) DEPLOY_ENV="${1#--env=}"; shift ;;
+    *)       echo "error: unknown argument '$1' (only --env production|staging)" >&2; exit 1 ;;
+  esac
+done
+
+case "$DEPLOY_ENV" in
+  production) APP_NAME="inventory" ;;
+  staging)    APP_NAME="inventory_staging" ;;
+  *)          echo "error: unknown environment '$DEPLOY_ENV' (production or staging)" >&2; exit 1 ;;
+esac
+
 # Where to deploy.
 SSH_HOST="${SSH_HOST:-ced@nuc150}"
-REMOTE_DIR="${REMOTE_DIR:-/home/ced/python/inventory}"
+REMOTE_DIR="${REMOTE_DIR:-/home/ced/python/$APP_NAME}"
 
 # What runs there. IMAGE_NAME is also the local build tag, the version is appended.
-CONTAINER_NAME="${CONTAINER_NAME:-app-inventory}"
-IMAGE_NAME="${IMAGE_NAME:-inventory}"
+# Each instance needs its own: prune removes every tag of IMAGE_NAME that is not
+# its own current/previous, so a shared image name would let one instance delete
+# the other's rollback target.
+CONTAINER_NAME="${CONTAINER_NAME:-app-$APP_NAME}"
+IMAGE_NAME="${IMAGE_NAME:-$APP_NAME}"
 
 # The port gunicorn listens on INSIDE the container. It is never published to the
 # host — the app is reached over the docker network below, as
@@ -34,22 +64,31 @@ DOCKER_NETWORK="${DOCKER_NETWORK:-nginx-common-network}"
 #
 # Leave empty too if Mongo runs on the HOST instead; the container is always
 # started with --add-host=host.docker.internal:host-gateway for that case.
-MONGO_NETWORK="${MONGO_NETWORK:-mongo-network}"
+#
+# Staging never had a MongoDB release, so it never joins. `-` rather than `:-` so
+# that MONGO_NETWORK='' from the environment means "none" instead of the default.
+if [ "$DEPLOY_ENV" = production ]; then
+  MONGO_NETWORK="${MONGO_NETWORK-mongo-network}"
+else
+  MONGO_NETWORK="${MONGO_NETWORK-}"
+fi
 
 # The dockerized nginx: its container, and the directory its config includes from.
 # `make setup` / `make nginx` render the snippet below into that directory and
 # restart the container; a deploy never touches either.
 NGINX_CONTAINER="${NGINX_CONTAINER:-nginx-proxy}"
 NGINX_CONF_DIR="${NGINX_CONF_DIR:-/home/ced/services/nginx_proxy/sites/apps}"
-NGINX_CONF_NAME="${NGINX_CONF_NAME:-inventory.conf}"
+NGINX_CONF_NAME="${NGINX_CONF_NAME:-$APP_NAME.conf}"
 
-# Sub-path the site is served under, i.e. https://<host>$URL_PREFIX.
+# Sub-path the site is served under, i.e. https://<host>$URL_PREFIX — /inventory
+# for production, /inventory_staging for staging. Neither location swallows the
+# other: nginx's `location /inventory/` needs the slash right after the name.
 #
 # Unlike the app's other settings this one is NOT server-owned: it renders the
 # nginx snippet AND is passed to the container as the URL_PREFIX env var by
 # remote.sh, so the proxy's path and the app's generated links come from this one
 # line and cannot drift apart. Set it to "/" to serve at the site root.
-URL_PREFIX="${URL_PREFIX:-/inventory}"
+URL_PREFIX="${URL_PREFIX:-/$APP_NAME}"
 
 # Architecture of the SERVER, not of your laptop. Building on an Apple Silicon Mac
 # defaults to linux/arm64, which the x86_64 server can only run (badly) under
@@ -62,6 +101,10 @@ TARGET_PLATFORM="${TARGET_PLATFORM:-linux/amd64}"
 KEEP_RELEASES="${KEEP_RELEASES:-3}"
 
 # Everything below is derived; no need to touch it.
+# Appended to the `make` commands the scripts suggest, so a hint printed during a
+# staging run never points at production.
+MAKE_ENV=""
+[ "$DEPLOY_ENV" = production ] || MAKE_ENV=" ENV=$DEPLOY_ENV"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REMOTE_SCRIPT="$REMOTE_DIR/remote.sh"
 

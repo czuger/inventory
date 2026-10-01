@@ -6,9 +6,9 @@
 # it already exists — that is the whole point of the code/config split.
 set -euo pipefail
 
-source "$(dirname "${BASH_SOURCE[0]}")/config.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/config.sh" "$@"
 
-echo "==> Target: $SSH_HOST:$REMOTE_DIR"
+echo "==> Target ($DEPLOY_ENV): $SSH_HOST:$REMOTE_DIR"
 
 # 1. Docker must be there, and usable by this SSH user without sudo.
 echo "==> Checking Docker on the server"
@@ -90,4 +90,4 @@ Then grant yourself admin, after logging in through Discord once:
 EOF2
 fi
 
-echo "Next: make deploy — then the site answers at https://<your-host>${URL_PREFIX%/}"
+echo "Next: make deploy$MAKE_ENV — then the site answers at https://<your-host>${URL_PREFIX%/}"

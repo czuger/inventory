@@ -10,7 +10,7 @@
 # container.
 set -euo pipefail
 
-source "$(dirname "${BASH_SOURCE[0]}")/config.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/config.sh" "$@"
 
 # UTC so two machines deploying the same day still sort chronologically.
 VERSION="$(date -u +%Y%m%d-%H%M%S)"
@@ -20,7 +20,7 @@ TARBALL="$REPO_ROOT/dist/$VERSION.tar"
 cleanup() { rm -f "$TARBALL"; }
 trap cleanup EXIT
 
-echo "==> Deploying $IMAGE_NAME:$VERSION to $SSH_HOST:$REMOTE_DIR"
+echo "==> Deploying $IMAGE_NAME:$VERSION ($DEPLOY_ENV) to $SSH_HOST:$REMOTE_DIR"
 
 # 1. Build for the SERVER's architecture, not the laptop's: an Apple Silicon Mac
 #    builds linux/arm64 by default, and the x86_64 server would then refuse it
@@ -61,7 +61,7 @@ scp -C "$TARBALL" "$SSH_HOST:$REMOTE_DIR/releases/$VERSION.tar"
 echo "==> Activating $VERSION on the server"
 if ! remote activate "$VERSION"; then
   echo >&2
-  echo "error: $VERSION did not come up. Roll back with: make rollback" >&2
+  echo "error: $VERSION did not come up. Roll back with: make rollback$MAKE_ENV" >&2
   exit 1
 fi
 

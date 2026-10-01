@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 
 from flask import Flask, abort, g, redirect, request, session, url_for
 from sqlalchemy import and_, or_, select
@@ -88,6 +89,13 @@ def create_app(test: bool = False) -> Flask:
     url_prefix = "" if test else os.environ.get("URL_PREFIX", "").strip().strip("/")
     if url_prefix:
         _app.wsgi_app = mounted_under(_app.wsgi_app, url_prefix)
+        # Several instances (production, staging) and other apps share the host,
+        # each with its own secret key. Flask's default cookie — `session`, path
+        # `/` — would be overwritten by whichever one the browser visited last,
+        # logging the user out of the others. Path alone would not do: a cookie
+        # left at `/` by an older release would still reach us, and outlive logout.
+        _app.config['SESSION_COOKIE_PATH'] = '/' + url_prefix
+        _app.config['SESSION_COOKIE_NAME'] = 'session_' + re.sub(r'\W', '_', url_prefix)
 
     oauth.init_app(_app)
     oauth.register(

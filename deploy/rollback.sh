@@ -6,9 +6,9 @@
 # it twice returns you to where you started.
 set -euo pipefail
 
-source "$(dirname "${BASH_SOURCE[0]}")/config.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/config.sh" "$@"
 
-echo "==> Rolling back on $SSH_HOST"
+echo "==> Rolling back $DEPLOY_ENV on $SSH_HOST:$REMOTE_DIR"
 remote versions
 echo
 
@@ -17,7 +17,7 @@ upload_remote_script
 
 if ! remote rollback; then
   echo >&2
-  echo "error: rollback failed — check 'make status' and 'make logs'" >&2
+  echo "error: rollback failed — check 'make status$MAKE_ENV' and 'make logs$MAKE_ENV'" >&2
   exit 1
 fi
 
