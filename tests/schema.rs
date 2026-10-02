@@ -313,7 +313,7 @@ async fn password_login_migration_keeps_every_user() {
 
     let report = migrate::run(&path).await.unwrap();
     assert!(report.baselined);
-    assert_eq!(report.applied, vec![2]);
+    assert_eq!(report.applied, vec![2, 3]);
     assert!(report.backup.is_some(), "an upgrade of a real database is backed up first");
 
     let pool = db::connect(&path).await.unwrap();
@@ -327,6 +327,13 @@ async fn password_login_migration_keeps_every_user() {
     assert_eq!(borrower, 2);
     let violations = sqlx::query("PRAGMA foreign_key_check").fetch_all(&pool).await.unwrap();
     assert!(violations.is_empty());
+    // Alembic's bookkeeping is gone (migration 0003).
+    let alembic: bool =
+        sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM sqlite_master WHERE name = 'alembic_version')")
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+    assert!(!alembic);
 
     // The deleted user's id (3) is still never handed out again.
     let next: i64 = sqlx::query_scalar(

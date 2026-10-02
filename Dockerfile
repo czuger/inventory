@@ -1,10 +1,9 @@
-# Image for the Rust app: one binary, built in a throwaway stage.
+# The app's image: one binary, built in a throwaway stage.
 #
-# It carries code only, like the Python image did: config.json and secret_key.txt are
+# It carries code only: config.json and secret_key.txt are
 # mounted from the server's config/ directory at run time, the database lives in the
 # server's data/db/ (mounted at /app/data) and the photos in data/uploads (mounted at
-# /app/inventory/api/static/uploads). Those are the paths deploy/remote.sh already mounts,
-# so switching images needs only its migrate command changed (`inventory migrate`).
+# /app/inventory/api/static/uploads, the Python image's path, kept so rollbacks work).
 #
 # No `--platform` is pinned: deploy.sh passes the server's architecture at build time.
 
@@ -47,7 +46,10 @@ RUN touch /app/README.md \
     && chown -R appuser:appuser /app/inventory/api/static/uploads /app/data
 USER appuser
 
+# The photos keep the path the Python image used: deploy/remote.sh mounts them there for
+# every image it starts, so a `make rollback` to a Python release still finds them.
 ENV BIND_ADDR=0.0.0.0:8000 \
+    UPLOADS_DIR=/app/inventory/api/static/uploads \
     RUST_LOG=info
 
 # Probes /health from inside the container (there is no curl in the image).

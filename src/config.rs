@@ -1,23 +1,22 @@
 //! Where everything lives: the project root, the database, the uploads, and the two
 //! files the server mounts read-only (`config.json`, `secret_key.txt`).
 //!
-//! Mirrors `inventory/libs/initialization.py`, so both apps find the same files: the root
-//! is the first directory, walking up from the working directory, that holds
-//! `requirements.txt`, `.git` or `README.md` (`/app` in the container), unless
-//! `INVENTORY_ROOT` says otherwise.
+//! The root is the first directory, walking up from the working directory, that holds
+//! `Cargo.toml`, `.git` or `README.md` (`/app` in the container, which has a README.md for
+//! that purpose), unless `INVENTORY_ROOT` says otherwise.
 
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
 use serde::Deserialize;
 
-const ROOT_MARKERS: [&str; 3] = ["requirements.txt", ".git", "README.md"];
+const ROOT_MARKERS: [&str; 3] = ["Cargo.toml", ".git", "README.md"];
 const DEFAULT_BIND_ADDR: &str = "0.0.0.0:8000";
 const DEFAULT_DISCORD_API: &str = "https://discord.com/api";
 
 #[derive(Debug, thiserror::Error)]
 pub enum ConfigError {
-    #[error("project root not found (no requirements.txt, .git or README.md above {0})")]
+    #[error("project root not found (no Cargo.toml, .git or README.md above {0})")]
     RootNotFound(PathBuf),
     #[error("cannot read {path}: {source}")]
     Read { path: PathBuf, source: std::io::Error },
@@ -75,7 +74,7 @@ impl Config {
             url_prefix: normalize_prefix(&var("URL_PREFIX").unwrap_or_default()),
             bind_addr: non_empty("BIND_ADDR").unwrap_or_else(|| DEFAULT_BIND_ADDR.to_owned()),
             uploads_dir: non_empty("UPLOADS_DIR")
-                .map_or_else(|| root.join("inventory/api/static/uploads"), PathBuf::from),
+                .map_or_else(|| root.join("data/uploads"), PathBuf::from),
             discord_api_base: non_empty("DISCORD_API_BASE")
                 .map_or_else(|| DEFAULT_DISCORD_API.to_owned(), |base| base.trim_end_matches('/').to_owned()),
             root,
@@ -213,7 +212,7 @@ mod tests {
         assert!(dir.path().join("data").is_dir());
         assert_eq!(config.url_prefix, "inventory");
         assert_eq!(config.bind_addr, "0.0.0.0:8000");
-        assert_eq!(config.uploads_dir, dir.path().join("inventory/api/static/uploads"));
+        assert_eq!(config.uploads_dir, dir.path().join("data/uploads"));
         assert_eq!(config.discord_api_base, "https://discord.com/api");
     }
 
