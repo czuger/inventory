@@ -86,7 +86,7 @@ ensure_data_writable() {
 }
 
 # Bring the database schema up to what an image expects, from that image, in a
-# throwaway container, BEFORE that image is started. inventory.db.migrate backs the
+# throwaway container, BEFORE that image is started. `inventory migrate` backs the
 # database up into data/db/backups/ first whenever there is something to apply,
 # and does nothing otherwise. A migration is a single transaction, so one that
 # fails leaves the database as it was — and the running version keeps serving.
@@ -97,7 +97,7 @@ run_migrations() {
   local image="$1"
 
   ensure_data_writable "$image"
-  docker run --rm -v "$DB_DIR:/app/data" "$image" python -m inventory.db.migrate \
+  docker run --rm -v "$DB_DIR:/app/data" "$image" inventory migrate \
     || die "migrations failed on $image — nothing was started, the previous version still runs"
 }
 
@@ -141,6 +141,8 @@ start_container() {
     `# the same file that renders the nginx snippet, so the proxy's location and` \
     `# the app's generated links cannot disagree.` \
     -e "URL_PREFIX=$URL_PREFIX" \
+    `# Where the app listens inside the container: nginx proxies to this port.` \
+    -e "BIND_ADDR=0.0.0.0:$APP_PORT" \
     `# Config is the server's, read-only, and never part of the image.` \
     -v "$CONFIG_DIR/config.json:/app/config.json:ro" \
     -v "$CONFIG_DIR/secret_key.txt:/app/secret_key.txt:ro" \
@@ -163,19 +165,21 @@ start_container() {
 }
 
 # Hit /health from *inside* the container. Nothing is published on the host, so
-# the probe cannot come from outside; `docker exec` is the way in, and python is
-# already there (the slim image has no curl).
+# the probe cannot come from outside; `docker exec` is the way in. The image has no
+# curl: the app's own `inventory healthcheck` probes it. An image from before the
+# Rust port has python instead — kept as a fallback so `make rollback` to one of
+# those still passes its health check.
 #
 # /health is registered at the app root and URL_PREFIX only affects generated
 # URLs (SCRIPT_NAME), not routing — so the path is the same with or without a
 # prefix, which is what makes this probe independent of the proxy.
 probe_health() {
-  docker exec "$CONTAINER_NAME" python -c \
-    "import urllib.request; urllib.request.urlopen('http://127.0.0.1:$APP_PORT/health', timeout=3)" \
+  docker exec -e "BIND_ADDR=127.0.0.1:$APP_PORT" "$CONTAINER_NAME" sh -c \
+    "inventory healthcheck 2>/dev/null || python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:$APP_PORT/health', timeout=3)\"" \
     >/dev/null 2>&1
 }
 
-# Poll until gunicorn is actually answering (a fresh container needs a second or
+# Poll until the app is actually answering (a fresh container needs a second or
 # two). Returns non-zero if it never does.
 wait_for_health() {
   local attempts="${1:-15}"

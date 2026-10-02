@@ -25,7 +25,9 @@ echo "==> Deploying $IMAGE_NAME:$VERSION ($DEPLOY_ENV) to $SSH_HOST:$REMOTE_DIR"
 # 1. Build for the SERVER's architecture, not the laptop's: an Apple Silicon Mac
 #    builds linux/arm64 by default, and the x86_64 server would then refuse it
 #    ("the requested image's platform does not match the detected host platform").
-#    --pull so a stale local python:3.13-slim doesn't ship security fixes late.
+#    --pull so stale local base images (rust, debian) don't ship security fixes
+#    late. Building for another architecture than the laptop's runs the compiler
+#    under emulation: the first build is slow, later ones reuse the dependency layer.
 echo "==> Building the image for $TARGET_PLATFORM"
 docker build --pull --platform "$TARGET_PLATFORM" -t "$IMAGE_NAME:$VERSION" "$REPO_ROOT"
 

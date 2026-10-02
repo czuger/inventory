@@ -48,6 +48,8 @@ enum Command {
 async fn main() -> ExitCode {
     let _ = dotenvy::dotenv();
     tracing_subscriber::fmt()
+        // Colours only on a terminal: `make logs` reads the container's plain output.
+        .with_ansi(std::io::IsTerminal::is_terminal(&std::io::stdout()))
         .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info,sqlx=warn")))
         .init();
 

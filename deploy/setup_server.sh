@@ -77,15 +77,19 @@ Still to do, once, by hand:
 
 If you have no secret_key.txt yet, generate one first — without it the app picks a
 random key per worker, so nobody stays logged in:
-  python3 -c "import secrets; print(secrets.token_hex(32))" > secret_key.txt
+  openssl rand -hex 32 > secret_key.txt
 
 In that server-side config.json, remember to:
   - set discord.client_id / client_secret, and add the redirect URI
       https://<your-host>${URL_PREFIX%/}/auth/discord/callback
     to the Discord application — OAuth rejects any callback not listed there.
 
-Then grant yourself admin, after logging in through Discord once:
-  ssh $SSH_HOST "docker exec $CONTAINER_NAME python misc/set_admin.py <discord_username>"
+Then grant yourself admin, after logging in once (through Discord, or after signing
+up on the login page):
+  ssh $SSH_HOST "docker exec $CONTAINER_NAME inventory set-admin <username>"
+
+A Discord member can also get a password (prompted, so -it):
+  ssh -t $SSH_HOST "docker exec -it $CONTAINER_NAME inventory set-password <username>"
 
 EOF2
 fi

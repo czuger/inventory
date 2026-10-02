@@ -46,10 +46,11 @@ REMOTE_DIR="${REMOTE_DIR:-/home/ced/python/$APP_NAME}"
 CONTAINER_NAME="${CONTAINER_NAME:-app-$APP_NAME}"
 IMAGE_NAME="${IMAGE_NAME:-$APP_NAME}"
 
-# The port gunicorn listens on INSIDE the container. It is never published to the
+# The port the app listens on INSIDE the container. It is never published to the
 # host — the app is reached over the docker network below, as
-# http://$CONTAINER_NAME:$APP_PORT. Changing this means changing the gunicorn
-# --bind and the HEALTHCHECK in the Dockerfile too.
+# http://$CONTAINER_NAME:$APP_PORT. remote.sh hands it to the container as BIND_ADDR,
+# which the app and the image's HEALTHCHECK both read, so this is the only place to
+# change it.
 APP_PORT="${APP_PORT:-8000}"
 
 # The shared docker network nginx sits on. It belongs to nginx, not to us: the

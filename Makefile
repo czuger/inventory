@@ -46,5 +46,6 @@ status:  ## Running container + /health, as seen from the server
 versions:  ## List the versions kept on the server
 	@./deploy/server.sh versions
 
-test:  ## Run the test suite locally
-	@python -m pytest
+test:  ## Run the test suite and the linter locally
+	@cargo test
+	@cargo clippy --all-targets -- -D warnings
