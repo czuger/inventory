@@ -676,14 +676,14 @@ version is a macro over `ItemKind`.
 
 **Phase 6: remove Python and switch the deploy**
 
-- [ ] 28. Delete the Python app and its tooling:
+- [x] 28. Delete the Python app and its tooling:
   - delete `inventory/`, `tests/`, `alembic/`, `alembic.ini`, `requirements.txt`, `pytest.ini` and every
     `misc/*.py`;
   - keep `misc/20241206_inventaire Grognards.xlsx`, `misc/inventory_v1_mapping.json` and
     `misc/inventory_xlsx_extraction_report.md`.
-- [ ] 29. `git mv rust/* .` in a commit of its own (only the move, so history stays readable). Migration `0003`
+- [x] 29. `git mv rust/* .` in a commit of its own (only the move, so history stays readable). Migration `0003`
   drops `alembic_version`
-- [ ] 30. Switch the deploy to the Rust image:
+- [x] 30. Switch the deploy to the Rust image:
   - the Rust `Dockerfile` replaces the Python one, and `.dockerignore` is updated;
   - in `deploy/remote.sh`: the migrate step becomes `inventory migrate`, the health probe becomes
     `inventory healthcheck`, and uploads are mounted at `/app/data/uploads`. The server-side directories do not
@@ -699,8 +699,20 @@ version is a macro over `ItemKind`.
   - sign-up and password login work;
   - existing photos display;
   - a sticker PDF opens.
-- [ ] 31. Rewrite `README.md` and `CLAUDE.md` for the Rust project: commands, architecture, database, deploy.
+- [x] 31. Rewrite `README.md` and `CLAUDE.md` for the Rust project: commands, architecture, database, deploy.
   Remove `MIGRATION_PLAN.md`, or keep it as a record (your call at that point)
+
+  *Phase 6 done 2026-10-02, in commits of its own (removal `5953f4c`, move `10dbdd9` + `1814889`, deploy
+  `b689a7e`, docs). Departures from the steps above:*
+  - *Photos stay mounted at `/app/inventory/api/static/uploads` (the Rust image sets `UPLOADS_DIR` to it) instead
+    of moving to `/app/data/uploads`, and the health probe falls back to python: `remote.sh` drives rollbacks too,
+    and both keep `make rollback` to the last Python release working. Locally, photos default to `data/uploads`.*
+  - *`rust/parity/` went with the Python app it compared against; its result is recorded under Phase 4.*
+  - *The image was built and smoke-tested locally the way `remote.sh` runs it — chown, `inventory migrate` on a
+    copy of the real database (baselined, backed up, 0001 → 0003), start, health probe, pages, photos, sign-up —
+    and Docker reported it healthy. **The staging deploy (`make deploy ENV=staging`) is not done**: it acts on the
+    server and waits for your go-ahead.*
+  - *This file is kept as the record of the port (the README points to it).*
 
 ## 8. Verification summary
 

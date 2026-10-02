@@ -4,209 +4,136 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Flask + SQLAlchemy (SQLite) inventory manager for a wargaming club ("Les Grognards d'Alsace"). Server-rendered
-Jinja templates with Bootstrap 5 (CDN), Discord OAuth login, French/English UI, and PDF sticker/list printing.
-Schema migrations are Alembic's. The data used to live in MongoDB (MongoEngine); see "Database" below.
+Rust (axum + sqlx on SQLite) inventory manager for a wargaming club ("Les Grognards d'Alsace"). Server-rendered
+minijinja templates with Bootstrap 5 (CDN), Discord OAuth and username/password login, French/English UI, PDF
+sticker/list printing. It was a Flask app until October 2026; `MIGRATION_PLAN.md` records the port, and much of the
+behaviour (and many comments) is defined as "what Flask did" — keep it that way unless asked. Comments citing Python
+files (`inventory/...py`, `tests/test_*.py`) refer to the Flask app, still in git history: `git show 5953f4c^:<path>`.
 
 ## Commands
 
 ```bash
-# Create/upgrade the database (data/inventory.sqlite3, or $DATABASE_URL), then run the dev server
-alembic upgrade head
-python -m inventory.api.app
+cargo run -- migrate                 # create/upgrade data/inventory.sqlite3 (or $DATABASE_URL), backing it up first
+cargo run                            # serve on $BIND_ADDR (0.0.0.0:8000)
+cargo run -- set-admin <username> [--revoke]
+cargo run -- set-password <username> [--login NAME]   # interactive prompt
+cargo run -- healthcheck             # exit 0 if /health answers (the image's HEALTHCHECK)
 
-# Tests (pytest.ini always adds coverage: --cov=inventory, term-missing + htmlcov/)
-pytest
-pytest tests/test_items.py                                       # one file
-pytest tests/test_items.py::TestItemCRUD                         # one class
-pytest "tests/test_items.py::TestItemCRUD::test_show[miniature]" # one parametrized case
-pytest -k borrow                                                 # by name
-pytest --no-cov -q                                               # skip coverage
-
-# Grant/revoke admin (user must have logged in via Discord at least once)
-python misc/set_admin.py <discord_username> [--revoke]
-
-# After changing a model: generate a migration, READ it, then apply it
-alembic revision --autogenerate -m "what changed"
-alembic upgrade head
-
-# One-time MongoDB -> SQLite import (needs `pip install pymongo`; see the script's docstring)
-python misc/migrate_mongo_to_sqlite.py --dry-run [--skip-orphans] [--uploads-dir DIR]
+make test                            # cargo test + cargo clippy --all-targets -- -D warnings
+cargo test --test items              # one integration test file (tests/*.rs)
+cargo test test_edit                 # by name
+./scripts/sqlx-prepare.sh            # after adding/changing a sqlx::query! — regenerates .sqlx/, commit it
 
 # Deploy (see deploy/config.sh for the server settings, all env-overridable)
-make setup       # one-time: server layout, docker check, nginx snippet
-make deploy      # build for the server's arch, ship the image, restart, health check
-make rollback    # back to the previous version (nothing is rebuilt or transferred)
-make status      # running container + /health, as seen from the server
-make logs        # follow the container logs
-make nginx       # re-install the nginx snippet only (after changing URL_PREFIX)
-make deploy ENV=staging   # any of the above, on the staging instance (or: deploy/deploy.sh --env staging)
+make setup | deploy | rollback | status | logs | nginx      # add ENV=staging for the staging instance
 ```
 
-`config.json` (gitignored) is required at project root and holds `discord` (client_id/client_secret); a leftover
-`mongo` section is only read by `misc/migrate_mongo_to_sqlite.py`. `secret_key.txt` (gitignored) holds the Flask
-session key; if missing a random key is generated per process, which silently invalidates sessions. In
-production both live in the server's `$REMOTE_DIR/config/` and are bind-mounted read-only — no deploy step reads
-or writes them. `inventory/libs/initialization.py` finds them by walking up to the first directory holding
-`requirements.txt`, `.git` or `README.md`, which is `/app` inside the image. The database is
-`<root>/data/inventory.sqlite3` unless `DATABASE_URL` is set (`database_url()`, used by the app, Alembic and the
-scripts alike); `data/` is gitignored and dockerignored.
+`config.json` (gitignored; `discord.client_id/client_secret`) and `secret_key.txt` (session signing key; missing →
+random key per process, which logs everyone out at each restart) live at the root, found by walking up to the first
+directory holding `Cargo.toml`, `.git` or `README.md` (`/app` in the image), or `$INVENTORY_ROOT`. In production both
+are mounted read-only from the server's `$REMOTE_DIR/config/`. `data/` (database, photos under `data/uploads`) is
+gitignored and dockerignored. Other settings are env vars (README → Settings); a root `.env` is loaded.
 
-Tests need no server: `create_app(test=True)` uses `data/inventory_test.sqlite3` (never `DATABASE_URL`), which
-`tests/conftest.py` deletes and rebuilds with `alembic upgrade head` at the start of every run.
-`tests/test_database.py` fails when a model changed without a migration. pytest-flask pushes a request context
-around every test, so a test and the requests its client makes share one SQLAlchemy session; use the
-`save`/`reload`/`count`/`first` helpers from `conftest.py` rather than raw session calls.
+## Rules
+
+- `unwrap`/`expect` are denied crate-wide (`Cargo.toml` lints); tests may use them (`clippy.toml`, and each
+  `tests/*.rs` allows them). Request paths return `AppError`, whose pages are werkzeug's, byte for byte.
+- Never put `\uXXXX` escapes in file content written by tools: they get decoded. Build such strings with `\\u`.
+- After a model/query change: `scripts/sqlx-prepare.sh`, then commit `.sqlx/` — builds (and the Docker image) compile
+  offline against it. The macros read `SQLX_DATABASE_URL` (`sqlx.toml`), never the app's `DATABASE_URL`.
+- Schema changes are new files in `migrations/` (next number). Never edit an applied one: `migrate` refuses a changed
+  checksum. Tables SQLite cannot ALTER are rebuilt (see `0002`: keep the AUTOINCREMENT counter across the rebuild).
 
 ## Architecture
 
+### Request pipeline (`src/lib.rs`)
+
+`build_app` wraps the router *as one service* (not `Router::layer`, which wraps each route): trace → session
+middleware → `web::werkzeug_compat`. axum finishes some responses after route layers ran (the `Allow` of a 405), and
+these layers must see the final response. `werkzeug_compat` turns axum's empty 405 into werkzeug's page and answers
+`OPTIONS`; `web::add_trailing_slash` routes give werkzeug's 308 for `/<slug>/<items>` without the slash.
+
 ### Multi-tenant routing via `<slug>`
 
-Every item blueprint is mounted at `/<slug>/<items>` where `slug` is an `Association.slug`.
-`register_assoc_hooks(bp)` in `inventory/api/utils.py` wires three things per blueprint:
+Every item route is `/{slug}/{segment}/...` where `slug` is an `Association.slug`. Handlers check in Flask's order
+(`handlers/items.rs` doc): `<int:id>` (404) → `association()` (404, `AppError::UnknownAssociation`, which also means
+"the session was never read": no `Vary`, nothing written back) → `require_admin` (403) → `scoped_item` (404 for
+another association's item) → form fields in the view's order. **Every query must be scoped by association**; a new
+mutating route must call `require_admin` (or check login for borrow-like actions). Item ids are `<int:id>`; a
+24-hex id on a show URL is an old sticker (`db::legacy`) and gets a 301.
 
-- a `url_value_preprocessor` that pops `slug`, resolves the `Association`, and stores it in `g.assoc` (404 otherwise);
-- a `url_defaults` hook that re-injects `g.assoc.slug`, so `url_for('miniatures.show', id=...)` needs no slug;
-- a `before_request` admin gate on the view names `create`, `edit`, `delete`, `upload_image`, `delete_image`, `stickers`.
+### Eight item types, one implementation
 
-Consequence: **every query must be scoped** with `.filter_by(association=g.assoc)`, and any new mutating view must
-either be named one of the gated view names or do its own admin check. `get_or_404` (`inventory/libs/`) does the
-scoping itself: a row of another association is a 404. Item routes take `<int:id>`.
+`kinds::ItemKind` is the single registry: `item_type` (`board_game`, stored in borrowings/links), `blueprint`
+(`board_games`, endpoint prefix), `segment` (`board-games`, URL), table, category name, flash noun, template dir,
+default quantity. `db/items.rs` holds the only runtime-built SQL (one column spec per type; the macros need literal
+SQL) and `Item` with `ItemFields` flattened in for templates. Adding a type: `ItemKind` + its arms, `own_columns`,
+`from_row`, `form_fields` (handlers/items.rs), `labels.rs`, a migration, templates, translations (`nav_*`),
+`CATEGORIES`, and the test configs in `tests/items.rs` / `tests/print.rs`.
 
-### Eight parallel item types
+Route modules per concern, each registered per kind: `handlers/items.rs` (index/show/create/edit/delete),
+`borrow.rs`, `images.rs` (uploads under `UPLOADS_DIR/<category_snake>/<id>/`, names `uuid_<secure_filename>`),
+`duplicates.rs`, `print.rs` (per-type stickers + `/{slug}/print/`), `auth.rs`, `app.rs`.
 
-`miniature, terrain, tablecloth, rulebook, board_game, book, equipment, consumable` — each has its own
-`inventory/db/<type>.py` model (one table each), `inventory/api/routes/<type>.py` blueprint, and
-`inventory/api/templates/<type>/{list,form,show}.html`. All models share `association, category, quantity,
-borrowing_count, sticker_printed, location, images` through `ItemMixin` (`inventory/db/item.py`) and differ only in
-a few descriptive fields; `images` is a JSON list of filenames.
+Borrowing is **event-sourced**: `borrowings` rows (`borrow`/`return`) are the record; status is the latest event;
+`borrowing_count` is a denormalized counter adjusted in SQL in the same transaction (never below 0).
+`duplicate_links` are undirected — query both ends. Neither has a foreign key to items (eight tables), so deleting
+an item leaves them behind and pages skip what they cannot resolve; that is why every table is AUTOINCREMENT.
 
-Adding or changing an item type means touching **all** of these registries, which are hand-maintained and easy to
-miss:
+### Templates (`src/templates.rs`)
 
-| Where | What |
-|---|---|
-| `inventory/db/constants.py` | `CATEGORIES` (display names) |
-| `inventory/db/models.py` | the import list Alembic sees — a model missing here gets its table dropped by autogenerate |
-| `alembic/versions/` | a migration creating the table (`alembic revision --autogenerate`) |
-| `misc/migrate_mongo_to_sqlite.py` | `ITEM_TYPES` (only matters for the one-time Mongo import) |
-| `inventory/api/item_labels.py` | `get_sticker_lines`, `get_list_row`, `_TYPE_BLUEPRINT_MAP`, `_get_type_model_map` |
-| `inventory/api/utils.py` | `_SLUG_TO_TYPE` (URL segment → item type, used to parse pasted duplicate URLs) |
-| `inventory/api/routes/print_page.py` | `ITEM_TYPES` (type, category name, model, blueprint name) |
-| `inventory/api/app.py` | blueprint registration |
-| `inventory/api/translations.py` | `nav_*` keys and any new field labels, in both `fr` and `en` |
-| `tests/conftest.py` | `ALL_ITEM_MODELS` |
-| `tests/test_items.py` | `ITEM_CONFIGS` (drives the parametrized CRUD/borrow/sticker suite) |
+minijinja with Jinja2-compatible output: a formatter printing `None`/`True`/`False` and escaping like MarkupSafe
+(`&#39;`, `&#34;`, `/` untouched), pycompat for `.lower()`/`.replace()`, `TemplateDate` with `strftime`. Templates
+are embedded by `build.rs`. Every page goes through the `Page` extractor (`t`, `lang`, `admin`, `current_user`,
+`request.blueprint`, `url_for`, `get_flashed_messages`). Templates cannot query: `get_borrow_status`,
+`get_borrow_history`, `get_duplicate_links` read `ItemExtras` the handler prefetched (`render_with`). Never hardcode
+user-facing strings in templates: add keys to both languages in `i18n/translations.json` (`t.<key>`; nested
+`t.categories[...]`, `t.materials[...]`). Flash messages written by handlers are English (inherited).
 
-Note the naming mismatches: item type is snake_case (`board_game`), blueprint/URL is plural-ish
-(`board_games` / `/board-games`), and `equipment` is identical in all three forms.
+`urls.rs` holds every endpoint's rule; `url_for` injects the current association's slug for item/print endpoints,
+puts extra args in the query string, and prefixes `URL_PREFIX` (nginx strips it before proxying, so routing never
+sees it). External URLs use `X-Forwarded-Proto` and `Host` — the Discord redirect URI must match the one registered
+(`https://apps.ieroe.com/inventory/auth/discord/callback`).
 
-### Shared behaviour is registered, not inherited
+### Sessions and accounts
 
-Route modules stay thin by calling registrar functions from `inventory/api/utils.py`, which attach routes to the
-blueprint: `register_image_routes` (upload/delete under `static/uploads/<category_snake>/<item_id>/`),
-`register_borrow_routes` (writes a `Borrowing` event and bumps `borrowing_count`),
-`register_duplicate_routes` (links two items by pasting the other item's URL), and `register_sticker_routes`
-(per-type PDF that also flips `sticker_printed`). Each route module then only defines `index/show/create/edit/delete`.
-
-Borrowing is **event-sourced**: `Borrowing` rows (`action` = `borrow`/`return`) are the record; current status
-comes from the latest event via the `get_borrow_status` / `get_borrow_history` template globals in `app.py`.
-`borrowing_count` on the item is a denormalized counter kept in sync by those routes.
-
-`DuplicateLink` is undirected — queries must check both `item1_*` and `item2_*` (see `get_duplicate_links` in
-`app.py` and `add_duplicate` in `utils.py`).
-
-`Borrowing` and `DuplicateLink` point at items through an `(item_type, item_id)` pair spread over eight tables,
-which no foreign key can guard: deleting an item leaves them behind (the templates skip what they cannot resolve).
-That is also why every table uses `AUTOINCREMENT` — a reused id would inherit a deleted item's history, links and
-upload folder.
+`session.rs` is Flask's signed cookie (itsdangerous: HMAC-SHA1, tagged JSON, zlib, 31-day max age), readable by
+both apps, now `SameSite=Lax`; name/path follow `URL_PREFIX` (`session_<prefix>`) so instances on one host don't
+clash. A non-integer `user_id` (Mongo era) is dropped. Discord login keeps authlib's state format in the session.
+Password accounts (`password.rs`): argon2id, `users.login` unique case-insensitively (separate from `username`, the
+display name Discord overwrites), generic failure message, 10 attempts/min per `X-Real-IP` (set by nginx; never trust
+`X-Forwarded-For` for this). Admin is CLI-only.
 
 ### Database
 
-`inventory/db/base.py` holds the `db` (Flask-SQLAlchemy) instance and everything that must apply to every
-connection and every table, the app's, Alembic's and the scripts' alike:
+`db/mod.rs` sets the pragmas on every connection: WAL, `synchronous=NORMAL`, `foreign_keys=ON`, 5s busy timeout.
+Every table is STRICT. Datetimes are TEXT `YYYY-MM-DD HH:MM:SS.ffffff` (always 6 digits — `db::types`; ordering
+relies on it) and `images` is `json.dumps` text (`["a", "b"]`). `migrate.rs` runs migrations with foreign keys off,
+`PRAGMA foreign_key_check` before each commit, a `VACUUM INTO` backup first, and baselines a database Alembic built
+(revision `7b1fd3535193`) as migration 0001.
 
-- **STRICT tables** (`__table_args__ = STRICT`, or `item_table_args()` for item tables). STRICT only accepts the
-  column types INTEGER/TEXT/REAL/BLOB/ANY, so `String`/`DateTime`/`JSON` compile to `TEXT` and `Boolean` to
-  `INTEGER` there; the Python types are unchanged. A wrong-typed value is an `IntegrityError`, not silently stored.
-- **Pragmas**, set by an `Engine` `connect` listener: `journal_mode=WAL`, `synchronous=NORMAL`, `foreign_keys=ON`
-  (SQLite's default is OFF), `busy_timeout=5000` (two gunicorn workers share the file).
-- A naming convention for constraints, which Alembic's batch mode needs.
+### PDFs (`src/pdf/`)
 
-`alembic/env.py` turns foreign keys **off** for the duration of a migration and runs `PRAGMA foreign_key_check`
-before committing: SQLite cannot ALTER most things, so batch mode rebuilds tables (copy, drop, rename), and dropping
-a referenced table fails with foreign keys on. It also makes each `alembic upgrade` one transaction (sqlite3 would
-otherwise autocommit DDL statement by statement). Always generate with `--autogenerate` and read the result.
+A small PDF writer with the built-in Helvetica fonts (WinAnsi) and reportlab's width tables, so wrapping and page
+breaks match what reportlab produced (tests pin page counts measured with it). Stickers 105×57mm, 2×5 on A4, QR
+codes encoded like Python's `qrcode` (byte mode, level M, smallest version). **Generating stickers marks the items
+printed** — be deliberate about that side effect; the list does not.
 
-`legacy_object_ids` maps the MongoDB ObjectId of every imported item to its new id. Stickers printed before the
-move encode `/<slug>/<items>/<ObjectId>` in their QR code; the `legacy_item` route in `app.py` (an `objectid` URL
-converter) 301-redirects those, and pasted duplicate URLs resolve them too. Never drop that table while such
-stickers are still on the shelves. Sessions from the Mongo era (string `user_id`) are logged out.
+### Deployment
 
-### Templates and i18n
+`make deploy` builds the image (multi-stage `Dockerfile`; `SQLX_OFFLINE`, no database at build time), ships it with
+`docker save`/scp, **migrates from the new image** (`inventory migrate` in a throwaway container) and restarts — no
+registry. `deploy/remote.sh` is the server side and the single source of the `docker run` options for deploys and
+rollbacks; keep it working for the previous image too:
 
-`app.py`'s `inject_globals` context processor exposes `t` (the translation dict for `session['lang']`, default
-`fr`), `lang`, `admin`, and `current_user` to every template. Templates always use `t.<key>` — never hardcode
-user-facing strings; add the key to both languages in `inventory/api/translations.py`. Nested dicts exist for
-enum-ish values (`t.categories[...]`, `t.materials[...]`).
+- photos stay mounted at `/app/inventory/api/static/uploads` (the Python image's path; the Rust image sets
+  `UPLOADS_DIR` to it), and the health probe falls back to python — so `make rollback` to a Python release works;
+- `BIND_ADDR` comes from `APP_PORT`; nginx reaches the container by name on `nginx-common-network`, no port published;
+- the database directory (`data/db`, not the file: WAL) is mounted at `/app/data`; mounts are chowned to uid 10001
+  before every migration and start; migrations run before the version swap, so a failed one leaves the old version up;
+  rollbacks never downgrade (restore a backup from `data/db/backups/` instead).
 
-List and show pages are responsive by duplication: a `d-none d-md-block` table for desktop and a `d-md-none`
-card/list rendering for mobile.
-
-### Deployment and URL prefix
-
-`make deploy` builds an image, `docker save`s it, scps the tarball, `docker load`s it on the server, **migrates the
-database from the new image** (`python -m inventory.db.migrate`, in a throwaway container) and restarts the
-container — no registry. Ported from the sibling `tasks_manager` project, so the two stay recognisable.
-
-- **Two instances**, production (default) and staging (`ENV=staging` / `--env staging`). `deploy/config.sh` derives
-  every per-instance name from `APP_NAME` (`inventory` or `inventory_staging`): `REMOTE_DIR` (sibling directories,
-  so separate `config/`, database and uploads), `IMAGE_NAME` (must differ: prune deletes every tag of its image
-  that is not its own current/previous), `CONTAINER_NAME`, `NGINX_CONF_NAME` and `URL_PREFIX`
-  (`/inventory_staging`). Staging joins no Mongo network. Since both share a host, the app names its session
-  cookie after the prefix and scopes its path to it (`create_app`), otherwise each would log the other out.
-- `deploy/config.sh` holds every setting and is sourced by all the others (with their arguments, for `--env`); `deploy/remote.sh` is the **server
-  side** and is re-uploaded before every run, so the `docker run` options a rollback uses cannot drift from the
-  ones a deploy used.
-- Releases are timestamped, `current_version.txt`/`previous_version.txt` record the swap **before** the restart,
-  and `make rollback` trades the two files. Pruning happens only after a healthy start.
-- The container publishes **no port**. It joins nginx's `nginx-common-network` and Mongo's `mongo-network`
-  (hence `docker create` + `network connect` + `docker start` rather than `docker run`, which takes only one
-  `--network`), and nginx reaches it by container name. The app no longer uses Mongo: that network is only kept so
-  `make rollback` to a pre-SQLite release still works; set `MONGO_NETWORK=''` once none is left.
-- Server-owned state under `$REMOTE_DIR`: `config/` (config.json, secret_key.txt), `data/uploads/`, bind-mounted
-  over `inventory/api/static/uploads`, and `data/db/`, bind-mounted at `/app/data` (the directory, not the file:
-  WAL keeps `-wal`/`-shm` files beside the database). **Those mounts are not optional** — the image is rebuilt from
-  scratch every release, so anything written inside the container is lost at the next deploy. Docker creates those
-  host directories as `root:root`, which the image's uid 10001 cannot write, so `ensure_data_writable` chowns them
-  to 10001 before every migration and start via `docker run --user 0` on the image itself (the daemon is root, so
-  this needs no sudo on the server). Getting it wrong is invisible to a deploy: `/health` stays green and only the
-  first photo upload (`EACCES`) or the first page (database) 500s.
-- Migrations run in `cmd_activate` **before** the version bookkeeping and the restart: a failing one is rolled back
-  and leaves the running version untouched. When there is something to apply, the database is first copied to
-  `data/db/backups/`. `make rollback` never downgrades — the previous image then runs on the newer schema, which is
-  only safe for additive migrations; otherwise restore a backup.
-
-`URL_PREFIX` in `deploy/config.sh` is the single source for the sub-path: it renders the nginx `location` block
-*and* is passed to the container as an env var. nginx strips the prefix before proxying, so routing already
-matches; `mounted_under()` in `app.py` sets `SCRIPT_NAME` so `url_for()` builds links back under it. PATH_INFO is
-deliberately untouched. Two consequences worth remembering:
-
-- Changing the prefix needs `make nginx` **and** `make deploy` — one updates the proxy, the other the app.
-- The Discord redirect URI is generated with `url_for(..., _external=True)`, so it includes the prefix and must
-  match what is registered on the Discord application exactly — currently
-  `https://apps.ieroe.com/inventory/auth/discord/callback`. Its **scheme** depends on gunicorn's
-  `--forwarded-allow-ips *` (Dockerfile): nginx is a separate container, so without it gunicorn ignores
-  `X-Forwarded-Proto` and the URI comes out as `http://`. `auth.login` logs the URI it sends, so `make logs` shows
-  exactly what Discord is being asked to match.
-
-`/health` is registered at the app root and never touches the database: it answers "did gunicorn come up with this
-image", which is the only question a deploy can act on. A probe that also failed on a database blip would roll
-back a good release.
-
-### PDF generation
-
-`inventory/api/pdf.py` builds sticker sheets (105×57mm, 2×5 on A4, QR code linking to the item's absolute `show`
-URL) with raw reportlab canvas drawing, and inventory lists with platypus. `/<slug>/print` (admin-only) offers
-three scopes: full, one category, or "new only" (`sticker_printed == False`). Generating stickers **marks items
-as printed**, so any code path calling `make_stickers_pdf` should be deliberate about that side effect.
+Two instances, production and staging (`ENV=staging`), derive every name from `APP_NAME` in `deploy/config.sh`.
+`URL_PREFIX` there renders the nginx `location` and is passed to the container: changing it needs `make nginx` and
+`make deploy`. `/health` never touches the database: it answers "did this image come up", the only question a deploy
+can act on.
