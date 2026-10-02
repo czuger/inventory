@@ -1,0 +1,8 @@
+# The query macros check SQL against a database at compile time. They read its URL from
+# SQLX_DATABASE_URL rather than DATABASE_URL, which is the app's own runtime setting and
+# must never point a build at real data (or real data at a build's leftovers).
+#
+# Builds normally need no database at all: they use the query data committed in .sqlx/.
+# After adding or changing a query, regenerate it with scripts/sqlx-prepare.sh.
+[common]
+database-url-var = "SQLX_DATABASE_URL"

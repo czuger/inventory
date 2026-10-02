@@ -1,0 +1,21 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT EXISTS (\n             SELECT 1 FROM duplicate_links WHERE association_id = ?\n               AND ((item1_id = ? AND item1_type = ? AND item2_id = ? AND item2_type = ?)\n                 OR (item1_id = ? AND item1_type = ? AND item2_id = ? AND item2_type = ?))\n           ) AS \"linked: bool\"",
+  "describe": {
+    "columns": [
+      {
+        "name": "linked: bool",
+        "ordinal": 0,
+        "type_info": "Integer",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Right": 9
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "bdbfa8906531902c338fa87244e44050f973015cd664dbdcc3bd6508dcfcf7e4"
+}

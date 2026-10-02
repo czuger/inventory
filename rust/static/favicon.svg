@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="4" fill="#212529"/>
+  <text x="16" y="27"
+        font-size="24"
+        text-anchor="middle"
+        fill="#ffc107"
+        font-family="'Segoe UI Symbol', 'Apple Symbols', 'Arial Unicode MS', serif">&#x265E;</text>
+</svg>

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM duplicate_links WHERE id = ? AND association_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "acab9811a4f80189b00039907c4fb4f6d95d0a52198cbd9df038b6530cf381b2"
+}

@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT item_type, item_id FROM legacy_object_ids WHERE object_id = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "item_type",
+        "ordinal": 0,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "legacy_object_ids",
+            "name": "item_type"
+          }
+        }
+      },
+      {
+        "name": "item_id",
+        "ordinal": 1,
+        "type_info": "Integer",
+        "origin": {
+          "Table": {
+            "table": "legacy_object_ids",
+            "name": "item_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "bb0518b36b2ca2481aa178f5983a41799a7a05c12f141e8dc9515536851270e0"
+}

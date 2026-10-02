@@ -1,0 +1,74 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT id, item1_id, item1_type, item2_id, item2_type FROM duplicate_links\n         WHERE association_id = ?\n           AND ((item1_id = ? AND item1_type = ?) OR (item2_id = ? AND item2_type = ?))\n         ORDER BY id",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Integer",
+        "origin": {
+          "Table": {
+            "table": "duplicate_links",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "name": "item1_id",
+        "ordinal": 1,
+        "type_info": "Integer",
+        "origin": {
+          "Table": {
+            "table": "duplicate_links",
+            "name": "item1_id"
+          }
+        }
+      },
+      {
+        "name": "item1_type",
+        "ordinal": 2,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "duplicate_links",
+            "name": "item1_type"
+          }
+        }
+      },
+      {
+        "name": "item2_id",
+        "ordinal": 3,
+        "type_info": "Integer",
+        "origin": {
+          "Table": {
+            "table": "duplicate_links",
+            "name": "item2_id"
+          }
+        }
+      },
+      {
+        "name": "item2_type",
+        "ordinal": 4,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "duplicate_links",
+            "name": "item2_type"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "6f178b7d30f025e1ce877cee4c8089c5bb3cda95f82832f26cf2b8f76e3c402f"
+}

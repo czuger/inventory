@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO borrowings (association_id, borrower_id, item_id, item_type, action, date) VALUES (?, ?, ?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 6
+    },
+    "nullable": []
+  },
+  "hash": "6fa11377cb1d1a0f827e3574dd2b81d6235bd0b639af5b2604201df16a2f4142"
+}

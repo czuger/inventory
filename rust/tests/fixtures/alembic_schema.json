@@ -1,0 +1,194 @@
+[
+ [
+  "table",
+  "associations",
+  "associations",
+  "CREATE TABLE associations (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tname TEXT NOT NULL, \n\tslug TEXT NOT NULL, \n\tCONSTRAINT uq_associations_name UNIQUE (name), \n\tCONSTRAINT uq_associations_slug UNIQUE (slug)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "sqlite_autoindex_associations_1",
+  "associations",
+  null
+ ],
+ [
+  "index",
+  "sqlite_autoindex_associations_2",
+  "associations",
+  null
+ ],
+ [
+  "table",
+  "sqlite_sequence",
+  "sqlite_sequence",
+  "CREATE TABLE sqlite_sequence(name,seq)"
+ ],
+ [
+  "table",
+  "games",
+  "games",
+  "CREATE TABLE games (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tname TEXT NOT NULL, \n\tCONSTRAINT uq_games_name UNIQUE (name)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "sqlite_autoindex_games_1",
+  "games",
+  null
+ ],
+ [
+  "table",
+  "legacy_object_ids",
+  "legacy_object_ids",
+  "CREATE TABLE legacy_object_ids (\n\tobject_id TEXT NOT NULL, \n\titem_type TEXT NOT NULL, \n\titem_id INTEGER NOT NULL, \n\tCONSTRAINT pk_legacy_object_ids PRIMARY KEY (object_id)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "sqlite_autoindex_legacy_object_ids_1",
+  "legacy_object_ids",
+  null
+ ],
+ [
+  "table",
+  "users",
+  "users",
+  "CREATE TABLE users (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tdiscord_id TEXT NOT NULL, \n\tusername TEXT NOT NULL, \n\tdisplay_name TEXT, \n\tis_admin INTEGER NOT NULL, \n\tCONSTRAINT uq_users_discord_id UNIQUE (discord_id)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "sqlite_autoindex_users_1",
+  "users",
+  null
+ ],
+ [
+  "table",
+  "borrowings",
+  "borrowings",
+  "CREATE TABLE borrowings (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tassociation_id INTEGER NOT NULL, \n\tborrower_id INTEGER NOT NULL, \n\titem_id INTEGER NOT NULL, \n\titem_type TEXT NOT NULL, \n\taction TEXT NOT NULL, \n\tdate TEXT NOT NULL, \n\tCONSTRAINT ck_borrowings_action_choices CHECK (action IN ('borrow', 'return')), \n\tCONSTRAINT fk_borrowings_association_id_associations FOREIGN KEY(association_id) REFERENCES associations (id), \n\tCONSTRAINT fk_borrowings_borrower_id_users FOREIGN KEY(borrower_id) REFERENCES users (id)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "ix_borrowings_item",
+  "borrowings",
+  "CREATE INDEX ix_borrowings_item ON borrowings (item_type, item_id, date)"
+ ],
+ [
+  "table",
+  "duplicate_links",
+  "duplicate_links",
+  "CREATE TABLE duplicate_links (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tassociation_id INTEGER NOT NULL, \n\titem1_id INTEGER NOT NULL, \n\titem1_type TEXT NOT NULL, \n\titem2_id INTEGER NOT NULL, \n\titem2_type TEXT NOT NULL, \n\tcreated_at TEXT NOT NULL, \n\tCONSTRAINT fk_duplicate_links_association_id_associations FOREIGN KEY(association_id) REFERENCES associations (id)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "ix_duplicate_links_association_id",
+  "duplicate_links",
+  "CREATE INDEX ix_duplicate_links_association_id ON duplicate_links (association_id)"
+ ],
+ [
+  "table",
+  "locations",
+  "locations",
+  "CREATE TABLE locations (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tassociation_id INTEGER NOT NULL, \n\troom TEXT NOT NULL, \n\tspot TEXT NOT NULL, \n\tCONSTRAINT fk_locations_association_id_associations FOREIGN KEY(association_id) REFERENCES associations (id), \n\tCONSTRAINT uq_locations_association_id_room_spot UNIQUE (association_id, room, spot)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "sqlite_autoindex_locations_1",
+  "locations",
+  null
+ ],
+ [
+  "table",
+  "board_games",
+  "board_games",
+  "CREATE TABLE board_games (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tassociation_id INTEGER NOT NULL, \n\tcategory TEXT NOT NULL, \n\tname TEXT NOT NULL, \n\tuniverse TEXT, \n\tquantity INTEGER NOT NULL, \n\tborrowing_count INTEGER NOT NULL, \n\tsticker_printed INTEGER NOT NULL, \n\tlocation_id INTEGER NOT NULL, \n\timages TEXT NOT NULL, \n\tCONSTRAINT ck_board_games_images_is_array CHECK (json_type(images) = 'array'), \n\tCONSTRAINT fk_board_games_association_id_associations FOREIGN KEY(association_id) REFERENCES associations (id), \n\tCONSTRAINT fk_board_games_location_id_locations FOREIGN KEY(location_id) REFERENCES locations (id)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "ix_board_games_association_id",
+  "board_games",
+  "CREATE INDEX ix_board_games_association_id ON board_games (association_id)"
+ ],
+ [
+  "table",
+  "books",
+  "books",
+  "CREATE TABLE books (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tassociation_id INTEGER NOT NULL, \n\tcategory TEXT NOT NULL, \n\tname TEXT NOT NULL, \n\tuniverse TEXT, \n\tperiod TEXT, \n\tquantity INTEGER NOT NULL, \n\tborrowing_count INTEGER NOT NULL, \n\tsticker_printed INTEGER NOT NULL, \n\tlocation_id INTEGER NOT NULL, \n\timages TEXT NOT NULL, \n\tCONSTRAINT ck_books_images_is_array CHECK (json_type(images) = 'array'), \n\tCONSTRAINT fk_books_association_id_associations FOREIGN KEY(association_id) REFERENCES associations (id), \n\tCONSTRAINT fk_books_location_id_locations FOREIGN KEY(location_id) REFERENCES locations (id)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "ix_books_association_id",
+  "books",
+  "CREATE INDEX ix_books_association_id ON books (association_id)"
+ ],
+ [
+  "table",
+  "consumables",
+  "consumables",
+  "CREATE TABLE consumables (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tassociation_id INTEGER NOT NULL, \n\tcategory TEXT NOT NULL, \n\ttype TEXT NOT NULL, \n\tunit TEXT, \n\tquantity INTEGER NOT NULL, \n\tborrowing_count INTEGER NOT NULL, \n\tsticker_printed INTEGER NOT NULL, \n\tlocation_id INTEGER NOT NULL, \n\timages TEXT NOT NULL, \n\tCONSTRAINT ck_consumables_images_is_array CHECK (json_type(images) = 'array'), \n\tCONSTRAINT fk_consumables_association_id_associations FOREIGN KEY(association_id) REFERENCES associations (id), \n\tCONSTRAINT fk_consumables_location_id_locations FOREIGN KEY(location_id) REFERENCES locations (id)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "ix_consumables_association_id",
+  "consumables",
+  "CREATE INDEX ix_consumables_association_id ON consumables (association_id)"
+ ],
+ [
+  "table",
+  "equipment",
+  "equipment",
+  "CREATE TABLE equipment (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tassociation_id INTEGER NOT NULL, \n\tcategory TEXT NOT NULL, \n\ttype TEXT NOT NULL, \n\tquantity INTEGER NOT NULL, \n\tborrowing_count INTEGER NOT NULL, \n\tsticker_printed INTEGER NOT NULL, \n\tlocation_id INTEGER NOT NULL, \n\timages TEXT NOT NULL, \n\tCONSTRAINT ck_equipment_images_is_array CHECK (json_type(images) = 'array'), \n\tCONSTRAINT fk_equipment_association_id_associations FOREIGN KEY(association_id) REFERENCES associations (id), \n\tCONSTRAINT fk_equipment_location_id_locations FOREIGN KEY(location_id) REFERENCES locations (id)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "ix_equipment_association_id",
+  "equipment",
+  "CREATE INDEX ix_equipment_association_id ON equipment (association_id)"
+ ],
+ [
+  "table",
+  "miniatures",
+  "miniatures",
+  "CREATE TABLE miniatures (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tassociation_id INTEGER NOT NULL, \n\tcategory TEXT NOT NULL, \n\ttype TEXT NOT NULL, \n\tgame_id INTEGER NOT NULL, \n\tscale TEXT NOT NULL, \n\tquantity INTEGER NOT NULL, \n\tborrowing_count INTEGER NOT NULL, \n\tsticker_printed INTEGER NOT NULL, \n\tlocation_id INTEGER NOT NULL, \n\timages TEXT NOT NULL, \n\tCONSTRAINT ck_miniatures_images_is_array CHECK (json_type(images) = 'array'), \n\tCONSTRAINT fk_miniatures_association_id_associations FOREIGN KEY(association_id) REFERENCES associations (id), \n\tCONSTRAINT fk_miniatures_game_id_games FOREIGN KEY(game_id) REFERENCES games (id), \n\tCONSTRAINT fk_miniatures_location_id_locations FOREIGN KEY(location_id) REFERENCES locations (id)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "ix_miniatures_association_id",
+  "miniatures",
+  "CREATE INDEX ix_miniatures_association_id ON miniatures (association_id)"
+ ],
+ [
+  "table",
+  "rulebooks",
+  "rulebooks",
+  "CREATE TABLE rulebooks (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tassociation_id INTEGER NOT NULL, \n\tcategory TEXT NOT NULL, \n\tname TEXT NOT NULL, \n\tgame_id INTEGER NOT NULL, \n\tsupplement INTEGER NOT NULL, \n\tquantity INTEGER NOT NULL, \n\tborrowing_count INTEGER NOT NULL, \n\tsticker_printed INTEGER NOT NULL, \n\tlocation_id INTEGER NOT NULL, \n\timages TEXT NOT NULL, \n\tCONSTRAINT ck_rulebooks_images_is_array CHECK (json_type(images) = 'array'), \n\tCONSTRAINT fk_rulebooks_association_id_associations FOREIGN KEY(association_id) REFERENCES associations (id), \n\tCONSTRAINT fk_rulebooks_game_id_games FOREIGN KEY(game_id) REFERENCES games (id), \n\tCONSTRAINT fk_rulebooks_location_id_locations FOREIGN KEY(location_id) REFERENCES locations (id)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "ix_rulebooks_association_id",
+  "rulebooks",
+  "CREATE INDEX ix_rulebooks_association_id ON rulebooks (association_id)"
+ ],
+ [
+  "table",
+  "tablecloths",
+  "tablecloths",
+  "CREATE TABLE tablecloths (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tassociation_id INTEGER NOT NULL, \n\tcategory TEXT NOT NULL, \n\ttype TEXT NOT NULL, \n\tmaterial TEXT, \n\tgame_id INTEGER NOT NULL, \n\tsize TEXT NOT NULL, \n\tremarks TEXT, \n\tquantity INTEGER NOT NULL, \n\tborrowing_count INTEGER NOT NULL, \n\tsticker_printed INTEGER NOT NULL, \n\tlocation_id INTEGER NOT NULL, \n\timages TEXT NOT NULL, \n\tCONSTRAINT ck_tablecloths_images_is_array CHECK (json_type(images) = 'array'), \n\tCONSTRAINT ck_tablecloths_material_choices CHECK (material IN ('mousepad (neoprene)', 'vinyl', 'cloth', 'textured')), \n\tCONSTRAINT fk_tablecloths_association_id_associations FOREIGN KEY(association_id) REFERENCES associations (id), \n\tCONSTRAINT fk_tablecloths_game_id_games FOREIGN KEY(game_id) REFERENCES games (id), \n\tCONSTRAINT fk_tablecloths_location_id_locations FOREIGN KEY(location_id) REFERENCES locations (id)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "ix_tablecloths_association_id",
+  "tablecloths",
+  "CREATE INDEX ix_tablecloths_association_id ON tablecloths (association_id)"
+ ],
+ [
+  "table",
+  "terrains",
+  "terrains",
+  "CREATE TABLE terrains (\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n\tassociation_id INTEGER NOT NULL, \n\tcategory TEXT NOT NULL, \n\ttype TEXT NOT NULL, \n\tgame_id INTEGER NOT NULL, \n\tscale TEXT NOT NULL, \n\ttheater TEXT, \n\tquantity INTEGER NOT NULL, \n\tborrowing_count INTEGER NOT NULL, \n\tsticker_printed INTEGER NOT NULL, \n\tlocation_id INTEGER NOT NULL, \n\timages TEXT NOT NULL, \n\tCONSTRAINT ck_terrains_images_is_array CHECK (json_type(images) = 'array'), \n\tCONSTRAINT fk_terrains_association_id_associations FOREIGN KEY(association_id) REFERENCES associations (id), \n\tCONSTRAINT fk_terrains_game_id_games FOREIGN KEY(game_id) REFERENCES games (id), \n\tCONSTRAINT fk_terrains_location_id_locations FOREIGN KEY(location_id) REFERENCES locations (id)\n)\n STRICT\n\n"
+ ],
+ [
+  "index",
+  "ix_terrains_association_id",
+  "terrains",
+  "CREATE INDEX ix_terrains_association_id ON terrains (association_id)"
+ ]
+]
