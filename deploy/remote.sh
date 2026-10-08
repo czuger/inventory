@@ -2,9 +2,9 @@
 # THE SERVER SIDE of the deploy. Never run this from your laptop.
 #
 # deploy.sh and rollback.sh upload this file before every run and then call one of
-# its subcommands over SSH. It exists so that the `docker run` line lives in exactly
-# one place: a rollback must relaunch the app with the same mounts, networks and
-# restart policy as a deploy, and duplicating those flags is how they drift.
+# its subcommands over SSH. It exists so that how the app is run (its systemd unit
+# and environment) lives in exactly one place: a rollback must start the app the
+# same way as a deploy, and the CLI (`run set-admin`) must see the same database.
 #
 # Usage: bash remote.sh <init | nginx_reload | activate VERSION | rollback
 #                        | prune | status | health | versions>
@@ -12,15 +12,13 @@ set -euo pipefail
 
 # Defaults mirror deploy/config.sh's production ones; the caller always overrides
 # them via env, which is also how a staging run gets its own names and directory.
-REMOTE_DIR="${REMOTE_DIR:-/home/ced/python/inventory}"
-CONTAINER_NAME="${CONTAINER_NAME:-app-inventory}"
-IMAGE_NAME="${IMAGE_NAME:-inventory}"
-APP_PORT="${APP_PORT:-8000}"
-DOCKER_NETWORK="${DOCKER_NETWORK:-nginx-common-network}"
-# `-`, not `:-`: staging passes MONGO_NETWORK='' and must not get production's.
-MONGO_NETWORK="${MONGO_NETWORK-mongo-network}"
+REMOTE_DIR="${REMOTE_DIR:-/home/ced/rust/inventory}"
+SERVICE_NAME="${SERVICE_NAME:-inventory}"
 URL_PREFIX="${URL_PREFIX:-/inventory}"
 KEEP_RELEASES="${KEEP_RELEASES:-3}"
+SOCKET_DIR="${SOCKET_DIR:-/home/ced/services/nginx_proxy/sockets}"
+NGINX_SOCKET_DIR="${NGINX_SOCKET_DIR:-/sockets}"
+SOCKET_NAME="${SOCKET_NAME:-inventory.sock}"
 NGINX_CONTAINER="${NGINX_CONTAINER:-nginx-proxy}"
 NGINX_CONF_DIR="${NGINX_CONF_DIR:-/home/ced/services/nginx_proxy/sites/apps}"
 NGINX_CONF_NAME="${NGINX_CONF_NAME:-inventory.conf}"
@@ -30,186 +28,206 @@ CONFIG_DIR="$REMOTE_DIR/config"
 DATA_DIR="$REMOTE_DIR/data"
 UPLOADS_DIR="$DATA_DIR/uploads"
 DB_DIR="$DATA_DIR/db"
+CURRENT_LINK="$REMOTE_DIR/current"
 CURRENT_FILE="$REMOTE_DIR/current_version.txt"
 PREVIOUS_FILE="$REMOTE_DIR/previous_version.txt"
-
-# The uid the image's `appuser` runs as; the uploads and db directories must be
-# writable by it.
-APP_UID=10001
+ENV_FILE="$REMOTE_DIR/app.env"
+RUN_SCRIPT="$REMOTE_DIR/run"
+UNIT_DIR="$HOME/.config/systemd/user"
+UNIT_FILE="$UNIT_DIR/$SERVICE_NAME.service"
+SOCKET_PATH="$SOCKET_DIR/$SOCKET_NAME"
 
 die() { echo "error: $*" >&2; exit 1; }
 
 read_version() { [ -f "$1" ] && cat "$1" || true; }
 
-# --- network ---------------------------------------------------------------
+# --- environment -----------------------------------------------------------
 
-# The nginx network belongs to nginx and is shared by every app it fronts — we
-# only join it. Deliberately NOT created here: a network we invented would exist,
-# accept the container, and 502 every request because nginx is not on it.
-check_network() {
-  docker network inspect "$DOCKER_NETWORK" >/dev/null 2>&1 || die \
-    "docker network '$DOCKER_NETWORK' does not exist — it is nginx's. Existing ones:
-$(docker network ls --format '  {{.Name}}')"
+# The app's whole environment, in one file read by the unit (EnvironmentFile) AND by
+# `run` and the migrations, so the CLI always acts on the database the server uses.
+#
+# INVENTORY_ROOT is config/: the app reads config.json and secret_key.txt from its
+# root. The database (a bare path: `sqlite:///abs` would read as relative) and the
+# photos are given explicitly, as they live in data/. SOCKET_PATH is where the app
+# listens (no port), and what `inventory healthcheck` probes.
+write_env() {
+  cat > "$ENV_FILE.tmp" <<EOF
+INVENTORY_ROOT=$CONFIG_DIR
+DATABASE_URL=$DB_DIR/inventory.sqlite3
+UPLOADS_DIR=$UPLOADS_DIR
+SOCKET_PATH=$SOCKET_PATH
+URL_PREFIX=$URL_PREFIX
+RUST_LOG=info
+EOF
+  mv "$ENV_FILE.tmp" "$ENV_FILE"
 
-  # Same reasoning for Mongo's network when one is configured. The app itself no
-  # longer uses MongoDB; the network is only joined so that rolling back to a
-  # release from before the move to SQLite still finds its database.
-  if [ -n "$MONGO_NETWORK" ]; then
-    docker network inspect "$MONGO_NETWORK" >/dev/null 2>&1 || die \
-      "docker network '$MONGO_NETWORK' does not exist. Set MONGO_NETWORK='' in
-       deploy/config.sh if MongoDB runs on the host instead."
+  # `$REMOTE_DIR/run <command>` runs the current binary with that environment:
+  #   ssh nuc150 /home/ced/rust/inventory/run set-admin <username>
+  cat > "$RUN_SCRIPT" <<EOF
+#!/usr/bin/env bash
+set -a; . '$ENV_FILE'; set +a
+exec '$CURRENT_LINK/inventory' "\$@"
+EOF
+  chmod +x "$RUN_SCRIPT"
+}
+
+# Runs a given binary with the app's environment.
+with_env() {
+  ( set -a; . "$ENV_FILE"; set +a; "$@" )
+}
+
+# The systemd user unit. Rewritten every time, so a change here reaches the server
+# with the next deploy or rollback; daemon-reload only when it changed.
+write_unit() {
+  mkdir -p "$UNIT_DIR"
+  cat > "$UNIT_FILE.tmp" <<EOF
+[Unit]
+Description=Inventory ($SERVICE_NAME)
+After=network-online.target
+
+[Service]
+WorkingDirectory=$REMOTE_DIR
+EnvironmentFile=$ENV_FILE
+ExecStart=$CURRENT_LINK/inventory serve
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
+EOF
+  if cmp -s "$UNIT_FILE.tmp" "$UNIT_FILE"; then
+    rm -f "$UNIT_FILE.tmp"
+  else
+    mv "$UNIT_FILE.tmp" "$UNIT_FILE"
+    systemctl --user daemon-reload
   fi
+  systemctl --user enable "$SERVICE_NAME" >/dev/null 2>&1
 }
 
-# --- container -------------------------------------------------------------
+# --- nginx -----------------------------------------------------------------
 
-# Make the bind-mounted uploads/ and db/ writable by the image's non-root uid.
-#
-# Docker creates a missing host directory as root:root, and `make setup` can only
-# chown it when passwordless sudo happens to be available — so a directory can
-# end up unwritable while every deploy still looks perfectly healthy: /health
-# never touches either, and the failure only shows up as an EACCES the first time
-# someone uploads a photo, or as a 500 on every page for the database.
-#
-# No host privileges are needed to fix it: the docker daemon runs as root, so a
-# throwaway container running as uid 0 can chown the very directories that are
-# about to be mounted. The image used is the one being started, which the callers
-# have just checked is loaded.
-ensure_data_writable() {
-  local image="$1"
+# The socket directory belongs to nginx_proxy, which bind-mounts it into its
+# container — we only use it. Deliberately NOT created here: if it is missing when
+# the proxy's compose starts, docker creates it as root and the app can no longer
+# write its socket.
+check_socket_dir() {
+  [ -d "$SOCKET_DIR" ] || die "$SOCKET_DIR does not exist.$(socket_dir_help)"
+  [ -w "$SOCKET_DIR" ] || die "$SOCKET_DIR is not writable by $(id -un)."
 
-  # -v creates a host directory (as root) if it does not exist yet, which is
-  # exactly the case this then repairs.
-  docker run --rm --user 0 -v "$UPLOADS_DIR:/mnt/uploads" -v "$DB_DIR:/mnt/db" "$image" \
-    chown -R "$APP_UID:$APP_UID" /mnt/uploads /mnt/db >/dev/null \
-    || die "could not make $UPLOADS_DIR and $DB_DIR writable by uid $APP_UID"
+  local mounted
+  mounted="$(docker inspect "$NGINX_CONTAINER" \
+    --format '{{range .Mounts}}{{if eq .Source "'"$SOCKET_DIR"'"}}{{.Destination}}{{end}}{{end}}' \
+    2>/dev/null)" || die "no container named '$NGINX_CONTAINER' — is the proxy running?"
+  [ "$mounted" = "$NGINX_SOCKET_DIR" ] || die \
+    "$NGINX_CONTAINER does not mount $SOCKET_DIR on $NGINX_SOCKET_DIR (currently: '${mounted:-nothing}').$(socket_dir_help)"
 }
 
-# Bring the database schema up to what an image expects, from that image, in a
-# throwaway container, BEFORE that image is started. `inventory migrate` backs the
-# database up into data/db/backups/ first whenever there is something to apply,
-# and does nothing otherwise. A migration is a single transaction, so one that
-# fails leaves the database as it was — and the running version keeps serving.
+socket_dir_help() {
+  cat <<HELP
+
+Once, in the nginx_proxy project:
+  mkdir -p $SOCKET_DIR        (as $(id -un), BEFORE restarting the proxy)
+  docker-compose.yml, service nginx, volumes:
+    - $SOCKET_DIR:$NGINX_SOCKET_DIR:ro
+  docker compose up -d        (recreates the container with the new mount)
+HELP
+}
+
+# The app may answer on the host while nginx still cannot see its socket (mount
+# missing or pointing elsewhere): check from inside the container too.
+probe_nginx_view() {
+  docker exec "$NGINX_CONTAINER" test -S "$NGINX_SOCKET_DIR/$SOCKET_NAME" 2>/dev/null
+}
+
+# --- app -------------------------------------------------------------------
+
+# Bring the database schema up to what a release expects, with that release's
+# binary, BEFORE it is started. `inventory migrate` backs the database up into
+# data/db/backups/ first whenever there is something to apply, and does nothing
+# otherwise. A migration is a single transaction, so one that fails leaves the
+# database as it was — and the running version keeps serving.
 #
-# Only deploys migrate. A rollback starts the previous image on the schema as it
+# Only deploys migrate. A rollback starts the previous binary on the schema as it
 # now is: fine for additive migrations, otherwise restore a backup by hand.
 run_migrations() {
-  local image="$1"
-
-  ensure_data_writable "$image"
-  docker run --rm -v "$DB_DIR:/app/data" "$image" inventory migrate \
-    || die "migrations failed on $image — nothing was started, the previous version still runs"
+  local version="$1"
+  with_env "$RELEASES_DIR/$version/inventory" migrate \
+    || die "migrations failed on $version — nothing was started, the previous version still runs"
 }
 
-# Start (or restart) the app on a given version. This is the single source of
-# truth for how the container is run.
-
-start_container() {
+# Point `current` at a release and (re)start the unit on it. This is the single
+# source of truth for how the app is run.
+start_version() {
   local version="$1"
 
-  docker image inspect "$IMAGE_NAME:$version" >/dev/null 2>&1 \
-    || die "image $IMAGE_NAME:$version is not loaded on this server"
+  [ -x "$RELEASES_DIR/$version/inventory" ] || die "release $version is not on this server"
 
-  # Before the mount, not after: the app has to find them writable on first request.
-  ensure_data_writable "$IMAGE_NAME:$version"
-
-  # Both are server-owned and never in the image. Without secret_key.txt the app
-  # falls back to a random key per process, which silently logs everyone out on
-  # every deploy and every worker restart.
+  # Both are server-owned and never shipped. Without secret_key.txt the app falls
+  # back to a random key per process, which silently logs everyone out on every
+  # deploy and every restart.
   [ -f "$CONFIG_DIR/config.json" ] || die "$CONFIG_DIR/config.json is missing — scp it there first"
   [ -f "$CONFIG_DIR/secret_key.txt" ] || die "$CONFIG_DIR/secret_key.txt is missing — scp it there first"
+  check_socket_dir
 
-  check_network
+  write_env
+  write_unit
 
-  # -f: also covers a container left in a stopped/created state.
-  docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
+  # Replace the symlink atomically: `current` never points nowhere.
+  ln -sfn "releases/$version" "$CURRENT_LINK.tmp"
+  mv -T "$CURRENT_LINK.tmp" "$CURRENT_LINK"
 
-  # `create` + `network connect` + `start` rather than plain `run`: `docker run`
-  # takes a single --network, and this app needs two (nginx's and Mongo's). Doing
-  # it in that order means the container has never run with only one of them.
-  docker create \
-    --name "$CONTAINER_NAME" \
-    --restart unless-stopped \
-    `# No published port at all: on this network the app answers at` \
-    `# http://$CONTAINER_NAME:$APP_PORT through docker's internal DNS, and` \
-    `# nothing at all is bound on the host.` \
-    --network "$DOCKER_NETWORK" \
-    `# Lets the server's config.json point at a MongoDB running on the HOST` \
-    `# (mongo.server = "host.docker.internal") when MONGO_NETWORK is empty.` \
-    --add-host=host.docker.internal:host-gateway \
-    `# The sub-path nginx serves the app under. It comes from deploy/config.sh,` \
-    `# the same file that renders the nginx snippet, so the proxy's location and` \
-    `# the app's generated links cannot disagree.` \
-    -e "URL_PREFIX=$URL_PREFIX" \
-    `# Where the app listens inside the container: nginx proxies to this port.` \
-    -e "BIND_ADDR=0.0.0.0:$APP_PORT" \
-    `# Config is the server's, read-only, and never part of the image.` \
-    -v "$CONFIG_DIR/config.json:/app/config.json:ro" \
-    -v "$CONFIG_DIR/secret_key.txt:/app/secret_key.txt:ro" \
-    `# Uploaded item photos. THE reason this has to be a volume: the image is` \
-    `# rebuilt from scratch every release, so anything written inside the` \
-    `# container is gone at the next deploy — these are user data.` \
-    -v "$UPLOADS_DIR:/app/inventory/api/static/uploads" \
-    `# The SQLite database. The directory, not the file: WAL mode keeps its` \
-    `# -wal and -shm files next to the database, and backups go in there too.` \
-    -v "$DB_DIR:/app/data" \
-    "$IMAGE_NAME:$version" >/dev/null
-
-  if [ -n "$MONGO_NETWORK" ]; then
-    docker network connect "$MONGO_NETWORK" "$CONTAINER_NAME"
-  fi
-
-  docker start "$CONTAINER_NAME" >/dev/null
-
-  echo "started $CONTAINER_NAME on $IMAGE_NAME:$version"
+  systemctl --user restart "$SERVICE_NAME"
+  echo "started $SERVICE_NAME on $version"
 }
 
-# Hit /health from *inside* the container. Nothing is published on the host, so
-# the probe cannot come from outside; `docker exec` is the way in. The image has no
-# curl: the app's own `inventory healthcheck` probes it. An image from before the
-# Rust port has python instead — kept as a fallback so `make rollback` to one of
-# those still passes its health check.
+# Ask the running app for /health with its own `inventory healthcheck`, through the
+# socket nginx uses.
 #
 # /health is registered at the app root and URL_PREFIX only affects generated
-# URLs (SCRIPT_NAME), not routing — so the path is the same with or without a
-# prefix, which is what makes this probe independent of the proxy.
+# URLs, not routing — so the path is the same with or without a prefix, which is
+# what makes this probe independent of the proxy.
 probe_health() {
-  docker exec -e "BIND_ADDR=127.0.0.1:$APP_PORT" "$CONTAINER_NAME" sh -c \
-    "inventory healthcheck 2>/dev/null || python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:$APP_PORT/health', timeout=3)\"" \
-    >/dev/null 2>&1
+  [ -x "$CURRENT_LINK/inventory" ] \
+    && SOCKET_PATH="$SOCKET_PATH" "$CURRENT_LINK/inventory" healthcheck >/dev/null 2>&1
 }
 
-# Poll until the app is actually answering (a fresh container needs a second or
-# two). Returns non-zero if it never does.
+# Poll until the app is actually answering (a fresh start needs a moment).
+# Returns non-zero if it never does.
 wait_for_health() {
   local attempts="${1:-15}"
   for _ in $(seq 1 "$attempts"); do
     if probe_health; then
-      echo "health check ok (/health inside $CONTAINER_NAME)"
+      echo "health check ok (/health on $SOCKET_PATH)"
+      if probe_nginx_view; then
+        echo "socket visible from $NGINX_CONTAINER ($NGINX_SOCKET_DIR/$SOCKET_NAME)"
+      else
+        echo "WARNING: $NGINX_CONTAINER does not see $NGINX_SOCKET_DIR/$SOCKET_NAME" >&2
+      fi
       return 0
     fi
     sleep 2
   done
-  echo "health check FAILED (/health inside $CONTAINER_NAME)" >&2
-  docker logs --tail 40 "$CONTAINER_NAME" >&2 || true
+  echo "health check FAILED (/health on $SOCKET_PATH)" >&2
+  journalctl --user -u "$SERVICE_NAME" -n 40 --no-pager >&2 || true
   return 1
 }
 
 # --- subcommands -----------------------------------------------------------
 
-# Load the freshly uploaded .tar, switch to it, and record the version swap.
+# Switch to the freshly uploaded release and record the version swap.
 cmd_activate() {
   local version="${1:?activate needs a version}"
-  local tarball="$RELEASES_DIR/$version.tar"
+  local binary="$RELEASES_DIR/$version/inventory"
 
-  [ -f "$tarball" ] || die "$tarball not found"
-  docker load -i "$tarball"
+  [ -f "$binary" ] || die "$binary not found"
+  chmod +x "$binary"
+  write_env
 
   # Before any bookkeeping: if this fails, nothing about the deploy has happened.
-  run_migrations "$IMAGE_NAME:$version"
+  run_migrations "$version"
 
-  # Version bookkeeping happens *before* the restart: if the new container fails
-  # to come up, previous_version.txt already points at what to roll back to.
+  # Version bookkeeping happens *before* the restart: if the new version fails to
+  # come up, previous_version.txt already points at what to roll back to.
   local current
   current="$(read_version "$CURRENT_FILE")"
   if [ -n "$current" ]; then          # absent on the very first deploy
@@ -217,7 +235,7 @@ cmd_activate() {
   fi
   echo "$version" > "$CURRENT_FILE"
 
-  start_container "$version"
+  start_version "$version"
   wait_for_health
 }
 
@@ -233,7 +251,7 @@ cmd_rollback() {
     die "previous version is the current one ($current)"
   fi
 
-  start_container "$previous"
+  start_version "$previous"
 
   echo "$previous" > "$CURRENT_FILE"
   if [ -n "$current" ]; then
@@ -246,33 +264,24 @@ cmd_rollback() {
   wait_for_health
 }
 
-# Keep the $KEEP_RELEASES newest tarballs and images; never touch what is running
-# or what rollback needs.
+# Keep the $KEEP_RELEASES newest releases; never touch what is running or what
+# rollback needs.
 cmd_prune() {
-  local keep="$KEEP_RELEASES" current previous
+  local keep="$KEEP_RELEASES" current previous kept=0
   current="$(read_version "$CURRENT_FILE")"
   previous="$(read_version "$PREVIOUS_FILE")"
 
-  local kept=0
-  # Newest first; anything past the limit goes, unless it is current/previous.
-  for tarball in $(ls -1t "$RELEASES_DIR"/*.tar 2>/dev/null); do
+  # Versions are UTC timestamps: newest first is reverse name order.
+  for dir in $(ls -1d "$RELEASES_DIR"/*/ 2>/dev/null | sort -r); do
     local version
-    version="$(basename "$tarball" .tar)"
+    version="$(basename "$dir")"
     kept=$((kept + 1))
     if [ "$kept" -le "$keep" ] || [ "$version" = "$current" ] || [ "$version" = "$previous" ]; then
       continue
     fi
     echo "pruning $version"
-    rm -f "$tarball"
-    docker image rm "$IMAGE_NAME:$version" >/dev/null 2>&1 || true
-  done
-
-  # Images with no tarball left (e.g. loaded by hand) follow the same rule.
-  for version in $(docker images --format '{{.Tag}}' "$IMAGE_NAME" | tail -n +$((keep + 1))); do
-    if [ "$version" = "$current" ] || [ "$version" = "$previous" ]; then
-      continue
-    fi
-    docker image rm "$IMAGE_NAME:$version" >/dev/null 2>&1 || true
+    rm -f "$RELEASES_DIR/$version/inventory"
+    rmdir "$RELEASES_DIR/$version"
   done
 }
 
@@ -280,23 +289,19 @@ cmd_status() {
   echo "current : $(read_version "$CURRENT_FILE")"
   echo "previous: $(read_version "$PREVIOUS_FILE")"
   echo
-  # No Ports column: nothing is published, that is the point.
-  docker ps --filter "name=^/$CONTAINER_NAME$" \
-    --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
+  systemctl --user status "$SERVICE_NAME" --no-pager --lines 0 || true
   echo
   echo "prefix  : ${URL_PREFIX%/}/"
-  echo "network : $DOCKER_NETWORK -> http://$CONTAINER_NAME:$APP_PORT"
-  echo "on it   : $(docker network inspect "$DOCKER_NETWORK" \
-    --format '{{range .Containers}}{{.Name}} {{end}}' 2>/dev/null || echo '(no such network)')"
-  if [ -n "$MONGO_NETWORK" ]; then
-    echo "mongo   : $MONGO_NETWORK"
-    echo "on it   : $(docker network inspect "$MONGO_NETWORK" \
-      --format '{{range .Containers}}{{.Name}} {{end}}' 2>/dev/null || echo '(no such network)')"
-  fi
+  echo "socket  : $SOCKET_PATH -> $NGINX_CONTAINER:$NGINX_SOCKET_DIR/$SOCKET_NAME"
   if probe_health; then
     echo "health  : ok"
   else
     echo "health  : NOT answering"
+  fi
+  if probe_nginx_view; then
+    echo "nginx   : sees the socket"
+  else
+    echo "nginx   : does NOT see the socket"
   fi
 }
 
@@ -304,38 +309,49 @@ cmd_versions() {
   echo "current : $(read_version "$CURRENT_FILE")"
   echo "previous: $(read_version "$PREVIOUS_FILE")"
   echo "releases:"
-  ls -1t "$RELEASES_DIR"/*.tar 2>/dev/null | xargs -r -n1 basename || echo "  (none)"
+  ls -1 "$RELEASES_DIR" 2>/dev/null | sort -r | sed 's/^/  /' || echo "  (none)"
 }
 
-# One-time server preparation: directory layout + an uploads/ and a db/ the
-# container can write.
+# One-time server preparation: directory layout, and a systemd user manager that
+# keeps running when nobody is logged in.
 cmd_init() {
-  mkdir -p "$RELEASES_DIR" "$CONFIG_DIR" "$UPLOADS_DIR" "$DB_DIR" 2>/dev/null || true
-  # The app runs as uid 10001 inside the container and writes into the
-  # bind-mounted uploads/ and db/, so both have to belong to that uid. Try it here
-  # for tidiness only — `sudo -n` so a password prompt can never hang a scripted
-  # setup — because every deploy repairs it anyway, from inside docker and without
-  # any host privileges.
-  sudo -n chown -R "$APP_UID:$APP_UID" "$UPLOADS_DIR" "$DB_DIR" 2>/dev/null \
-    || chown -R "$APP_UID:$APP_UID" "$UPLOADS_DIR" "$DB_DIR" 2>/dev/null \
-    || echo "note: $UPLOADS_DIR and $DB_DIR not chowned here — the first deploy will do it" >&2
+  mkdir -p "$RELEASES_DIR" "$CONFIG_DIR" "$UPLOADS_DIR" "$DB_DIR"
   chmod 700 "$CONFIG_DIR"
   echo "layout ready under $REMOTE_DIR"
 
-  # Fail here rather than at the first deploy if a network is not around.
-  check_network
-  echo "network '$DOCKER_NETWORK' found"
-  # An `if`, not `[ ] && echo`: as the last command, a false test would be the
-  # function's status and fail the whole init when there is no Mongo network.
-  if [ -n "$MONGO_NETWORK" ]; then
-    echo "network '$MONGO_NETWORK' found"
+  # The app now runs as this user. Directories left owned by the container's
+  # uid 10001 would make every page a 500 (database) or every upload an EACCES.
+  local foreign
+  foreign="$(find "$DATA_DIR" ! -user "$(id -u)" -print -quit 2>/dev/null || true)"
+  if [ -n "$foreign" ]; then
+    echo "WARNING: $DATA_DIR holds files not owned by $(id -un) (e.g. $foreign). Fix it once with:" >&2
+    echo "  sudo chown -R $(id -un): $DATA_DIR" >&2
   fi
+
+  # Without lingering, user units stop at logout and do not start at boot.
+  if [ "$(loginctl show-user "$(id -un)" --property=Linger --value 2>/dev/null)" = yes ]; then
+    echo "lingering already enabled for $(id -un)"
+  elif sudo -n loginctl enable-linger "$(id -un)" 2>/dev/null || loginctl enable-linger "$(id -un)" 2>/dev/null; then
+    echo "lingering enabled for $(id -un)"
+  else
+    echo "WARNING: could not enable lingering; the app would stop at logout. Run once:" >&2
+    echo "  sudo loginctl enable-linger $(id -un)" >&2
+  fi
+
+  systemctl --user show-environment >/dev/null 2>&1 \
+    || die "no systemd user manager for $(id -un) (systemctl --user fails)"
+  echo "systemd user manager ok"
+
+  # Fail here rather than at the first deploy.
+  check_socket_dir
+  echo "$SOCKET_DIR is mounted in $NGINX_CONTAINER on $NGINX_SOCKET_DIR"
 }
 
-# Validate the snippet setup_server.sh just uploaded, then restart nginx.
+# Validate the snippet setup_server.sh just uploaded, then reload nginx.
 #
 # `nginx -t` FIRST, and remove the file if it fails: this proxy fronts other
 # sites, and a broken include would take them all down at its next restart.
+# Reload rather than restart: the other sites keep their connections.
 cmd_nginx_reload() {
   local conf="$NGINX_CONF_DIR/$NGINX_CONF_NAME"
 
@@ -349,9 +365,9 @@ cmd_nginx_reload() {
     die "nginx refused the config — removed $conf, nginx left untouched"
   fi
 
-  echo "==> Restarting $NGINX_CONTAINER"
-  docker restart "$NGINX_CONTAINER" >/dev/null
-  echo "$NGINX_CONTAINER restarted with $conf"
+  echo "==> Reloading $NGINX_CONTAINER"
+  docker exec "$NGINX_CONTAINER" nginx -s reload
+  echo "$NGINX_CONTAINER reloaded with $conf"
 }
 
 command="${1:-}"

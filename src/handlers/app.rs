@@ -10,11 +10,11 @@ use crate::session::Session;
 use crate::urls::UrlContext;
 use crate::web::{redirect, referrer};
 
-/// What the deploy gates on: `inventory healthcheck` probes it from inside the container
-/// after every start, and the image's HEALTHCHECK runs the same probe.
+/// What the deploy gates on: `inventory healthcheck` probes it on the server after every
+/// start, and `make status` runs the same probe.
 ///
 /// Deliberately does NOT touch the database. It answers the only question the deploy can
-/// act on — did the server come up with this image — and a probe that also failed when
+/// act on — did the server come up with this release — and a probe that also failed when
 /// the database blinked would roll back a perfectly good release.
 pub async fn health() -> impl IntoResponse {
     ([(header::CONTENT_TYPE, "text/plain")], "ok")

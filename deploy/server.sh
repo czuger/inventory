@@ -3,7 +3,7 @@
 #
 # Lives here rather than in the Makefile so it reads the same deploy/config.sh as
 # every other script — including ENV=staging — instead of a second copy of the
-# host, directory and container name.
+# host, directory and unit name.
 #
 # Usage: deploy/server.sh <logs | status | versions> [--env production|staging]
 set -euo pipefail
@@ -15,7 +15,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/config.sh" "$@"
 
 case "$command" in
   logs)
-    ssh -t "$SSH_HOST" "docker logs -f --tail 100 '$CONTAINER_NAME'"
+    ssh -t "$SSH_HOST" "journalctl --user -u '$SERVICE_NAME' -f -n 100"
     ;;
   status|versions)
     # The server's copy may predate this checkout (or not exist yet, before the

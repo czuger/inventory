@@ -14,10 +14,11 @@ files (`inventory/...py`, `tests/test_*.py`) refer to the Flask app, still in gi
 
 ```bash
 cargo run -- migrate                 # create/upgrade data/inventory.sqlite3 (or $DATABASE_URL), backing it up first
-cargo run                            # serve on $BIND_ADDR (0.0.0.0:8000)
+cargo run                            # serve on $BIND_ADDR (0.0.0.0:8000), or the Unix socket $SOCKET_PATH
+cargo run -- seed [--file F]         # load misc/grognards_seed.json (embedded) into a fresh database
 cargo run -- set-admin <username> [--revoke]
 cargo run -- set-password <username> [--login NAME]   # interactive prompt
-cargo run -- healthcheck             # exit 0 if /health answers (the image's HEALTHCHECK)
+cargo run -- healthcheck             # exit 0 if /health answers (the deploy's health probe)
 
 make test                            # cargo test + cargo clippy --all-targets -- -D warnings
 cargo test --test items              # one integration test file (tests/*.rs)
@@ -30,17 +31,17 @@ make setup | deploy | rollback | status | logs | nginx      # add ENV=staging fo
 
 `config.json` (gitignored; `discord.client_id/client_secret`) and `secret_key.txt` (session signing key; missing →
 random key per process, which logs everyone out at each restart) live at the root, found by walking up to the first
-directory holding `Cargo.toml`, `.git` or `README.md` (`/app` in the image), or `$INVENTORY_ROOT`. In production both
-are mounted read-only from the server's `$REMOTE_DIR/config/`. `data/` (database, photos under `data/uploads`) is
-gitignored and dockerignored. Other settings are env vars (README → Settings); a root `.env` is loaded.
+directory holding `Cargo.toml`, `.git` or `README.md`, or `$INVENTORY_ROOT`. In production `INVENTORY_ROOT` is the
+server's `$REMOTE_DIR/config/`, which holds both. `data/` (database, photos under `data/uploads`) is gitignored.
+Other settings are env vars (README → Settings); a root `.env` is loaded.
 
 ## Rules
 
 - `unwrap`/`expect` are denied crate-wide (`Cargo.toml` lints); tests may use them (`clippy.toml`, and each
   `tests/*.rs` allows them). Request paths return `AppError`, whose pages are werkzeug's, byte for byte.
 - Never put `\uXXXX` escapes in file content written by tools: they get decoded. Build such strings with `\\u`.
-- After a model/query change: `scripts/sqlx-prepare.sh`, then commit `.sqlx/` — builds (and the Docker image) compile
-  offline against it. The macros read `SQLX_DATABASE_URL` (`sqlx.toml`), never the app's `DATABASE_URL`.
+- After a model/query change: `scripts/sqlx-prepare.sh`, then commit `.sqlx/` — builds (and the deploy's cross-compile)
+  compile offline against it. The macros read `SQLX_DATABASE_URL` (`sqlx.toml`), never the app's `DATABASE_URL`.
 - Schema changes are new files in `migrations/` (next number). Never edit an applied one: `migrate` refuses a changed
   checksum. Tables SQLite cannot ALTER are rebuilt (see `0002`: keep the AUTOINCREMENT counter across the rebuild).
 
@@ -121,19 +122,22 @@ printed** — be deliberate about that side effect; the list does not.
 
 ### Deployment
 
-`make deploy` builds the image (multi-stage `Dockerfile`; `SQLX_OFFLINE`, no database at build time), ships it with
-`docker save`/scp, **migrates from the new image** (`inventory migrate` in a throwaway container) and restarts — no
-registry. `deploy/remote.sh` is the server side and the single source of the `docker run` options for deploys and
-rollbacks; keep it working for the previous image too:
+`make deploy` cross-compiles a static binary for the server (`cargo zigbuild --target x86_64-unknown-linux-musl`,
+`SQLX_OFFLINE`, no database at build time), scps it to `releases/<version>/`, **migrates with the new binary** and
+only then points the `current` symlink at it and restarts the systemd *user* unit (no sudo on deploys; lingering is
+enabled once by `make setup`). `deploy/remote.sh` is the server side and the single source of how the app runs:
 
-- photos stay mounted at `/app/inventory/api/static/uploads` (the Python image's path; the Rust image sets
-  `UPLOADS_DIR` to it), and the health probe falls back to python — so `make rollback` to a Python release works;
-- `BIND_ADDR` comes from `APP_PORT`; nginx reaches the container by name on `nginx-common-network`, no port published;
-- the database directory (`data/db`, not the file: WAL) is mounted at `/app/data`; mounts are chowned to uid 10001
-  before every migration and start; migrations run before the version swap, so a failed one leaves the old version up;
-  rollbacks never downgrade (restore a backup from `data/db/backups/` instead).
+- it writes `$REMOTE_DIR/app.env` (`INVENTORY_ROOT=config/`, `DATABASE_URL` as a bare absolute path, `UPLOADS_DIR`,
+  `SOCKET_PATH`, `URL_PREFIX`), read by the unit, the migrations and the `run` wrapper
+  (`ssh nuc150 /home/ced/rust/inventory/run set-admin <u>`), so the CLI always hits the server's database;
+- the app opens no port: nginx runs in nginx_proxy's `nginx-proxy` container, so the app listens on a Unix socket
+  (`src/listen.rs`, mode 0666, stale socket replaced) in `/home/ced/services/nginx_proxy/sockets`, which that
+  container bind-mounts at `/sockets` (`inventory.sock`, `inventory_staging.sock`); `setup`/`deploy` refuse to go
+  on unless the mount is there, and nginx is validated and reloaded with `docker exec`;
+- migrations run before the version swap, so a failed one leaves the old version up; rollbacks only swap the
+  symlink and never downgrade (restore a backup from `data/db/backups/` instead).
 
 Two instances, production and staging (`ENV=staging`), derive every name from `APP_NAME` in `deploy/config.sh`.
-`URL_PREFIX` there renders the nginx `location` and is passed to the container: changing it needs `make nginx` and
-`make deploy`. `/health` never touches the database: it answers "did this image come up", the only question a deploy
-can act on.
+`URL_PREFIX` and the socket there render the nginx `location` and are passed to the app: changing them needs
+`make nginx` and `make deploy`. `/health` never touches the database: it answers "did this release come up", the
+only question a deploy can act on.

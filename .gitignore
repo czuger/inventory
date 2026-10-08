@@ -1,9 +1,7 @@
 # Build output
 /target
-# Image tarballs written by deploy/deploy.sh
-/dist/
 
-# Server-owned config and secrets (mounted read-only in production)
+# Server-owned config and secrets (in the server's config/ in production)
 config.json
 secret_key.txt
 .env

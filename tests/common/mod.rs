@@ -50,6 +50,7 @@ pub fn test_config(root: &Path, database_path: &Path) -> Config {
         database_path: database_path.to_path_buf(),
         url_prefix: String::new(),
         bind_addr: "127.0.0.1:0".to_owned(),
+        socket_path: None,
         uploads_dir: root.join("uploads"),
         discord_api_base: "http://discord.invalid/api".to_owned(),
     }

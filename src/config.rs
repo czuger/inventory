@@ -1,9 +1,9 @@
 //! Where everything lives: the project root, the database, the uploads, and the two
-//! files the server mounts read-only (`config.json`, `secret_key.txt`).
+//! server-owned files (`config.json`, `secret_key.txt`).
 //!
 //! The root is the first directory, walking up from the working directory, that holds
-//! `Cargo.toml`, `.git` or `README.md` (`/app` in the container, which has a README.md for
-//! that purpose), unless `INVENTORY_ROOT` says otherwise.
+//! `Cargo.toml`, `.git` or `README.md`, unless `INVENTORY_ROOT` says otherwise (on the
+//! server, its `config/` directory).
 
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
@@ -36,7 +36,11 @@ pub struct Config {
     pub database_path: PathBuf,
     /// The sub-path nginx serves the app under, without slashes (`inventory`), or empty.
     pub url_prefix: String,
+    /// TCP address to listen on when there is no `socket_path` (`BIND_ADDR`).
     pub bind_addr: String,
+    /// Unix socket to listen on instead of TCP (`SOCKET_PATH`): how the server's nginx, in a
+    /// container, reaches the app.
+    pub socket_path: Option<PathBuf>,
     pub uploads_dir: PathBuf,
     /// Where Discord's OAuth and API endpoints live (`DISCORD_API_BASE`, for tests).
     pub discord_api_base: String,
@@ -73,8 +77,8 @@ impl Config {
             database_path,
             url_prefix: normalize_prefix(&var("URL_PREFIX").unwrap_or_default()),
             bind_addr: non_empty("BIND_ADDR").unwrap_or_else(|| DEFAULT_BIND_ADDR.to_owned()),
-            uploads_dir: non_empty("UPLOADS_DIR")
-                .map_or_else(|| root.join("data/uploads"), PathBuf::from),
+            socket_path: non_empty("SOCKET_PATH").map(PathBuf::from),
+            uploads_dir: non_empty("UPLOADS_DIR").map_or_else(|| root.join("data/uploads"), PathBuf::from),
             discord_api_base: non_empty("DISCORD_API_BASE")
                 .map_or_else(|| DEFAULT_DISCORD_API.to_owned(), |base| base.trim_end_matches('/').to_owned()),
             root,
@@ -212,6 +216,7 @@ mod tests {
         assert!(dir.path().join("data").is_dir());
         assert_eq!(config.url_prefix, "inventory");
         assert_eq!(config.bind_addr, "0.0.0.0:8000");
+        assert_eq!(config.socket_path, None);
         assert_eq!(config.uploads_dir, dir.path().join("data/uploads"));
         assert_eq!(config.discord_api_base, "https://discord.com/api");
     }

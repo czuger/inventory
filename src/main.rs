@@ -4,12 +4,11 @@ use std::time::Duration;
 
 use anyhow::Context as _;
 use clap::{Parser, Subcommand};
-use tokio::io::{AsyncReadExt as _, AsyncWriteExt as _};
 use tracing_subscriber::EnvFilter;
 
 use inventory::config::{Config, Secrets};
 use inventory::db::users;
-use inventory::{AppState, build_app, db, migrate, password};
+use inventory::{AppState, build_app, db, listen, migrate, password, seed};
 
 #[derive(Parser)]
 #[command(about = "The club inventory web app")]
@@ -20,11 +19,17 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
-    /// Serve the app on BIND_ADDR (the default command)
+    /// Serve the app on SOCKET_PATH, or BIND_ADDR without one (the default command)
     Serve,
     /// Back up the database, then apply the pending migrations
     Migrate,
-    /// Exit 0 if the server on BIND_ADDR answers /health (the container's HEALTHCHECK)
+    /// Load the club inventory into a fresh, migrated database (never one that holds data)
+    Seed {
+        /// A seed file to load instead of the built-in misc/grognards_seed.json
+        #[arg(long)]
+        file: Option<std::path::PathBuf>,
+    },
+    /// Exit 0 if the server on SOCKET_PATH or BIND_ADDR answers /health (the deploy's health probe)
     Healthcheck,
     /// Grant (or revoke) admin rights; the user must have logged in at least once
     SetAdmin {
@@ -48,7 +53,7 @@ enum Command {
 async fn main() -> ExitCode {
     let _ = dotenvy::dotenv();
     tracing_subscriber::fmt()
-        // Colours only on a terminal: `make logs` reads the container's plain output.
+        // Colours only on a terminal: `make logs` reads the unit's plain output from journald.
         .with_ansi(std::io::IsTerminal::is_terminal(&std::io::stdout()))
         .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info,sqlx=warn")))
         .init();
@@ -56,6 +61,7 @@ async fn main() -> ExitCode {
     let result = match Cli::parse().command.unwrap_or(Command::Serve) {
         Command::Serve => serve().await,
         Command::Migrate => run_migrations().await,
+        Command::Seed { file } => run_seed(file.as_deref()).await,
         Command::Healthcheck => healthcheck().await,
         Command::SetAdmin { username, revoke } => set_admin(&username, !revoke).await,
         Command::SetPassword { username, login } => set_password(&username, login.as_deref()).await,
@@ -78,36 +84,14 @@ async fn serve() -> anyhow::Result<()> {
         .await
         .with_context(|| format!("cannot open {}", config.database_path.display()))?;
 
-    let listener = tokio::net::TcpListener::bind(&config.bind_addr)
-        .await
-        .with_context(|| format!("cannot listen on {}", config.bind_addr))?;
-    tracing::info!("listening on {}", config.bind_addr);
-    let state = AppState::new(config, &secrets.secret_key, pool.clone())?.with_discord(secrets.discord);
+    let state = AppState::new(config.clone(), &secrets.secret_key, pool.clone())?.with_discord(secrets.discord);
     let app = build_app(state);
-    axum::serve(listener, app).with_graceful_shutdown(shutdown_signal()).await?;
+    listen::serve(app, &config).await.with_context(|| match &config.socket_path {
+        Some(path) => format!("cannot serve on {}", path.display()),
+        None => format!("cannot serve on {}", config.bind_addr),
+    })?;
     pool.close().await;
     Ok(())
-}
-
-async fn shutdown_signal() {
-    let ctrl_c = async {
-        let _ = tokio::signal::ctrl_c().await;
-    };
-    #[cfg(unix)]
-    let terminate = async {
-        match tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate()) {
-            Ok(mut signal) => {
-                signal.recv().await;
-            }
-            Err(_) => std::future::pending::<()>().await,
-        }
-    };
-    #[cfg(not(unix))]
-    let terminate = std::future::pending::<()>();
-    tokio::select! {
-        () = ctrl_c => {},
-        () = terminate => {},
-    }
 }
 
 async fn run_migrations() -> anyhow::Result<()> {
@@ -129,25 +113,46 @@ async fn run_migrations() -> anyhow::Result<()> {
     Ok(())
 }
 
-/// A bare HTTP/1.0 GET: the runtime image has no curl, and this needs no extra crate.
-async fn healthcheck() -> anyhow::Result<()> {
-    let bind = std::env::var("BIND_ADDR").unwrap_or_else(|_| "0.0.0.0:8000".to_owned());
-    let mut addr: SocketAddr = bind.parse().with_context(|| format!("BIND_ADDR {bind:?} is not an ip:port"))?;
-    if addr.ip().is_unspecified() {
-        addr.set_ip(Ipv4Addr::LOCALHOST.into());
-    }
-    let probe = async {
-        let mut stream = tokio::net::TcpStream::connect(addr).await?;
-        stream.write_all(b"GET /health HTTP/1.0\r\nHost: localhost\r\n\r\n").await?;
-        let mut response = Vec::new();
-        stream.read_to_end(&mut response).await?;
-        Ok::<_, std::io::Error>(response)
+async fn run_seed(file: Option<&std::path::Path>) -> anyhow::Result<()> {
+    let json = match file {
+        Some(path) => std::fs::read_to_string(path).with_context(|| format!("cannot read {}", path.display()))?,
+        None => seed::GROGNARDS.to_owned(),
     };
-    let response = tokio::time::timeout(Duration::from_secs(3), probe)
-        .await
-        .context("timed out")?
-        .with_context(|| format!("cannot reach {addr}"))?;
-    let status_line = String::from_utf8_lossy(&response).lines().next().unwrap_or_default().to_owned();
+    let data = seed::parse(&json)?;
+    let config = Config::from_env()?;
+    let pool = db::connect(&config.database_path).await?;
+    let summary =
+        seed::seed(&pool, &data).await.with_context(|| format!("seeding {}", config.database_path.display()))?;
+    pool.close().await;
+    let items: Vec<String> = summary.items.iter().map(|(kind, n)| format!("{n} {}", kind.table())).collect();
+    println!(
+        "seeded '{}': {} locations, {} games, {}",
+        summary.association,
+        summary.locations,
+        summary.games,
+        items.join(", ")
+    );
+    Ok(())
+}
+
+/// Asks the server on SOCKET_PATH, or BIND_ADDR without one, for /health.
+async fn healthcheck() -> anyhow::Result<()> {
+    let probe = async {
+        if let Some(path) = std::env::var_os("SOCKET_PATH").filter(|path| !path.is_empty()) {
+            let stream = tokio::net::UnixStream::connect(&path)
+                .await
+                .with_context(|| format!("cannot reach unix:{}", path.display()))?;
+            return Ok(listen::get_health(stream).await?);
+        }
+        let bind = std::env::var("BIND_ADDR").unwrap_or_else(|_| "0.0.0.0:8000".to_owned());
+        let mut addr: SocketAddr = bind.parse().with_context(|| format!("BIND_ADDR {bind:?} is not an ip:port"))?;
+        if addr.ip().is_unspecified() {
+            addr.set_ip(Ipv4Addr::LOCALHOST.into());
+        }
+        let stream = tokio::net::TcpStream::connect(addr).await.with_context(|| format!("cannot reach {addr}"))?;
+        anyhow::Ok(listen::get_health(stream).await?)
+    };
+    let status_line = tokio::time::timeout(Duration::from_secs(3), probe).await.context("timed out")??;
     anyhow::ensure!(status_line.split(' ').nth(1) == Some("200"), "unhealthy: {status_line}");
     Ok(())
 }
@@ -204,7 +209,7 @@ async fn set_password(username: &str, login: Option<&str>) -> anyhow::Result<()>
         anyhow::bail!("the login '{login}' is already used by user {}", other.id);
     }
 
-    let no_terminal = "typing the password needs a terminal (in the container: `docker exec -it`)";
+    let no_terminal = "typing the password needs a terminal (over SSH: `ssh -t`)";
     let typed = rpassword::prompt_password(format!("New password for '{username}': ")).context(no_terminal)?;
     let again = rpassword::prompt_password("Again: ").context(no_terminal)?;
     password::check_password(&typed, &again).map_err(|refusal| match refusal {

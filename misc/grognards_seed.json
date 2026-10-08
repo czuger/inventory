@@ -1,0 +1,2327 @@
+{
+ "_comment": "The club inventory as loaded by `inventory seed` into a fresh database. Built once from the v2 extraction of misc/20241206_inventaire Grognards.xlsx (see misc/inventory_xlsx_extraction_report.md); this file is now the authority: edit it, not the workbook. `source` names the sheet lines (F1 = Feuil1, NA = Nappes), `note` says what was interpreted.",
+ "_rules": [
+  "Every canonical line of the extraction is here, whatever its status; struck, placeholder and zero lines have quantity 0. The Feuil1 tablecloth rows refined by Nappes are not (D11).",
+  "Names are the sheet labels, untouched, followed by the remark when there is one (tablecloths keep it in remarks).",
+  "Rooms follow the sheet header: the grande salle holds the two placards, the petite salle the rest (D04).",
+  "Quantity is the sheet count when it is one whole number, otherwise 1 with a note.",
+  "An item counted per place is split into one item per place; with bare X marks the first place gets it and the others are noted.",
+  "Items kept at a member's home are under \"Hors club / Chez ...\"; gift candidates and stock for sale under \"Hors stock\"; items the sheet does not place under \"À localiser\".",
+  "A game, scale or size the sheet does not state is \"Non précisé\", \"Mixte\" or \"?x?\"."
+ ],
+ "association": {
+  "name": "Les Grognards d'Alsace",
+  "slug": "grognards"
+ },
+ "locations": [
+  {
+   "room": "Grande salle",
+   "spot": "Placard 1 porte"
+  },
+  {
+   "room": "Grande salle",
+   "spot": "Placard 2 portes"
+  },
+  {
+   "room": "Petite salle",
+   "spot": "Pièce 1"
+  },
+  {
+   "room": "Petite salle",
+   "spot": "Vitrine 1"
+  },
+  {
+   "room": "Petite salle",
+   "spot": "Vitrine 2"
+  },
+  {
+   "room": "Petite salle",
+   "spot": "Pièce 2"
+  },
+  {
+   "room": "Petite salle",
+   "spot": "Armoire 1"
+  },
+  {
+   "room": "Petite salle",
+   "spot": "Armoire 2"
+  },
+  {
+   "room": "Hors club",
+   "spot": "Chez Stéphane M"
+  },
+  {
+   "room": "Hors club",
+   "spot": "Chez le Préz"
+  },
+  {
+   "room": "Hors stock",
+   "spot": "Cadeaux potentiels"
+  },
+  {
+   "room": "Hors stock",
+   "spot": "À vendre"
+  },
+  {
+   "room": "À localiser",
+   "spot": "À localiser"
+  }
+ ],
+ "games": [
+  "Non précisé",
+  "Armada",
+  "Art de la Guerre",
+  "BOLT ACTION",
+  "Briskars",
+  "CONGO",
+  "Flame of War (FOW)",
+  "Guildball",
+  "Jugula",
+  "Malifaux",
+  "SAGA",
+  "Sails of Glory",
+  "Seigneurs des Anneaux",
+  "StarWars"
+ ],
+ "items": [
+  {
+   "source": [
+    "F1:r17"
+   ],
+   "type": "terrain",
+   "name": "mélaminées peintes/floquées 50x50 – avec rivière",
+   "quantity": 13,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "Mixte"
+   }
+  },
+  {
+   "source": [
+    "F1:r18"
+   ],
+   "type": "terrain",
+   "name": "polystyrènes/floquées 60x60 – steppe + plage + neige",
+   "quantity": 28,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "Mixte"
+   }
+  },
+  {
+   "source": [
+    "F1:r19"
+   ],
+   "type": "terrain",
+   "name": "bois – + 4 trétaux supprimées",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "Mixte"
+   },
+   "note": "status struck: quantity 0 (sheet: '8x120cm'); no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r20"
+   ],
+   "type": "terrain",
+   "name": "bois – durant période COVID",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "Mixte"
+   },
+   "note": "status struck: quantity 0 (sheet: '2x180cm'); no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r24"
+   ],
+   "type": "terrain",
+   "name": "batîments ouest européens",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r25"
+   ],
+   "type": "terrain",
+   "name": "batîments est européens",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r26"
+   ],
+   "type": "terrain",
+   "name": "batîments ruines – dans 1 boite",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r27"
+   ],
+   "type": "terrain",
+   "name": "batîments orientaux",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r28"
+   ],
+   "type": "terrain",
+   "name": "ponts",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r29"
+   ],
+   "type": "terrain",
+   "name": "arbres",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r30"
+   ],
+   "type": "terrain",
+   "name": "collines",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r31"
+   ],
+   "type": "terrain",
+   "name": "champs",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r32"
+   ],
+   "type": "terrain",
+   "name": "terrains accidentés",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r33"
+   ],
+   "type": "terrain",
+   "name": "routes",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r34"
+   ],
+   "type": "terrain",
+   "name": "rivières",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r35"
+   ],
+   "type": "terrain",
+   "name": "marais",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r36"
+   ],
+   "type": "terrain",
+   "name": "murets",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r37"
+   ],
+   "type": "terrain",
+   "name": "haies",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r38"
+   ],
+   "type": "terrain",
+   "name": "barrières",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "15mm"
+   },
+   "note": "status placeholder: quantity 0; no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r40"
+   ],
+   "type": "terrain",
+   "name": "batiments – médiévaux",
+   "quantity": 2,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   },
+   "note": "counted in panières: '2 panières batiments'"
+  },
+  {
+   "source": [
+    "F1:r41"
+   ],
+   "type": "terrain",
+   "name": "murs",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   },
+   "note": "sheet quantity '1,5m de murs' is not one whole count: quantity 1"
+  },
+  {
+   "source": [
+    "F1:r42"
+   ],
+   "type": "terrain",
+   "name": "temple – antique",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r43"
+   ],
+   "type": "terrain",
+   "name": "temple – grec",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Vitrine 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r44"
+   ],
+   "type": "terrain",
+   "name": "temple – Gondor",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Vitrine 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r45"
+   ],
+   "type": "terrain",
+   "name": "tour – féodale",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r46"
+   ],
+   "type": "terrain",
+   "name": "tour – médiévale",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r47"
+   ],
+   "type": "terrain",
+   "name": "maisons – 20e siècle",
+   "quantity": 8,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   },
+   "note": "the rest of 9 at the X"
+  },
+  {
+   "source": [
+    "F1:r47"
+   ],
+   "type": "terrain",
+   "name": "maisons – 20e siècle",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Vitrine 2"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   },
+   "note": "H47 counts 1"
+  },
+  {
+   "source": [
+    "F1:r48"
+   ],
+   "type": "terrain",
+   "name": "routes – 20e siècle",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   },
+   "note": "sheet quantity '2-3m routes' is not one whole count: quantity 1"
+  },
+  {
+   "source": [
+    "F1:r49"
+   ],
+   "type": "terrain",
+   "name": "\"mur\" de la mine",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r50"
+   ],
+   "type": "terrain",
+   "name": "tombeau de Balin",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r51"
+   ],
+   "type": "terrain",
+   "name": "arène cirque – Jugula",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ],
+   "fields": {
+    "game": "Jugula",
+    "scale": "28mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r52"
+   ],
+   "type": "terrain",
+   "name": "décors Désert",
+   "quantity": 2,
+   "location": [
+    "Grande salle",
+    "Placard 2 portes"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   },
+   "note": "counted in boites: '2 boites'"
+  },
+  {
+   "source": [
+    "F1:r53"
+   ],
+   "type": "terrain",
+   "name": "décors Asie",
+   "quantity": 1,
+   "location": [
+    "Grande salle",
+    "Placard 2 portes"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   },
+   "note": "counted in boite: '1 boite'"
+  },
+  {
+   "source": [
+    "F1:r54"
+   ],
+   "type": "terrain",
+   "name": "arbres – dont 8 sapins",
+   "quantity": 38,
+   "location": [
+    "Grande salle",
+    "Placard 1 porte"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "28mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r56"
+   ],
+   "type": "terrain",
+   "name": "table (à peindre) – Stalingrad",
+   "quantity": 1,
+   "location": [
+    "Grande salle",
+    "Placard 2 portes"
+   ],
+   "fields": {
+    "game": "BOLT ACTION",
+    "scale": "Mixte"
+   }
+  },
+  {
+   "source": [
+    "F1:r57"
+   ],
+   "type": "terrain",
+   "name": "table – France occupée",
+   "quantity": 1,
+   "location": [
+    "Grande salle",
+    "Placard 2 portes"
+   ],
+   "fields": {
+    "game": "BOLT ACTION",
+    "scale": "Mixte"
+   }
+  },
+  {
+   "source": [
+    "F1:r58"
+   ],
+   "type": "terrain",
+   "name": "table – maisons allemagne+gare",
+   "quantity": 1,
+   "location": [
+    "Grande salle",
+    "Placard 2 portes"
+   ],
+   "fields": {
+    "game": "BOLT ACTION",
+    "scale": "Mixte"
+   }
+  },
+  {
+   "source": [
+    "F1:r60"
+   ],
+   "type": "terrain",
+   "name": "Malifaux",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Malifaux",
+    "scale": "Mixte"
+   },
+   "note": "scale '+30mm' is not one the application knows: Mixte"
+  },
+  {
+   "source": [
+    "F1:r61"
+   ],
+   "type": "terrain",
+   "name": "Briskars",
+   "quantity": 1,
+   "location": [
+    "Grande salle",
+    "Placard 2 portes"
+   ],
+   "fields": {
+    "game": "Briskars",
+    "scale": "Mixte"
+   },
+   "note": "scale '+30mm' is not one the application knows: Mixte"
+  },
+  {
+   "source": [
+    "F1:r61"
+   ],
+   "type": "terrain",
+   "name": "Briskars",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Vitrine 2"
+   ],
+   "fields": {
+    "game": "Briskars",
+    "scale": "Mixte"
+   },
+   "note": "scale '+30mm' is not one the application knows: Mixte; H61 says \"1 maison\""
+  },
+  {
+   "source": [
+    "F1:r62"
+   ],
+   "type": "miniature",
+   "name": "Fig Symbiotique",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Vitrine 2"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "Mixte"
+   },
+   "note": "listed under scenery for +30mm but is a figurine; scale '+30mm' is not one the application knows: Mixte"
+  },
+  {
+   "source": [
+    "F1:r69"
+   ],
+   "type": "miniature",
+   "name": "Armada = règle – Alliance & Empire",
+   "quantity": 2,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Armada",
+    "scale": "Mixte"
+   },
+   "note": "labelled \"Armada = règle\" but counted in cartons/boxes of ships: stored as miniatures; counted in cartons: '2 cartons'"
+  },
+  {
+   "source": [
+    "F1:r70"
+   ],
+   "type": "miniature",
+   "name": "Armada = règle – Alliance & Empire",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Armada",
+    "scale": "Mixte"
+   },
+   "note": "labelled \"Armada = règle\" but counted in cartons/boxes of ships: stored as miniatures; counted in panière: '1 panière'"
+  },
+  {
+   "source": [
+    "F1:r71"
+   ],
+   "type": "miniature",
+   "name": "Armada = règle – conflit Corélien (campagne)",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Armada",
+    "scale": "Mixte"
+   },
+   "note": "labelled \"Armada = règle\" but counted in cartons/boxes of ships: stored as miniatures; counted in boite: '1 boite'"
+  },
+  {
+   "source": [
+    "F1:r72"
+   ],
+   "type": "miniature",
+   "name": "Armada = règle – destroyer stellaire",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Armada",
+    "scale": "Mixte"
+   },
+   "note": "labelled \"Armada = règle\" but counted in cartons/boxes of ships: stored as miniatures; counted in boite: '1 boite'"
+  },
+  {
+   "source": [
+    "F1:r73"
+   ],
+   "type": "miniature",
+   "name": "Armada = règle – Phoenix Home",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Armada",
+    "scale": "Mixte"
+   },
+   "note": "labelled \"Armada = règle\" but counted in cartons/boxes of ships: stored as miniatures; counted in boite: '1 boite '"
+  },
+  {
+   "source": [
+    "F1:r76"
+   ],
+   "type": "miniature",
+   "name": "URUKAÏ",
+   "quantity": 3,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Seigneurs des Anneaux",
+    "scale": "Mixte"
+   },
+   "note": "counted in boites: '3 boites'"
+  },
+  {
+   "source": [
+    "F1:r77"
+   ],
+   "type": "miniature",
+   "name": "GOBELINS",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Seigneurs des Anneaux",
+    "scale": "Mixte"
+   },
+   "note": "counted in boite: '1 boite'"
+  },
+  {
+   "source": [
+    "F1:r78"
+   ],
+   "type": "miniature",
+   "name": "TROLLS – dans la boite des Gob",
+   "quantity": 2,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Seigneurs des Anneaux",
+    "scale": "Mixte"
+   }
+  },
+  {
+   "source": [
+    "F1:r79"
+   ],
+   "type": "miniature",
+   "name": "HARADRIMS – dont 1 MAMELIK",
+   "quantity": 40,
+   "location": [
+    "Petite salle",
+    "Vitrine 2"
+   ],
+   "fields": {
+    "game": "Seigneurs des Anneaux",
+    "scale": "Mixte"
+   },
+   "note": "approximate: '40 figs env'; counted in figs: '40 figs env'"
+  },
+  {
+   "source": [
+    "F1:r80"
+   ],
+   "type": "miniature",
+   "name": "ROHANS",
+   "quantity": 3,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Seigneurs des Anneaux",
+    "scale": "Mixte"
+   },
+   "note": "counted in boites: '3 boites'"
+  },
+  {
+   "source": [
+    "F1:r81"
+   ],
+   "type": "miniature",
+   "name": "EFLES",
+   "quantity": 32,
+   "location": [
+    "Petite salle",
+    "Vitrine 1"
+   ],
+   "fields": {
+    "game": "Seigneurs des Anneaux",
+    "scale": "Mixte"
+   }
+  },
+  {
+   "source": [
+    "F1:r82"
+   ],
+   "type": "miniature",
+   "name": "AVENTURIERS",
+   "quantity": 20,
+   "location": [
+    "Petite salle",
+    "Vitrine 1"
+   ],
+   "fields": {
+    "game": "Seigneurs des Anneaux",
+    "scale": "Mixte"
+   }
+  },
+  {
+   "source": [
+    "F1:r84"
+   ],
+   "type": "rulebook",
+   "name": "règle V2",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "SAGA",
+    "supplement": false
+   }
+  },
+  {
+   "source": [
+    "F1:r85"
+   ],
+   "type": "rulebook",
+   "name": "Age de la Magie = extension",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "SAGA",
+    "supplement": true
+   }
+  },
+  {
+   "source": [
+    "F1:r86"
+   ],
+   "type": "miniature",
+   "name": "Age de la magie = figurines",
+   "quantity": 9,
+   "location": [
+    "Petite salle",
+    "Vitrine 2"
+   ],
+   "fields": {
+    "game": "SAGA",
+    "scale": "Mixte"
+   },
+   "note": "counted in squeletettes: '9 squeletettes'"
+  },
+  {
+   "source": [
+    "F1:r87"
+   ],
+   "type": "miniature",
+   "name": "Age des Invasions = figurines",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Vitrine 2"
+   ],
+   "fields": {
+    "game": "SAGA",
+    "scale": "Mixte"
+   },
+   "note": "sheet quantity '33 piétons et 4 cavaliers' is not one whole count: quantity 1"
+  },
+  {
+   "source": [
+    "F1:r88"
+   ],
+   "type": "rulebook",
+   "name": "Age d'Hannibal = extension",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "SAGA",
+    "supplement": true
+   }
+  },
+  {
+   "source": [
+    "F1:r89"
+   ],
+   "type": "rulebook",
+   "name": "Croissant & Croix = extension",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "SAGA",
+    "supplement": true
+   }
+  },
+  {
+   "source": [
+    "F1:r90"
+   ],
+   "type": "equipment",
+   "name": "sets de 8 dés",
+   "quantity": 7,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ]
+  },
+  {
+   "source": [
+    "F1:r93"
+   ],
+   "type": "miniature",
+   "name": "Figurines + décors",
+   "quantity": 60,
+   "location": [
+    "Petite salle",
+    "Vitrine 1"
+   ],
+   "fields": {
+    "game": "CONGO",
+    "scale": "28mm"
+   },
+   "note": "approximate: '60 env'"
+  },
+  {
+   "source": [
+    "F1:r94"
+   ],
+   "type": "rulebook",
+   "name": "Règle",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Vitrine 1"
+   ],
+   "fields": {
+    "game": "CONGO",
+    "supplement": false
+   }
+  },
+  {
+   "source": [
+    "F1:r97"
+   ],
+   "type": "miniature",
+   "name": "Figurines : 1 battlegroup USA (en guêtres) – + 1 M4A1 +1 HT",
+   "quantity": 60,
+   "location": [
+    "Petite salle",
+    "Vitrine 1"
+   ],
+   "fields": {
+    "game": "BOLT ACTION",
+    "scale": "28mm"
+   },
+   "note": "approximate: '60 env'"
+  },
+  {
+   "source": [
+    "F1:r100"
+   ],
+   "type": "miniature",
+   "name": "Figurines : compagnie chars USA – à monter",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Flame of War (FOW)",
+    "scale": "15mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r101"
+   ],
+   "type": "miniature",
+   "name": "maquettes",
+   "quantity": 2,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Flame of War (FOW)",
+    "scale": "15mm"
+   }
+  },
+  {
+   "source": [
+    "F1:r102"
+   ],
+   "type": "terrain",
+   "name": "Décors",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Flame of War (FOW)",
+    "scale": "15mm"
+   },
+   "note": "counted in camp prisonniers: '1 camp prisonniers'"
+  },
+  {
+   "source": [
+    "F1:r104"
+   ],
+   "type": "board_game",
+   "name": "Guerre de l'anneau",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r105"
+   ],
+   "type": "board_game",
+   "name": "Britannia – version AH",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r106"
+   ],
+   "type": "board_game",
+   "name": "An mil",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r107"
+   ],
+   "type": "board_game",
+   "name": "Barbe Noire",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r108"
+   ],
+   "type": "board_game",
+   "name": "Empire",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r109"
+   ],
+   "type": "board_game",
+   "name": "Dipolmacy",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r110"
+   ],
+   "type": "board_game",
+   "name": "Power",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r111"
+   ],
+   "type": "board_game",
+   "name": "Bounty Hunter – Shoot at the saloon",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r112"
+   ],
+   "type": "board_game",
+   "name": "Aces of Aces",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r113"
+   ],
+   "type": "board_game",
+   "name": "Wanted",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r114"
+   ],
+   "type": "board_game",
+   "name": "Strike",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r115"
+   ],
+   "type": "board_game",
+   "name": "Formule D",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r116"
+   ],
+   "type": "board_game",
+   "name": "Battle for Britain – Blood Red Skies",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r117"
+   ],
+   "type": "board_game",
+   "name": "Handiap Race",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r118"
+   ],
+   "type": "rulebook",
+   "name": "Sails of Glory = règle",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ],
+   "fields": {
+    "game": "Sails of Glory",
+    "supplement": false
+   },
+   "note": "counted in boite: '1 boite'"
+  },
+  {
+   "source": [
+    "F1:r119"
+   ],
+   "type": "board_game",
+   "name": "Sails of Glory = bateaux",
+   "quantity": 4,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ],
+   "note": "counted in boites: '4  boites'"
+  },
+  {
+   "source": [
+    "F1:r122"
+   ],
+   "type": "rulebook",
+   "name": "Au contact",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Armoire 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "supplement": false
+   }
+  },
+  {
+   "source": [
+    "F1:r123"
+   ],
+   "type": "rulebook",
+   "name": "Filed of Glory V2 (FoG)",
+   "quantity": 3,
+   "location": [
+    "Petite salle",
+    "Armoire 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "supplement": false
+   }
+  },
+  {
+   "source": [
+    "F1:r124"
+   ],
+   "type": "rulebook",
+   "name": "V for Victory",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Armoire 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "supplement": false
+   }
+  },
+  {
+   "source": [
+    "F1:r125"
+   ],
+   "type": "rulebook",
+   "name": "Art de la Guerre V4 (AdG) – dont 1 chez Stéphane M",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Armoire 1"
+   ],
+   "fields": {
+    "game": "Art de la Guerre",
+    "supplement": false
+   }
+  },
+  {
+   "source": [
+    "F1:r125"
+   ],
+   "type": "rulebook",
+   "name": "Art de la Guerre V4 (AdG) – dont 1 chez Stéphane M",
+   "quantity": 1,
+   "location": [
+    "Hors club",
+    "Chez Stéphane M"
+   ],
+   "fields": {
+    "game": "Art de la Guerre",
+    "supplement": false
+   },
+   "note": "\"dont 1 chez Stéphane M\""
+  },
+  {
+   "source": [
+    "F1:r131"
+   ],
+   "type": "equipment",
+   "name": "machine à café – 3 filtres et 1 dosettes",
+   "quantity": 4,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "note": "also marked: Petite salle / Armoire 1"
+  },
+  {
+   "source": [
+    "F1:r132"
+   ],
+   "type": "equipment",
+   "name": "thermos – 2 café et 1 eau chaude",
+   "quantity": 3,
+   "location": [
+    "Petite salle",
+    "Armoire 1"
+   ]
+  },
+  {
+   "source": [
+    "F1:r133"
+   ],
+   "type": "equipment",
+   "name": "plastifieuse",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Armoire 1"
+   ]
+  },
+  {
+   "source": [
+    "F1:r134"
+   ],
+   "type": "equipment",
+   "name": "rétroprojecteur",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Armoire 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r135"
+   ],
+   "type": "equipment",
+   "name": "rallonge électrique – 1x20m + 1x25m",
+   "quantity": 2,
+   "location": [
+    "Petite salle",
+    "Armoire 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r136"
+   ],
+   "type": "equipment",
+   "name": "multiprise",
+   "quantity": 3,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "note": "also marked: Petite salle / Pièce 2, Petite salle / Armoire 2"
+  },
+  {
+   "source": [
+    "F1:r137"
+   ],
+   "type": "equipment",
+   "name": "radioCD",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r138"
+   ],
+   "type": "equipment",
+   "name": "camera – Sony FDR-AX43",
+   "quantity": 1,
+   "location": [
+    "Hors club",
+    "Chez le Préz"
+   ]
+  },
+  {
+   "source": [
+    "F1:r139"
+   ],
+   "type": "equipment",
+   "name": "lumières – chez le Préz",
+   "quantity": 2,
+   "location": [
+    "Hors club",
+    "Chez le Préz"
+   ]
+  },
+  {
+   "source": [
+    "F1:r141"
+   ],
+   "type": "equipment",
+   "name": "camera – Neewwer - 177cm",
+   "quantity": 1,
+   "location": [
+    "Hors club",
+    "Chez le Préz"
+   ]
+  },
+  {
+   "source": [
+    "F1:r142"
+   ],
+   "type": "equipment",
+   "name": "lumières",
+   "quantity": 2,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "note": "no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r143"
+   ],
+   "type": "equipment",
+   "name": "carte SSD – chez le Préz",
+   "quantity": 3,
+   "location": [
+    "Hors club",
+    "Chez le Préz"
+   ]
+  },
+  {
+   "source": [
+    "F1:r144"
+   ],
+   "type": "equipment",
+   "name": "matériel divers",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "note": "the heading \"matériel divers\" carries a mark in pièce 1 and nothing else"
+  },
+  {
+   "source": [
+    "F1:r146"
+   ],
+   "type": "equipment",
+   "name": "caissette avec clé – dont 1 avec le fond de caisse",
+   "quantity": 3,
+   "location": [
+    "Petite salle",
+    "Armoire 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r149"
+   ],
+   "type": "equipment",
+   "name": "épée BATARDE en acier – Espagne",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ]
+  },
+  {
+   "source": [
+    "F1:r150"
+   ],
+   "type": "equipment",
+   "name": "Vitrine – tout en verre",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r151"
+   ],
+   "type": "equipment",
+   "name": "coffre à roulettes – pour plaques 120cm",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r152"
+   ],
+   "type": "equipment",
+   "name": "mètre-ruban rouge – 2m",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Armoire 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r153"
+   ],
+   "type": "equipment",
+   "name": "dé à 6 faces – en 4 boites",
+   "quantity": 2,
+   "location": [
+    "Petite salle",
+    "Armoire 2"
+   ],
+   "note": "approximate: '90 env'; 90 dice about, in 4 boxes: quantity counts boxes (G153/K153)"
+  },
+  {
+   "source": [
+    "F1:r153"
+   ],
+   "type": "equipment",
+   "name": "dé à 6 faces – en 4 boites",
+   "quantity": 2,
+   "location": [
+    "Petite salle",
+    "Vitrine 1"
+   ],
+   "note": "approximate: '90 env'; 90 dice about, in 4 boxes: quantity counts boxes (G153/K153)"
+  },
+  {
+   "source": [
+    "F1:r154"
+   ],
+   "type": "equipment",
+   "name": "règle métallique 60cm",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Armoire 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r155"
+   ],
+   "type": "equipment",
+   "name": "fournitures de bureau",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Armoire 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r156"
+   ],
+   "type": "equipment",
+   "name": "ciseaux à Poulets magnétiques",
+   "quantity": 2,
+   "location": [
+    "Petite salle",
+    "Armoire 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r157"
+   ],
+   "type": "equipment",
+   "name": "pintes de bière",
+   "quantity": 24,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r158"
+   ],
+   "type": "equipment",
+   "name": "couteaux, fourchettes, louches…",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Armoire 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r159"
+   ],
+   "type": "equipment",
+   "name": "marteau",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Armoire 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r160"
+   ],
+   "type": "equipment",
+   "name": "balai",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ]
+  },
+  {
+   "source": [
+    "F1:r161"
+   ],
+   "type": "equipment",
+   "name": "balayette",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "note": "status zero: quantity 0 (sheet: 0); no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r162"
+   ],
+   "type": "equipment",
+   "name": "poubelle – avec tri",
+   "quantity": 2,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ]
+  },
+  {
+   "source": [
+    "F1:r164"
+   ],
+   "type": "equipment",
+   "name": "matériel peinture",
+   "quantity": 1,
+   "location": [
+    "Petite salle",
+    "Pièce 2"
+   ],
+   "note": "sheet quantity '1 lampe + accessoires + fig en en libre service' is not one whole count: quantity 1"
+  },
+  {
+   "source": [
+    "F1:r167"
+   ],
+   "type": "rulebook",
+   "name": "FIRESTROM armada",
+   "quantity": 1,
+   "location": [
+    "Hors stock",
+    "Cadeaux potentiels"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "supplement": false
+   },
+   "note": "in the sheet: petite salle / pièce 1"
+  },
+  {
+   "source": [
+    "F1:r168"
+   ],
+   "type": "rulebook",
+   "name": "Achtung Panzer!",
+   "quantity": 1,
+   "location": [
+    "Hors stock",
+    "Cadeaux potentiels"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "supplement": false
+   },
+   "note": "in the sheet: petite salle / pièce 1"
+  },
+  {
+   "source": [
+    "F1:r169"
+   ],
+   "type": "board_game",
+   "name": "Planet Steams",
+   "quantity": 1,
+   "location": [
+    "Hors stock",
+    "Cadeaux potentiels"
+   ],
+   "note": "in the sheet: petite salle / pièce 1"
+  },
+  {
+   "source": [
+    "F1:r170"
+   ],
+   "type": "board_game",
+   "name": "Dystopian wars",
+   "quantity": 1,
+   "location": [
+    "Hors stock",
+    "Cadeaux potentiels"
+   ],
+   "note": "in the sheet: petite salle / pièce 1"
+  },
+  {
+   "source": [
+    "F1:r172"
+   ],
+   "type": "miniature",
+   "name": "antiques",
+   "quantity": 1,
+   "location": [
+    "Hors stock",
+    "Cadeaux potentiels"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "Mixte"
+   },
+   "note": "counted in boite de statuettes: '1 boite de statuettes'; in the sheet: petite salle / pièce 2"
+  },
+  {
+   "source": [
+    "F1:r173"
+   ],
+   "type": "miniature",
+   "name": "médiévales 70mm – dans attatché case",
+   "quantity": 27,
+   "location": [
+    "Hors stock",
+    "Cadeaux potentiels"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "70mm"
+   },
+   "note": "in the sheet: petite salle / vitrine 1, petite salle / pièce 2"
+  },
+  {
+   "source": [
+    "F1:r174"
+   ],
+   "type": "miniature",
+   "name": "19e - plat d'étain – dans boite en bois",
+   "quantity": 1,
+   "location": [
+    "Hors stock",
+    "Cadeaux potentiels"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "Mixte"
+   },
+   "note": "sheet quantity '1-2kg' is not one whole count: quantity 1; in the sheet: petite salle / armoire 1"
+  },
+  {
+   "source": [
+    "F1:r176"
+   ],
+   "type": "equipment",
+   "name": "maquette d'une tour – MedFan",
+   "quantity": 1,
+   "location": [
+    "Hors stock",
+    "Cadeaux potentiels"
+   ],
+   "note": "in the sheet: petite salle / pièce 1"
+  },
+  {
+   "source": [
+    "F1:r177"
+   ],
+   "type": "equipment",
+   "name": "réglettes ADG 28mm",
+   "quantity": 1,
+   "location": [
+    "Hors stock",
+    "Cadeaux potentiels"
+   ],
+   "note": "counted in set: '1 set'; in the sheet: petite salle / pièce 1"
+  },
+  {
+   "source": [
+    "F1:r178"
+   ],
+   "type": "equipment",
+   "name": "chemisette grognards – XXL",
+   "quantity": 4,
+   "location": [
+    "Hors stock",
+    "Cadeaux potentiels"
+   ],
+   "note": "in the sheet: petite salle / armoire 2"
+  },
+  {
+   "source": [
+    "F1:r180"
+   ],
+   "type": "miniature",
+   "name": "stock de figruines à vendre – Antiq-Med",
+   "quantity": 7,
+   "location": [
+    "Hors stock",
+    "À vendre"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "Mixte"
+   },
+   "note": "counted in boites: '1 petite + 6 grandes boites'; in the sheet: petite salle / pièce 1"
+  },
+  {
+   "source": [
+    "F1:r181"
+   ],
+   "type": "miniature",
+   "name": "listing chez François S – 17e, 18e, 19e",
+   "quantity": 1,
+   "location": [
+    "Hors stock",
+    "À vendre"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "scale": "Mixte"
+   },
+   "note": "a listing kept by François S: B181 holds scales, C181 periods; sheet quantity '15mm, 28mm' is not one whole count: quantity 1"
+  },
+  {
+   "source": [
+    "F1:r184"
+   ],
+   "type": "consumable",
+   "name": "barres chocolatées",
+   "quantity": 1,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "unit": "kg"
+   },
+   "note": "no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r186"
+   ],
+   "type": "consumable",
+   "name": "café",
+   "quantity": 2,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "unit": "kg"
+   },
+   "note": "no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r187"
+   ],
+   "type": "consumable",
+   "name": "jus d'orange",
+   "quantity": 3,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "unit": "l"
+   },
+   "note": "no location in the sheet"
+  },
+  {
+   "source": [
+    "F1:r188"
+   ],
+   "type": "consumable",
+   "name": "boite 80 filtres café",
+   "quantity": 3,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "unit": null
+   },
+   "note": "no location in the sheet"
+  },
+  {
+   "source": [
+    "NA:r4"
+   ],
+   "type": "tablecloth",
+   "name": "nappes floquéee (1,2x1,8)",
+   "quantity": 23,
+   "location": [
+    "Petite salle",
+    "Armoire 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "size": "120x180",
+    "material": "textured",
+    "remarks": null
+   }
+  },
+  {
+   "source": [
+    "NA:r5"
+   ],
+   "type": "tablecloth",
+   "name": "nappes tissus (1,2x1,8)",
+   "quantity": 6,
+   "location": [
+    "Petite salle",
+    "Armoire 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "size": "120x180",
+    "material": "cloth",
+    "remarks": null
+   }
+  },
+  {
+   "source": [
+    "NA:r6"
+   ],
+   "type": "tablecloth",
+   "name": "nappes mousse (1,2x0,9)",
+   "quantity": 25,
+   "location": [
+    "Grande salle",
+    "Placard 1 porte"
+   ],
+   "fields": {
+    "game": "SAGA",
+    "size": "120x90",
+    "material": "mousepad (neoprene)",
+    "remarks": "SAGA"
+   }
+  },
+  {
+   "source": [
+    "NA:r7"
+   ],
+   "type": "tablecloth",
+   "name": "nappes mousse (0,9x0,9)",
+   "quantity": 8,
+   "location": [
+    "Grande salle",
+    "Placard 1 porte"
+   ],
+   "fields": {
+    "game": "Guildball",
+    "size": "90x90",
+    "material": "mousepad (neoprene)",
+    "remarks": "Guildball"
+   }
+  },
+  {
+   "source": [
+    "NA:r8"
+   ],
+   "type": "tablecloth",
+   "name": "nappes mousse (0,9x0,9)",
+   "quantity": 2,
+   "location": [
+    "Grande salle",
+    "Placard 1 porte"
+   ],
+   "fields": {
+    "game": "Malifaux",
+    "size": "90x90",
+    "material": "mousepad (neoprene)",
+    "remarks": "Malifaux (en housse)"
+   }
+  },
+  {
+   "source": [
+    "NA:r9"
+   ],
+   "type": "tablecloth",
+   "name": "nappes mousse (0,9x0,9)",
+   "quantity": 2,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Malifaux",
+    "size": "90x90",
+    "material": "mousepad (neoprene)",
+    "remarks": "Malifaux (en housse)"
+   }
+  },
+  {
+   "source": [
+    "NA:r10"
+   ],
+   "type": "tablecloth",
+   "name": "nappes mousse (1,2x1,8)",
+   "quantity": 1,
+   "location": [
+    "Grande salle",
+    "Placard 1 porte"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "size": "120x180",
+    "material": "mousepad (neoprene)",
+    "remarks": "désert"
+   }
+  },
+  {
+   "source": [
+    "NA:r11"
+   ],
+   "type": "tablecloth",
+   "name": "nappes mousse (1,2x1,8)",
+   "quantity": 1,
+   "location": [
+    "Grande salle",
+    "Placard 1 porte"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "size": "120x180",
+    "material": "mousepad (neoprene)",
+    "remarks": "glace"
+   }
+  },
+  {
+   "source": [
+    "NA:r12"
+   ],
+   "type": "tablecloth",
+   "name": "nappes mousse (1,2x1,8)",
+   "quantity": 1,
+   "location": [
+    "Grande salle",
+    "Placard 1 porte"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "size": "120x180",
+    "material": "mousepad (neoprene)",
+    "remarks": "feu"
+   }
+  },
+  {
+   "source": [
+    "NA:r13"
+   ],
+   "type": "tablecloth",
+   "name": "nappes mousse (1,2x1,2)",
+   "quantity": 4,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "size": "120x120",
+    "material": "mousepad (neoprene)",
+    "remarks": "désert+plage"
+   }
+  },
+  {
+   "source": [
+    "NA:r14"
+   ],
+   "type": "tablecloth",
+   "name": "nappes mousse (1,2x1,8)",
+   "quantity": 2,
+   "location": [
+    "Petite salle",
+    "Pièce 1"
+   ],
+   "fields": {
+    "game": "StarWars",
+    "size": "120x180",
+    "material": "mousepad (neoprene)",
+    "remarks": "StarWars"
+   }
+  },
+  {
+   "source": [
+    "NA:r15"
+   ],
+   "type": "tablecloth",
+   "name": "nappes ADG (1,2x0,8)",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "size": "120x80",
+    "material": "mousepad (neoprene)",
+    "remarks": "perdues dans la masse"
+   },
+   "note": "status struck: quantity 0 (sheet: 1); no location in the sheet"
+  },
+  {
+   "source": [
+    "NA:r16"
+   ],
+   "type": "tablecloth",
+   "name": "nappes ADG (1,2x0,8)",
+   "quantity": 0,
+   "location": [
+    "À localiser",
+    "À localiser"
+   ],
+   "fields": {
+    "game": "Non précisé",
+    "size": "120x80",
+    "material": "textured",
+    "remarks": "perdues dans la masse"
+   },
+   "note": "status struck: quantity 0 (sheet: 4); no location in the sheet"
+  }
+ ]
+}

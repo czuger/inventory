@@ -4,7 +4,7 @@
 #   make deploy SSH_HOST=ced@other-box
 #
 # Every target acts on production unless told otherwise. ENV=staging targets the
-# separate staging instance (its own directory, database, container and URL
+# separate staging instance (its own directory, database, systemd unit, socket and URL
 # prefix — see deploy/config.sh):
 #
 #   make setup ENV=staging      # once
@@ -25,10 +25,10 @@ help:  ## Show this help
 	@echo
 	@echo "  Add ENV=staging to act on the staging instance instead of production."
 
-setup:  ## One-time server preparation (directories, Docker check, nginx config)
+setup:  ## One-time server preparation (directories, systemd check, nginx config)
 	@./deploy/setup_server.sh
 
-nginx:  ## Re-install the nginx snippet and restart the proxy (no deploy)
+nginx:  ## Re-install the nginx snippet and reload nginx (no deploy)
 	@./deploy/nginx.sh
 
 deploy:  ## Build, ship and start the new version, then health check it
@@ -37,10 +37,10 @@ deploy:  ## Build, ship and start the new version, then health check it
 rollback:  ## Switch back to the previously deployed version
 	@./deploy/rollback.sh
 
-logs:  ## Follow the container logs (Ctrl-C to stop)
+logs:  ## Follow the app's logs (Ctrl-C to stop)
 	@./deploy/server.sh logs
 
-status:  ## Running container + /health, as seen from the server
+status:  ## Running unit + /health, as seen from the server
 	@./deploy/server.sh status
 
 versions:  ## List the versions kept on the server

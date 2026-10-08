@@ -1,4 +1,0 @@
-target/
-parity/
-*.sqlite3
-*.sqlite3-*

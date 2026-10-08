@@ -198,8 +198,8 @@ fn bind_value<'q>(
 
 /// Inserts with the model defaults SQLAlchemy applied: nothing borrowed, no sticker
 /// printed, no photos.
-pub async fn insert(
-    pool: &SqlitePool,
+pub async fn insert<'e>(
+    executor: impl SqliteExecutor<'e>,
     kind: ItemKind,
     association_id: i64,
     values: &Values,
@@ -217,7 +217,8 @@ pub async fn insert(
     for (_, value) in &values.own {
         query = bind_value(query, value);
     }
-    let row = query.bind(values.quantity).bind(values.location_id).bind(images_to_json(&[])).fetch_one(pool).await?;
+    let row =
+        query.bind(values.quantity).bind(values.location_id).bind(images_to_json(&[])).fetch_one(executor).await?;
     row.try_get("id")
 }
 
